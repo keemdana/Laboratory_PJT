@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.mail.Mail.mssql">
+    <insert id="insert" parameterType="com.vertexid.paragon.mail.MailDTO" >
+        INSERT INTO T_SYS_MAIL_MAS(
+            EMAIL_UID
+            ,REL_UID
+            ,SOL_MAS_UID
+            ,STU_CD
+            ,STU_DTL
+            ,SEND
+            ,REC
+            ,REF
+            ,SECU_REF
+            ,TIT
+            ,CONTENT
+            ,SEND_DTE
+            ,SEND_YN
+            ,HTML_USE_YN
+            ,RESV_DTE
+            ,REG_LOGIN_ID
+            ,REG_DTE
+            ,UPT_LOGIN_ID
+            ,UPT_DTE
+        )VALUES(
+            #{emailUid}
+            ,#{relUid}
+            ,#{solMasUid}
+            ,#{stuCd}
+            ,#{stuDtl}
+            ,#{send}
+            ,#{rec}
+            ,#{ref}
+            ,#{secuRef}
+            ,#{tit}
+            ,#{content}
+            ,#{sendDte}
+            ,#{sendYn}
+            ,#{htmlUseYn}
+            ,#{resvDte}
+            ,#{loginInfo.loginId}
+            ,SYSDATE
+            ,#{loginInfo.loginId}
+            ,SYSDATE
+        )
+    </insert>
+    <update id="update" parameterType="com.vertexid.paragon.mail.MailDTO" >
+        UPDATE T_SYS_MAIL_MAS
+        SET SEND_DTE = CURRENT_TIMESTAMP
+        <if test="sendYn != null and sendYn != ''">
+            , SEND_YN = #{sendYn}
+        </if>
+        WHERE EMAIL_UID = #{emailUid}
+    </update>
+    
+    <!-- 발송대상 메일 리스트 -->
+    <select id="getMailList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT *
+        FROM T_SYS_MAIL_MAS
+        <where>
+            AND NVL(SEND_YN, 'N') = #{sendYn}
+        </where>
+        ORDER BY REG_DTE DESC
+    </select>
+    
+</mapper>

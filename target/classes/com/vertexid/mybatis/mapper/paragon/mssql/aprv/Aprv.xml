@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.aprv.Aprv.mssql">
+    <select id="selectNewAprNo" parameterType="map" resultType="string" fetchSize="1000">
+    	SELECT dbo.F_SYS_APR_NO() AS NewAprNo;
+    </select>
+    <select id="aprLinelist" parameterType="com.vertexid.paragon.aprv.AprvLineDTO" resultType="paramMap" fetchSize="1000">
+       SELECT
+			APR.*
+			, CONVERT(VARCHAR(16), APR.APR_DTE, 121) AS APR_DTE_TIME
+			, VAPR.DSP_NM_KO AS APR_NM
+			, VREG.DSP_NM_KO AS GIAN_NM
+			, VAPR.USER_NO
+			, VAPR.POSITION_LANG_CD
+			, VAPR.DEPT_NM_KO
+			, VAPR.MOBILE_NO
+			, (CASE WHEN APR_TYPE = 'S' THEN 'L.상신'
+					WHEN APR_TYPE = 'H' THEN 'L.합의(순차)'
+					WHEN APR_TYPE = 'B' THEN 'L.합의(병렬)'
+					ELSE CASE WHEN APR.APR_STU = 'R' THEN 'L.반려'
+					ELSE 'L.결재' END
+				END) AS APR_TYPE_LANG_CD
+			, (CASE WHEN APR.APR_STU = 'Y' THEN 'L.완료'
+					WHEN APR.APR_STU = 'J' THEN 'L.전결'
+					WHEN APR.APR_STU = 'W' THEN 'L.대상'
+					WHEN APR.APR_STU = 'R' THEN 'L.반려'
+					WHEN APR.APR_STU = 'N' THEN 'L.대기'
+				END) AS APR_STU_LANG_CD
+			,APR_USER_NM AS REG_NM
+			,MAS.APR_MAS_STU MAS_APR_STU
+			,MAS.REG_LOGIN_ID MAS_REG_LOGIN_ID
+		FROM T_SYS_APR_LINE APR
+			INNER JOIN T_SYS_APR_MAS MAS
+				ON APR.APR_NO = MAS.APR_NO
+			INNER JOIN V_SYS_USER VAPR
+				on VAPR.LOGIN_ID = APR.APR_LOGIN_ID
+			INNER JOIN V_SYS_USER VREG
+				on VREG.LOGIN_ID = MAS.REG_LOGIN_ID
+		<where>
+        	<if test="docUid != null and !docUid.equals('')">
+	           	AND APR.DOC_UID  = #{docUid}
+			</if>
+        	<if test="aprNo != null and !aprNo.equals('')">
+	           	AND APR.APR_NO  = #{aprNo}
+			</if>
+        	<if test="solMasUid != null and !solMasUid.equals('')">
+	           	AND APR.SOL_MAS_UID  = #{solMasUid}
+			</if>
+        	<if test="aprStu != null and !aprStu.equals('')">
+	           	AND APR.APR_STU  = #{aprStu}
+			</if>
+        	<if test="nAprStu != null and !nAprStu.equals('')">
+	           	AND APR.APR_STU  != #{nAprStu}
+			</if>
+        	<if test="nAprLoginId != null and !nAprLoginId.equals('')">
+	           	AND APR.APR_LOGIN_ID  != #{nAprLoginId}
+			</if>
+        	<if test="ordNo != null and !ordNo.equals('')">
+	           	AND APR.ORD_NO  = #{ordNo}
+			</if>
+		</where>
+        <!-- <trim prefix="WHERE" prefixOverrides="AND |OR ">
+       </trim> -->
+       ORDER BY APR.ORD_NO ASC
+    </select>
+	<delete id="deleteMas" parameterType="com.vertexid.paragon.aprv.AprvMasDTO" >
+		DELETE FROM T_SYS_APR_MAS
+		WHERE DOC_UID = #{docUid}
+	</delete>
+	<delete id="deleteLine" parameterType="com.vertexid.paragon.aprv.AprvMasDTO" >
+		DELETE FROM T_SYS_APR_LINE
+		WHERE DOC_UID = #{docUid}
+	</delete>
+	<insert id="insertMas" parameterType="com.vertexid.paragon.aprv.AprvMasDTO" >
+		INSERT INTO T_SYS_APR_MAS(
+			 APR_NO
+			,SOL_MAS_UID
+			,DOC_UID
+			,APR_MAS_STU
+			,REG_LOGIN_ID
+			,REG_DTE
+			,UPT_LOGIN_ID
+			,UPT_DTE
+		)VALUES(
+			 #{aprNo}
+			,#{solMasUid}
+			,#{docUid}
+			,#{aprMasStu}
+			,#{regLoginId}
+			,SYSDATETIME()
+			,#{uptLoginId}
+			,SYSDATETIME()
+		)
+	</insert>
+	<insert id="insertLine" parameterType="com.vertexid.paragon.aprv.AprvLineDTO" >
+		INSERT INTO T_SYS_APR_LINE(
+			 APR_LINE_UID
+			,APR_NO
+			,SOL_MAS_UID
+			,DOC_UID
+			,ORD_NO
+			,APR_TYPE
+			,APR_STU
+			,APR_DEPT_CD
+			,APR_DEPT_NM
+			,APR_LOGIN_ID
+			,APR_USER_NM
+			,APR_DTE
+			,APR_MEMO
+		)VALUES(
+			 #{aprLineUid}
+			,#{aprNo}
+			,#{solMasUid}
+			,#{docUid}
+			,#{ordNo}
+			,#{aprType}
+			,#{aprStu}
+			,#{aprDeptCd}
+			,#{aprDeptNm}
+			,#{aprLoginId}
+			,#{aprUserNm}
+		<choose>
+			<when test="aprDte != null and aprDte.equals('TODAY')">
+           		,SYSDATETIME()
+            </when>
+            <otherwise>
+	            ,#{aprDte}
+            </otherwise>
+		</choose>
+			,#{aprMemo}
+		)
+	</insert>
+	<update id="updateMas" parameterType="com.vertexid.paragon.aprv.AprvMasDTO" >
+		UPDATE T_SYS_APR_MAS
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="aprEdDte != null and aprEdDte.equals('TODAY')">
+				,APR_ED_DTE = SYSDATETIME()
+			</if>
+			<if test="aprMasStu != null and aprMasStu != ''">
+	           	,APR_MAS_STU  = #{aprMasStu}
+			</if>
+			<if test="aprEdLoginId != null and aprEdLoginId != ''">
+	           	,APR_ED_LOGIN_ID  = #{aprEdLoginId}
+			</if>
+        </trim>
+		WHERE APR_NO = #{aprNo}
+	</update>
+	<update id="updateLine" parameterType="com.vertexid.paragon.aprv.AprvLineDTO" >
+		UPDATE T_SYS_APR_LINE
+		<trim prefix="SET" prefixOverrides=",">
+			<if test="aprDte != null and aprDte.equals('TODAY')">
+				,APR_DTE = SYSDATETIME()
+			</if>
+			<if test="aprStu != null and aprStu != ''">
+	           	,apr_stu  = #{aprStu}
+			</if>
+			<if test="aprMemo != null and aprMemo != ''">
+	           	,apr_memo  = #{aprMemo}
+			</if>
+			<if test="ordNo != null and ordNo != ''">
+	           	,ord_no  = #{ordNo}
+			</if>
+        </trim>
+		WHERE APR_LINE_UID = #{aprLineUid}
+	</update>
+</mapper>

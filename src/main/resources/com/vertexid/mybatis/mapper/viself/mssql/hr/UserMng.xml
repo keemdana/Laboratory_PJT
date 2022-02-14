@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.viself.hr.UserMng.mssql">
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT A.*
+        FROM (
+            SELECT ROW_NUMBER() OVER(ORDER BY  O.user_nm) AS ROWNUM
+                , O.*
+                , COUNT(*) OVER() AS TTL
+            FROM t_sys_user o
+        ) A
+        WHERE rownum BETWEEN ((CAST(#{page} AS NUMERIC) - 1) * CAST(#{rows} AS NUMERIC))+1 AND (CAST(#{page} AS NUMERIC) * CAST(#{rows} AS NUMERIC))
+    </select>
+
+    <select id="getData" parameterType="paramMap" resultType="paramMap" fetchSize="1000">
+        select
+            *
+        from v_sys_user
+        where login_id = #{userId}
+    </select>
+
+    <insert id="insert" parameterType="com.vertexid.viself.hr.UserDTO">
+        INSERT INTO t_sys_user(
+            user_id
+            , user_nm
+            , use_enable
+            , user_tp_cd
+            , reg_user_id
+            , reg_dtime
+            , upt_user_id
+            , upt_dtime
+        )VALUES(
+            #{userId}
+            , #{userNm}
+            , #{useEnable}
+            , 'TEST'
+            , 'SYSTEM'
+            , CURRENT_TIMESTAMP
+            , 'SYSTEM'
+            , CURRENT_TIMESTAMP
+        )
+    </insert>
+
+    <update id="updateTmpPwd" parameterType="com.vertexid.viself.hr.UserDTO">
+        UPDATE t_sys_user
+        SET temp_pwd = #{tempPwd}
+            , upt_user_id = 'SYSTEM'
+            , upt_dtime = CURRENT_TIMESTAMP
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteOldestPwdHis">
+        DELETE
+
+    </delete>
+
+    <insert id="insertPwdHis">
+
+    </insert>
+
+    <update id="udpatePassword"
+            parameterType="com.vertexid.viself.hr.UserDTO"
+            statementType="CALLABLE">
+        {
+            CALL pkg_sys_user.sp_chnage_password_s(
+                 #{userId}
+                , #{userPwd}
+                , #{user.loginId}
+                , #{errYn, mode=OUT, jdbcType=VARCHAR, javaType=String}
+                , #{errCd, mode=OUT, jdbcType=VARCHAR, javaType=String}
+                , #{errMsg, mode=OUT, jdbcType=VARCHAR, javaType=String}
+            )
+        }
+    </update>
+</mapper>

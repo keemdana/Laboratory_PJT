@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.viself.mlang.MLangMng.mssql">
+	<select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+		<include refid="Common.prefixPaging" />
+		SELECT
+		ROW_NUMBER() OVER (ORDER BY
+		<choose>
+			<when test='sort != null and !sort.equals("")'>
+				<foreach collection="sorts" index="idx" item="itm" separator=",">
+					<if test='itm.equals("langCd")'>LANG_CD</if>
+					<if test='itm.equals("ko")'>KO</if>
+					<if test='itm.equals("en")'>EN</if>
+					<if test='itm.equals("ja")'>JA</if>
+					<if test='itm.equals("zh")'>ZH</if>
+					<choose>
+						<when test='orders[idx].equals("desc")'>DESC</when>
+						<otherwise>ASC</otherwise>
+					</choose>
+				</foreach>
+			</when>
+			<otherwise>
+				LANG_CD
+			</otherwise>
+		</choose>
+
+		) RN
+		, COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+		, PAGING.*
+		FROM (
+		SELECT v1.*
+		FROM t_sys_lang_mas v1
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<choose>
+				<when test="langCd != null and langCd != ''">
+					v1.LANG_CD like '%'+#{langCd}+'%'
+				</when>
+				<otherwise>
+					v1.LANG_CD IS NOT NULL
+				</otherwise>
+			</choose>
+		</trim>
+		<if test="useYn != null and useYn != ''">
+			AND v1.use_yn = #{useYn}
+		</if>
+		<if test="ko != null and ko != ''">
+			AND v1.KO like '%'+#{ko}+'%'
+		</if>
+		<if test="en != null and en != ''">
+			AND v1.EN like '%'+#{en}+'%'
+		</if>
+		<if test="langUid != null and langUid != ''">
+			AND v1.LANG_UID = #{langUid}
+		</if>
+		) PAGING
+		<include refid="Common.postfixPaging" />
+	</select>
+	<select id="listMaxVersion" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT
+				CONVERT(CHAR(8), MAX(UPT_DTE), 112) + replace((CONVERT(CHAR(8), MAX(UPT_DTE), 8) ),':','') MAX_VERSION
+		FROM T_SYS_LANG_MAS
+	</select>
+	<insert id="notYetInsert" parameterType="map">
+		INSERT INTO T_SYS_NO_LANG(NO_LANG)
+		VALUES(#{noLang})
+	</insert>
+	<insert id="deleteNoLang" parameterType="map">
+		DELETE FROM T_SYS_NO_LANG
+	</insert>
+	<insert id="notYetSelectInsert" parameterType="map">
+		INSERT INTO t_sys_lang_mas(
+									LANG_UID
+								  , LANG_CD
+								  , KO
+								  , REG_DTE
+								  , REG_LOGIN_ID
+								  , UPT_DTE
+								  , UPT_LOGIN_ID
+		)
+		SELECT
+			dbo.F_SYS_UID()
+			 ,NO_LANG
+			 ,(
+			REPLACE(
+					REPLACE(NO_LANG,'L.','')
+				,'_',' '
+				)
+			)
+			 , SYSDATETIME()
+			 , 'SYSTEM'
+			 , SYSDATETIME()
+			 , 'SYSTEM'
+		FROM (
+				 SELECT distinct NO_LANG FROM T_SYS_NO_LANG
+			 )TBL
+		WHERE NOT EXISTS(
+				SELECT 1 FROM T_SYS_LANG_MAS
+				WHERE LANG_CD = TBL.NO_LANG
+			)
+	</insert>
+	<insert id="saveData" parameterType="com.vertexid.viself.code.CodeDTO">
+		INSERT t_sys_lang_mas(
+             LANG_UID
+           , LANG_CD
+           , KO
+           , EN
+           , JA
+           , ZH
+           , REG_DTE
+           , REG_LOGIN_ID
+           , UPT_DTE
+           , UPT_LOGIN_ID
+        )VALUES(
+              dbo.F_SYS_UID()
+			, UPPER(#{langCd})
+		, #{ko}
+		, #{en}
+		, #{ja}
+		, #{zh}
+		, SYSDATETIME()
+		, 'SYSTEM'
+		, SYSDATETIME()
+		, 'SYSTEM'
+		)
+	</insert>
+	<update id="updateData" parameterType="paramMap">
+		UPDATE t_sys_lang_mas
+		SET UPT_DTE = SYSDATETIME()
+		, UPT_LOGIN_ID = 'SYSTEM'
+		<if test="langCd != null and langCd != ''">
+			, LANG_CD = #{langCd}
+		</if>
+		<if test="ko != null and ko != ''">
+			, KO = #{ko}
+		</if>
+		<if test="en != null and en != ''">
+			, EN = #{en}
+		</if>
+		<if test="ja != null and ja != ''">
+			, JA = #{ja}
+		</if>
+		<if test="zh != null and zh != ''">
+			, ZH = #{zh}
+		</if>
+		WHERE LANG_UID = #{langUid}
+	</update>
+</mapper>

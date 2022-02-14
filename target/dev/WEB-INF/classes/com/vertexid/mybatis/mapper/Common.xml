@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="Common">
+    <!-- 공용 ResultMap 설정 -->
+    <resultMap id="rMap" type="paramMap"/>
+    <resultMap id="rMap1" type="paramMap"/>
+    <resultMap id="rMap2" type="paramMap"/>
+    <resultMap id="rMap3" type="paramMap"/>
+    <resultMap id="rMap4" type="paramMap"/>
+    <resultMap id="rMap5" type="paramMap"/>
+    <resultMap id="rMap6" type="paramMap"/>
+    <resultMap id="rMap7" type="paramMap"/>
+    <resultMap id="rMap8" type="paramMap"/>
+    <!-- 페이징 쿼리 앞부분 : MSSQL -->
+    <sql id="prefixPaging" >
+        <if test='page != null and page !=""'>
+        SELECT
+        	  PAGING_RESULT.*
+        	, RN AS ASC_NO
+        	, PAGING_RESULT.TOT_CNT - RN + 1 AS DESC_NO
+        FROM (
+
+        </if>
+    </sql>
+
+    <!-- 페이징 쿼리 뒷부분 : MSSQL -->
+    <sql id="postfixPaging" >
+        <if test='page != null and page !=""'>
+
+        ) PAGING_RESULT
+        WHERE RN BETWEEN ((CAST(#{page} AS NUMERIC) - 1) * CAST(#{rows} AS NUMERIC))+1 AND (CAST(#{page} AS NUMERIC) * CAST(#{rows} AS NUMERIC))
+        </if>
+    </sql>
+
+    <sql id="pagingPrefix" >
+        <if test='page != null and page !=""'>
+            SELECT
+            PAGING_RESULT.*
+            , RN AS ASC_NO
+            FROM (
+        </if>
+    </sql>
+
+    <!-- 페이징 쿼리 뒷부분 : MSSQL -->
+    <sql id="pagingPostfix" >
+        <if test='page != null and page !=""'>
+            ) PAGING_RESULT
+            WHERE RN BETWEEN ((CAST(#{page} AS NUMERIC) - 1) * CAST(#{rows} AS NUMERIC))+1 AND (CAST(#{page} AS NUMERIC) * CAST(#{rows} AS NUMERIC))
+        </if>
+    </sql>
+
+    <sql id="countPrefix">
+        SELECT COUNT(*) AS TOT_CNT
+        FROM (
+    </sql>
+
+    <sql id="countPostfix">
+        ) COUNT_RESULT
+    </sql>
+</mapper>

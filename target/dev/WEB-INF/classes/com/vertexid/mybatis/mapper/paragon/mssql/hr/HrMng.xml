@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.hr.HrMng.mssql">
+    <select id="list" parameterType="com.vertexid.paragon.hr.HrMngDTO" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+        SELECT
+			ROW_NUMBER() OVER (ORDER BY NM_KO ASC) RN
+            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+            , PAGING.*
+        FROM (
+            SELECT
+            	 O.*
+	            , dbo.F_SYS_CD_ABB_LANGS( 'USER_AUTH',o.AUTH_CD ) AUTH_LANG_CD
+	            , CASE o.USE_YN WHEN 'Y' THEN '재직' WHEN 'N' THEN '퇴직' END AS USE_YN_LANG
+            FROM v_sys_user o
+            WHERE LOGIN_ID IS NOT NULL
+            <if test="dspNmKo != null and dspNmKo != ''">
+	           	AND O.DSP_NM_KO LIKE '%'+ #{dspNmKo} +'%'
+			</if>
+            <if test="nmKo != null and nmKo != ''">
+	           	AND O.NM_KO LIKE '%'+ #{nmKo} +'%'
+			</if>
+            <if test="deptNmKo != null and deptNmKo != ''">
+	           	AND O.DEPT_NM_KO LIKE '%'+ #{deptNmKo} +'%'
+			</if>
+            <if test="useYn != null and useYn != ''">
+	           	AND O.USE_YN = #{useYn}
+			</if>
+            <if test="authCd != null and authCd != ''">
+	           	AND O.AUTH_CD like '%'+ #{authCd} +'%'
+			</if>
+            <if test="loginId != null and loginId != ''">
+	           	AND O.LOGIN_ID = #{loginId}
+			</if>
+            <if test="deptCd != null and deptCd != ''">
+	           	AND O.DEPT_CD = #{deptCd}
+			</if>
+            <if test="chiefYn != null and chiefYn != ''">
+	           	AND O.CHIEF_YN = #{chiefYn}
+			</if>
+            <if test="loginIds != null and loginIds.length > 0">
+            	AND O.LOGIN_ID IN
+				<foreach collection="loginIds" item="item" open="(" separator="," close=")" index="index">
+			        #{item}
+			    </foreach>
+			</if>
+            <if test="deptCds != null and deptCds.length > 0">
+            	AND O.DEPT_CD IN
+				<foreach collection="deptCds" item="item" open="(" separator="," close=")" index="index">
+			        #{item}
+			    </foreach>
+			</if>
+        ) PAGING
+        <include refid="Common.postfixPaging" />
+    </select>
+    <select id="aprvLinelist" parameterType="com.vertexid.paragon.hr.HrMngDTO" resultType="paramMap" fetchSize="1000">
+    	SELECT * FROM V_SYS_USER WHERE LOGIN_ID = #{loginId}
+    	<if test="loginIds != null and loginIds.length > 0">
+			<foreach collection="loginIds" item="item" open="" separator="" close="" index="index">
+       UNION ALL SELECT * FROM V_SYS_USER WHERE LOGIN_ID = #{item}
+		    </foreach>
+		</if>
+    </select>
+	<select id="treeList" parameterType="com.vertexid.paragon.hr.HrMngDTO" resultType="paramMap" fetchSize="1000">
+			SELECT
+				GW.*
+				,V.USER_NO
+				,V.LOGIN_ID
+				,V.LOGIN_PWD
+				,V.DSP_NM_KO
+				,V.DSP_NM_EN
+				,V.DSP_NM_JA
+				,V.DSP_NM_ZH
+				,V.RESIDENT_REG_NO
+				,V.EMAIL
+				,V.TEL_NO
+				,V.MOBILE_NO
+				,V.ADDR_KO
+				,V.ADDR_EN
+				,V.ADDR_JA
+				,V.ADDR_ZH
+				,V.POSITION_CD
+				,V.POSITION_LANG_CD
+				,V.DUTY_CD
+				,V.DUTY_LANG_CD
+				,V.USER_TYPE
+				,V.USER_TYPE_LANG_CD
+				,V.DEPT_NM_KO
+				,V.DEPT_NM_EN
+				,V.DEPT_NM_JA
+				,V.DEPT_NM_ZH
+				,V.CORP_NM
+				,V.CORP_TYPE
+				,V.CHIEF_YN
+				,V.SITE_LOCALE
+				,V.AUTH_CD
+				,V.LOGIN_IP
+				,V.REG_DTE
+				,V.REG_LOGIN_ID
+				,V.UPT_DTE
+				,V.UPT_LOGIN_ID
+			FROM V_TREE_GROUP GW
+				LEFT OUTER JOIN V_SYS_USER V
+						ON GW.UUID = V.USER_NO
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+            <choose>
+                <when test="parentCd != null and parentCd != ''">
+                    GW.PARENT_DEPT_CD  = #{parentCd}
+                </when>
+                <when test="schValue != null and schValue != '' and schField != null and !schField.equals('')">
+                    (GW.NM_KO LIKE '%'+#{schValue}+'%' AND USR_SEQ = #{schField})
+                </when>
+                <when test="schValue != null and schValue != '' and schField != null and schField.equals('')">
+                    GW.NM_KO LIKE '%'+#{schValue}+'%'
+                </when>
+                <when test="uuid != null and uuid != ''">
+		            GW.UUID = #{uuid}
+				</when>
+                <otherwise>
+                    GW.PARENT_DEPT_CD IS NULL
+                </otherwise>
+            </choose>
+        </trim>
+        	ORDER BY USR_SEQ ASC, DEPT_SEQ, POSITION_CD, NM_KO
+	</select>
+    <update id="update" parameterType="com.vertexid.paragon.hr.HrMngDTO">
+        UPDATE t_sys_user
+        SET use_yn = #{useYn}
+            , auth_cd = #{authCd}
+        WHERE LOGIN_ID IN
+		<foreach collection="loginIds" item="item" open="(" separator="," close=")" index="index">
+	        #{item}
+	    </foreach>
+    </update>
+
+    <delete id="deleteVUser" parameterType="com.vertexid.paragon.hr.HrMngDTO">
+        DELETE V_SYS_USER
+        WHERE LOGIN_ID IN
+		<foreach collection="loginIds" item="item" open="(" separator="," close=")" index="index">
+	        #{item}
+	    </foreach>
+    </delete>
+
+    <insert id="selectVInsert" parameterType="com.vertexid.paragon.hr.HrMngDTO">
+        INSERT INTO V_SYS_USER
+        SELECT * FROM V_SYS_USER_TEMP
+        WHERE LOGIN_ID IN
+		<foreach collection="loginIds" item="item" open="(" separator="," close=")" index="index">
+	        #{item}
+	    </foreach>
+    </insert>
+
+</mapper>

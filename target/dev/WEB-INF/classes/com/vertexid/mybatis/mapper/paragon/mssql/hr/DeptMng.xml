@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.hr.DeptMng.mssql">
+
+    <sql id="deptSelectQry">
+        SELECT vdpt.*
+            , vdpt.dept_cd cd
+            , vdpt.nm_ko lang_cd
+        FROM V_SYS_DEPT vdpt
+        WHERE vdpt.USE_YN = 'Y'
+        <!-- trim prefix="WHERE" prefixOverrides="AND|OR"> -->
+            <if test="schValue != null and !schValue.equals('')">
+                AND (
+                    vdpt.NM_KO LIKE '%'||#{schValue}||'%'
+                )
+            </if>
+        <!-- /trim  -->
+    </sql>
+
+    <select id="deptList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="com.vertexid.paragon.hr.DeptMng.mssql.deptSelectQry"/>
+    </select>
+
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.def.defstumng.DefStuParti.mssql">
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+		<include refid="Common.prefixPaging" />
+	     SELECT
+	        	ROW_NUMBER() OVER (ORDER BY ORD_NO ASC) RN
+	            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+	            , PAGING.*
+	        FROM (
+	       	SELECT
+	       		A.*
+	       		,B.PATI_UID
+				,B.PATI_NM
+				, B.PATI_CLASS_PATH
+				, B.PATI_JSP_WRT_PATH
+				, B.PATI_JSP_VIEW_PATH
+				,V1.LANG_CD AS PATI_TYPE_1_LANG_CD
+				,V2.LANG_CD AS PATI_TYPE_2_LANG_CD
+				, 'U' AS cud
+			FROM T_SYS_DEF_STU_PATI A
+				INNER JOIN T_SYS_DEF_PATI_MAS B
+					ON A.PATI_MNG_NO = B.PATI_MNG_NO
+				INNER JOIN T_SYS_DEF_STU_MAS C
+					ON A.STU_CD = C.STU_CD
+				LEFT OUTER JOIN V_SYS_CODE  V1
+					ON B.PATI_TYPE1 = V1.CD
+				LEFT OUTER JOIN V_SYS_CODE  V2
+					ON B.PATI_TYPE2 = V2.CD
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<choose>
+				<when test="stuCd != null and stuCd != ''">
+	           		A.STU_CD = #{stuCd}
+	            </when>
+	            <otherwise>
+		            A.STU_CD IS NOT NULL
+	            </otherwise>
+			</choose>
+        </trim>
+
+		) PAGING
+		<include refid="Common.postfixPaging" />
+    </select>
+    <insert id="insert" parameterType="com.vertexid.paragon.def.defstumng.DefStuPartiDTO">
+        INSERT T_SYS_DEF_STU_PATI(
+             STU_PATI_UID
+           , STU_CD
+           , PATI_MNG_NO
+           , ORD_NO
+           , PATI_STAGE_TYPE
+           , VIEW_AUTH
+           , PATI_ONLY_VIEW_YN
+        )VALUES(
+              #{stuPatiUid}
+			, #{stuCd}
+			, #{patiMngNo}
+			, #{ordNo}
+			, #{patiStageType}
+			, #{viewAuth}
+			, #{patiOnlyViewYn}
+        )
+    </insert>
+    <delete id="delete" parameterType="map">
+        DELETE FROM T_SYS_DEF_STU_PATI
+        WHERE STU_CD = #{stuCd}
+    </delete>
+</mapper>

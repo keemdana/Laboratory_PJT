@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.viself.auth.AuthMember.mssql">
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT
+            AM.*
+        FROM T_SYS_AUTH_MEMBER AM
+            INNER JOIN V_SYS_USER SU
+                ON AM.MBR_ID = SU.LOGIN_ID
+        <where>
+            <if test="authCd != null and !authCd.equals('')">
+                   AND AM.AUTH_CD  = #{authCd}
+            </if>
+            <if test="authMemberId != null and !authMemberId.equals('')">
+                   AND AM.MBR_ID  = #{authMemberId}
+            </if>
+            <if test="authMemberTpCd != null and !authMemberTpCd.equals('')">
+                   AND AM.MBR_TP_CD  = #{authMemberTpCd}
+            </if>
+        </where>
+    </select>
+
+    <select id="getAuthorities" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT
+            AM.*
+        FROM T_SYS_AUTH_MEMBER AM
+            INNER JOIN V_SYS_USER SU
+                ON AM.MBR_ID = SU.LOGIN_ID
+        <where>
+            <if test="authCd != null and !authCd.equals('')">
+                AND AM.AUTH_CD  = #{authCd}
+            </if>
+            <if test="authMemberId != null and !authMemberId.equals('')">
+                AND AM.MBR_ID  = #{authMemberId}
+            </if>
+            <if test="authMemberTpCd != null and !authMemberTpCd.equals('')">
+                AND AM.MBR_TP_CD  = #{authMemberTpCd}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertAuthUser" parameterType="com.vertexid.viself.auth.AuthMemberDTO">
+        INSERT INTO T_SYS_AUTH_MEMBER(
+               AUTH_CD
+             , MBR_TP_CD
+             , MBR_ID
+             , USER_NM
+             , REG_LOGIN_ID
+             , REG_DTE
+             , UPT_LOGIN_ID
+             , UPT_DTE
+        )VALUES(
+            #{authCd}
+            , #{mbrTpCd}
+            , #{mbrId}
+            , #{userNm}
+            , #{loginInfo.loginId}
+            , GETDATE()
+            , #{loginInfo.loginId}
+            , GETDATE()
+        )
+    </insert>
+    <insert id="updateAuthUser" parameterType="com.vertexid.viself.auth.AuthMemberDTO">
+        UPDATE V_SYS_USER
+        SET AUTH_CD = (
+            SELECT AUTH_CD FROM V_SYS_USER_TEMP WHERE LOGIN_ID = V_SYS_USER.LOGIN_ID
+        )
+        WHERE LOGIN_ID = #{mbrId}
+    </insert>
+    <delete id="delete" parameterType="com.vertexid.viself.auth.AuthMemberDTO" >
+        DELETE FROM T_SYS_AUTH_MEMBER
+        <where>
+            <if test="authCd != null and !authCd.equals('')">
+                AND AUTH_CD  = #{authCd}
+            </if>
+            <if test="mbrId != null and !mbrId.equals('')">
+                AND MBR_ID  = #{mbrId}
+            </if>
+        </where>
+    </delete>
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.role.RoleInfo.mssql">
+	<insert id="insert" parameterType="com.vertexid.paragon.role.RoleDTO" >
+		INSERT INTO T_SYS_ROLE_MAS(
+			SOL_MAS_UID
+			,DOC_UID
+			,ORD_NO
+			,ROLE_CD
+			,ROLE_NM
+			,REL_NO
+			,REL_NM
+			,USE_YN
+			,REG_DTE
+			,REG_LOGIN_ID
+			,UPT_DTE
+			,UPT_LOGIN_ID
+		)VALUES(
+			 #{solMasUid}
+			,#{docUid}
+			,(SELECT COUNT(*)+1 FROM T_SYS_ROLE_MAS WHERE SOL_MAS_UID = #{solMasUid})
+			,#{roleCd}
+			,#{roleNm}
+			,#{relNo}
+			,#{relNm}
+			,#{useYn}
+			,SYSDATETIME()
+			,#{regLoginId}
+			,SYSDATETIME()
+			,#{uptLoginId}
+		)
+	</insert>
+	<delete id="delete" parameterType="com.vertexid.paragon.role.RoleDTO" >
+		DELETE FROM T_SYS_ROLE_MAS
+		WHERE SOL_MAS_UID = #{solMasUid}
+		<if test="roleCd != null and roleCd != ''">
+           	AND ROLE_CD = #{roleCd}
+		</if>
+	</delete>
+</mapper>

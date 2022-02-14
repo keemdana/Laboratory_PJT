@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+    <comment>
+        <!--
+          ~ Copyright (c) 2021 Vertex ID., KOREA
+          ~ All rights reserved.
+          ~
+          ~ This software is the confidential
+          ~ and proprietary information of emFrontier.com ("Confidential Information").
+          ~ You shall not disclose such Confidential Information
+          ~ and shall use it only in accordance with
+          ~ the terms of the license agreement you entered into
+          ~ with Vertex ID. Networks
+          -->
+        Common Properties
+    </comment>
+    <!-- System Properties -->
+    <entry key="sys.name">Paragon System</entry>
+    <entry key="sys.operation.mode">QAS</entry>
+    <entry key="db.base.dbms">mariadb</entry>
+    <entry key="db.mybatis.mapper.root">com.vertexid</entry>
+    <entry key="cmm.vo.toString.style">MULTI_LINE_STYLE</entry>
+
+    <!-- JDBC Properties -->
+    <!--
+    <entry key="db.base.driverClass">oracle.jdbc.OracleDriver</entry>
+    <entry key="db.base.url">jdbc:oracle:thin:@192.168.137.1:1521/RMS</entry>
+    <entry key="db.base.username">RMSLF</entry>
+    <entry key="db.base.password">RMSLF</entry>
+    -->
+    <entry key="db.base.dbms">mssql</entry>
+    <entry key="db.base.driverClass">com.microsoft.sqlserver.jdbc.SQLServerDriver</entry>
+    <entry key="db.base.url">jdbc:sqlserver://:1412;database=</entry>
+    <entry key="db.base.username"></entry>
+    <entry key="db.base.password"></entry>
+
+    <!-- batch job yn -->
+    <entry key="batch.yn">N</entry>
+
+    <!-- JWT -->
+    <entry key="jwt.alg"></entry>
+    <entry key="jwt.iss">space.jayu</entry>
+
+
+    <!-- 접근제어허가 -->
+
+
+    <!-- 인증실패 최소허용횟수 : 5회-->
+
+    <!-- 잠금유지 시간 : 30분 -->
+
+    <!-- 패스워드 최소길이 : 8자리 -->
+    <!--
+      - 10자리이상 : 2종류(영대, 영소, 숫자, 특수문자) 이상
+      - 8자리이상 : 3종류(영대, 영소, 숫자, 특수문자) 이상
+      -->
+
+    <!-- 패스워드 유지기간 : 6개월 -->
+
+</properties>
+

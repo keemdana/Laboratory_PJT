@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.def.defstumng.DefStuGroup.mssql">
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+    <include refid="Common.prefixPaging" />
+       SELECT
+            ROW_NUMBER() OVER (ORDER BY STU_CD,STU_GROUP ASC) RN
+              , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+              , PAGING.*
+          FROM (
+           SELECT
+             A.*
+        , 'U' AS cud
+        , V1.LANG_CD AS GROUP_LANG_CD
+      FROM T_SYS_DEF_STU_GROUP A
+        LEFT OUTER JOIN V_SYS_CODE  V1
+          ON A.STU_GROUP = V1.CD
+    <trim prefix="WHERE" prefixOverrides="AND|OR">
+      <choose>
+        <when test="stuCd != null and stuCd != ''">
+                 A.STU_CD = #{stuCd}
+              </when>
+              <otherwise>
+                A.STU_CD IS NOT NULL
+              </otherwise>
+      </choose>
+        </trim>
+    ) PAGING
+    <include refid="Common.postfixPaging" />
+    </select>
+    <insert id="insert" parameterType="com.vertexid.paragon.def.defstumng.DefStuGroupDTO">
+        INSERT T_SYS_DEF_STU_GROUP(
+             STU_GROUP_UID
+           , STU_GROUP
+           , STU_CD
+           , STU_DTL
+        )VALUES(
+            #{stuGroupUid}
+	      , #{stuGroup}
+	      , #{stuCd}
+	      , #{stuDtl}
+        )
+    </insert>
+    <delete id="delete" parameterType="map">
+        DELETE FROM T_SYS_DEF_STU_GROUP
+        WHERE STU_CD = #{stuCd}
+    </delete>
+</mapper>

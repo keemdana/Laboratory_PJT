@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.viself.menu.MenuMng.mssql">
+
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <![CDATA[
+        	SELECT DISTINCT A.*
+        	FROM V_TREE_MENU A
+        ]]>
+        <![CDATA[
+        ]]>
+        <![CDATA[
+
+			WHERE A.USE_YN='1'
+			ORDER BY A.LEVEL_NO,A.ORD_NO
+        ]]>
+    </select>
+
+    <select id="allList" parameterType="map" resultType="paramMap" fetchSize="1000">
+
+        <![CDATA[
+        	SELECT
+        		V1.*
+        		, 'U' as cud
+        	FROM V_TREE_MENU V1
+        ]]>
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <choose>
+                <when test="parentCd != null and parentCd != ''">
+                    v1.parent_menu_id  = #{parentCd}
+                </when>
+                <when test="parentMenuId != null and parentMenuId != ''">
+                    v1.parent_menu_id  = #{parentMenuId}
+                </when>
+                <when test="menuId != null and menuId != ''">
+	                v1.menu_id = #{menuId}
+                </when>
+                <otherwise>
+                    ISNULL(V1.PARENT_MENU_ID,'')  = ''
+                </otherwise>
+            </choose>
+        </trim>
+         <![CDATA[
+			ORDER BY V1.LEVEL_NO,V1.ORD_NO
+        ]]>
+    </select>
+
+    <insert id="insert" parameterType="com.vertexid.viself.menu.MenuDTO">
+        INSERT INTO t_sys_menu(
+            MENU_ID
+            <if test="parentMenuId != null and parentMenuId != ''">
+            , PARENT_MENU_ID
+            </if>
+            , ORD_NO
+            , LANG_CD
+            , USE_YN
+            , JSON_DATA
+            <if test="moduleId != null and moduleId != ''">
+            , MODULE_ID
+            </if>
+            , REG_LOGIN_ID
+            , REG_DTE
+            , UPT_LOGIN_ID
+            , UPT_DTE
+        )VALUES(
+            #{menuId}
+            <if test="parentMenuId != null and parentMenuId != ''">
+            , #{parentMenuId}
+            </if>
+            , #{ordNo}
+            , #{langCd}
+            , #{useYn}
+            , #{jsonData}
+            <if test="moduleId != null and moduleId != ''">
+            , #{moduleId}
+            </if>
+            , 'SYSTEM'
+            , SYSDATETIME()
+            , 'SYSTEM'
+            , SYSDATETIME()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.vertexid.viself.menu.MenuDTO">
+        UPDATE t_sys_menu
+        SET UPT_LOGIN_ID = 'SYSTEM'
+            , UPT_DTE = SYSDATETIME()
+        <if test="langCd != null and langCd != ''">
+            , LANG_CD = #{langCd}
+        </if>
+        <if test="useYn != null and useYn != ''">
+            , USE_YN = #{useYn}
+        </if>
+        <if test="ordNo != null and ordNo != ''">
+            , ORD_NO = #{ordNo}
+        </if>
+        <if test="parentMenuId != null and parentMenuId != ''">
+            , PARENT_MENU_ID = #{parentMenuId}
+        </if>
+        <if test="jsonData != null and jsonData != ''">
+            , JSON_DATA = #{jsonData}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            , MODULE_ID = #{moduleId}
+        </if>
+        WHERE menu_id = #{menuId}
+    </update>
+
+	<!--
+      ~ 메뉴 조회(상위 메뉴 조회 등에 이용)
+      -->
+    <select id="data" parameterType="map" resultType="paramMap">
+        SELECT *
+        FROM t_sys_menu
+        WHERE menu_id = #{menuId}
+    </select>
+
+    <delete id="delete" parameterType="com.vertexid.viself.menu.MenuDTO">
+        DELETE t_sys_menu
+        WHERE menu_id = #{menuId}
+    </delete>
+
+    <delete id="deleteforPath" parameterType="com.vertexid.viself.menu.MenuDTO">
+        DELETE t_sys_menu
+        WHERE menu_id IN (
+        	SELECT MENU_ID FROM V_TREE_MENU
+        	WHERE MENU_ID_PATH LIKE '%||'+#{menuId}+'≫%'
+        )
+    </delete>
+
+    <delete id="deleteForParent" parameterType="com.vertexid.viself.menu.MenuDTO">
+        DELETE t_sys_menu
+        WHERE PARENT_MENU_ID = #{parentMenuId}
+    </delete>
+</mapper>

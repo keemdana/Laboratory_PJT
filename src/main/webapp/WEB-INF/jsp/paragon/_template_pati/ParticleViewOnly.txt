@@ -1,0 +1,78 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<div id="view_[|PATI_MNG_NO|]<c:out value="${param.docUid}"/>">
+	<div  class="particleHeader">
+		<span class="particleHeader"><i class="far fa-dot-circle" data-term="파티클제목"> </i></span>
+		<span class="particleBtn">
+		</span>
+	</div>
+	<table class="paticle">
+		<tr>
+			<th class="th2">title</th>
+			<td class="td2" id="_pati_ip_type_lang_cd">
+				content
+				<!--
+				paticle에 구현된 Html 값들은 기존에는 파티클 테이블에 각 각 저장 되는 형태에서
+				T_SYS_DOC_MAS.JSON_DATA에  JSON String 형태로 저장되 도록 수정 되었다.
+				paticle에서는 파티클 데이터에 대한 CRUD가 따로 필요 하지 않는다.
+				가져올때는 request Attribute에  'CommonConstants._JSON_DATA' 키 명으로 담아온다
+
+				사용예제 ex)
+				-->
+				<%=StringUtil.convertForView(jsonMap.getString("LMS_PATI_TEST"))%>
+				<!-- get... 메소드는 Object 형태의 값을 각 데이터 타입으로 Casting 하여 반환한다.-->
+				<!-- jsonMap에는 각 테그의 name속성값의 대문자 형태로 키 맵핑 되어 있다-->
+				<!-- jsonMap에서 꺼내 쓸대는 꼭 대문자로 기술 되어야 한다.-->
+			</td>
+		</tr>
+
+		<%-- 첨부파일 뷰 예시
+		<tr>
+			<th class="th2"><%=StringUtil.getLocaleWord(Label.선행기술조사서,siteLocale)%></th>
+			<td class="td2">
+				<jsp:include page="/ServletController">
+					<jsp:param value="SYS_ATCH" name="AIR_ACTION" />
+					<jsp:param value="FILE_VIEW" name="AIR_MODE" />
+					<jsp:param value="" name="AIR_PARTICLE" />
+					<jsp:param value="<%=doc_uid%>" name="masterDocId" />
+					<jsp:param value="IPS" name="systemTypeCode" />
+					<jsp:param value="IPS/DTL_SCH" name="typeCode" />
+				</jsp:include>
+			</td>
+		</tr>
+	--%>
+	</table>
+</div>
+
+<script type="text/javascript">
+	var [|HASHMAP_VALUE|]_VIEW_<c:out value='${param.docUid}'/> = function(){
+		var POST_FIX = "<c:out value='${param.docUid}'/>";
+		var obj = {
+			prnt 		: "#view_[|PATI_MNG_NO|]" +POST_FIX
+//			,ipTypeCdArea: "#ipTypeCdArea"+POST_FIX
+		}
+		var loadData = function(jsonData){
+
+//			if(typeof jsonData._pati_titKo === "string" && jsonData._pati_titKo != ""){
+//				$("#_pati_titKo", obj.prnt).append(jsonData._pati_titKo);
+//			}//-- 명칭 국문 로드
+//			if(typeof jsonData._pati_titEn === "string" && jsonData._pati_titEn != ""){
+//				$("#_pati_titEn", obj.prnt).append(jsonData._pati_titEn);
+//			}//-- 명칭 영문 로드
+
+		}
+
+		var init = function(){
+			loadData(jsonData<c:out value="${param.docUid}"/>);			//-- 수정모드 데이터 로드 (DATA_CUBE 테이블의 JSON_DATA 필드를 JSON object 로 불러옴)
+		}
+		return{
+			init:init
+		}
+	}
+
+	var View[|HASHMAP_VALUE|]_<c:out value='${param.docUid}'/> = new [|HASHMAP_VALUE|]_VIEW_<c:out value='${param.docUid}'/>();
+	$(function(){
+		View[|HASHMAP_VALUE|]_<c:out value='${param.docUid}'/>.init();
+	});
+</script>

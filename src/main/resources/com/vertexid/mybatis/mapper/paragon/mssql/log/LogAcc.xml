@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.log.LogAcc.mssql">
+	<insert id="insert" parameterType="map" >
+		INSERT INTO t_sys_log_acc(
+			 LOG_UID
+			,ACTION_CD
+			,LOG_TYPE_CD
+			,REL_UID
+			,DEPT_CD
+			,DEPT_NM
+			,LOGIN_ID
+			,USER_NM
+			,LOGIN_IP
+			,REG_DTE
+		)VALUES(
+			 #{logUid}
+			,#{actionCd}
+			,#{logTypeCd}
+			,#{relUid}
+			,#{deptCd}
+			,#{deptNm}
+			,#{loginId}
+			,#{userNm}
+			,#{loginIp}
+			,SYSDATETIME()
+		)
+	</insert>
+</mapper>

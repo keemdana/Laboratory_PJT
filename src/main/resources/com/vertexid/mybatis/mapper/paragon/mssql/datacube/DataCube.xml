@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.datacube.DataCube.mssql">
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+        SELECT
+			ROW_NUMBER() OVER (ORDER BY ORD_NO ASC) RN
+            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+            , PAGING.*
+        FROM (
+            SELECT
+            	 O.*
+	            , B.STU_VIEW_AUTH
+	            , B.STU_BASE_NM
+	            , B.LANG_CD AS STU_LANG_CD
+	            , B.DOC_NM_LANG_CD
+	            , C.STU_BASE_NM AS NEXT_STU_BASE_NM
+	            , C.LANG_CD AS NEXT_STU_LANG_CD
+	            , C.PROC_TYPE AS NEXT_PROC_TYPE
+	            , LMS.MNG_NO
+	            , VU.DSP_NM_KO
+	            , VU.DSP_NM_EN
+	            , VU.DSP_NM_JA
+	            , VU.DSP_NM_ZH
+				, CONCAT(ISNULL((SELECT
+						STUFF((
+							SELECT ','+ LINE.APR_LOGIN_ID
+							FROM T_SYS_APR_MAS APR
+							INNER JOIN T_SYS_APR_LINE LINE
+							ON APR.APR_NO = LINE.APR_NO
+							WHERE APR.DOC_UID = O.DOC_UID
+							--AND APR.APR_MAS_STU != 'E'
+							FOR XML PATH('')
+						),1,1,'')
+				),REQ_LOGIN_ID),',',LMS.REQ_LOGIN_ID) AS APR_NOS
+            FROM t_sys_data_cube o
+            	LEFT OUTER JOIN (
+            		SELECT 'CT'STU_TYPE,SOL_MAS_UID,REQ_LOGIN_ID, CHR_LOGIN_ID, DIVID_LOGIN_ID, STU_CD, STU_DTL,MNG_NO FROM T_LMS_CT_MAS
+					UNION ALL
+					SELECT 'CO'STU_TYPE,SOL_MAS_UID,REQ_LOGIN_ID, CHR_LOGIN_ID, DIVID_LOGIN_ID, STU_CD, STU_DTL,MNG_NO FROM T_LMS_CO_MAS
+					UNION ALL
+					SELECT 'SE'STU_TYPE,SOL_MAS_UID,REQ_LOGIN_ID, CHR_LOGIN_ID, ''DIVID_LOGIN_ID, STU_CD,  STU_DTL,MNG_NO FROM T_LMS_SE_MAS
+					UNION ALL
+					SELECT 'SU'STU_TYPE,SOL_MAS_UID,REG_LOGIN_ID AS REQ_LOGIN_ID, CHR_LOGIN_ID, ''DIVID_LOGIN_ID, STU_CD,  STU_DTL,MNG_NO FROM T_LMS_SU_MAS
+					UNION ALL
+					SELECT 'PR'STU_TYPE,SOL_MAS_UID,REQ_LOGIN_ID, REQ_LOGIN_ID AS CHR_LOGIN_ID, ''DIVID_LOGIN_ID, ''STU_CD,  ''STU_DTL,MNG_NO FROM T_LMS_PRJ_MAS
+            	)LMS
+            		ON O.SOL_MAS_UID = LMS.SOL_MAS_UID
+            	INNER JOIN T_SYS_DEF_STU_MAS B
+            		ON O.STU_CD = B.STU_cD
+            	INNER JOIN V_SYS_USER VU
+            		ON O.REG_LOGIN_ID = VU.LOGIN_ID
+            	LEFT OUTER JOIN T_SYS_DEF_STU_MAS C
+            		ON O.NEXT_STU_CD = C.STU_CD
+            	LEFT OUTER JOIN V_SYS_USER UP
+            		ON O.UPT_LOGIN_ID = UP.LOGIN_ID
+            <trim prefix="WHERE" prefixOverrides="AND|OR">
+				<choose>
+					<when test="groupUid != null and groupUid != ''">
+		           		o.GROUP_UID = #{groupUid}
+		            </when>
+		            <otherwise>
+			            o.GROUP_UID IS NOT NULL
+		            </otherwise>
+				</choose>
+	        </trim>
+            <if test="solMasUid != null and solMasUid != ''">
+	           	AND O.SOL_MAS_UID = #{solMasUid}
+			</if>
+            <if test="ordNo != null and ordNo != ''">
+	           	AND O.ORD_NO  = #{ordNo}
+			</if>
+<!--             <if test="solMasUid != null and solMasUid != ''"> -->
+<!-- 	           	AND O.SOL_MAS_UID LIKE '%'+ #{solMasUid} +'%' -->
+<!-- 			</if> -->
+        ) PAGING
+        <include refid="Common.postfixPaging" />
+    </select>
+	<select id="listOne" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT DC.*
+			,(CASE
+					WHEN DC.STU_DTL = 'T' AND DC.REG_LOGIN_ID = #{loginInfo.loginId} then 'true'
+					WHEN ISNULL(TODO.TODO_ID,'') !='' THEN  'true'
+					ELSE 'false'
+			  END
+			) AS IS_TODO
+			,(CASE WHEN DC.STU_DTL = 'T' THEN 'IMSI'
+			   ELSE	TODO.TODO_TYPE
+			 END) AS TODO_TYPE
+			,IN_UID
+		FROM t_sys_data_cube DC
+			INNER JOIN (
+				SELECT SOL_MAS_UID, MAX(ORD_NO) AS ORD_NO FROM T_SYS_DATA_CUBE GROUP BY SOL_MAS_UID
+			)MAX_DC
+				ON MAX_DC.SOL_MAS_UID = DC.SOL_MAS_UID
+			LEFT OUTER JOIN(
+		        SELECT
+					'PROC' AS TODO_TYPE
+					,RM.REL_NO AS TODO_ID
+					,DC.DOC_UID
+					,DC.ORD_NO
+					,DSI.IN_UID
+				FROM T_SYS_DATA_CUBE DC
+					INNER JOIN T_SYS_ROLE_MAS RM
+						ON RM.SOL_MAS_UID = DC.SOL_MAS_UID
+					INNER JOIN T_SYS_DEF_STU_IN DSI
+						ON DSI.STU_CD = DC.STU_CD
+					   AND DSI.STU_DTL = DC.STU_DTL
+					   AND DSI.ROLE_CD = RM.ROLE_CD
+				WHERE REL_NO = #{loginInfo.loginId}
+				UNION ALL
+				SELECT
+					'APRV' AS TODO_TYPE
+					,AL.APR_LOGIN_ID
+					,DC.DOC_UID
+					,DC.ORD_NO
+					,NULL IN_UID
+				FROM T_SYS_DATA_CUBE DC
+					INNER JOIN T_SYS_APR_LINE AL
+						ON AL.DOC_UID = DC.DOC_UID
+					   AND AL.APR_STU = 'W'
+					   AND AL.APR_LOGIN_ID = #{loginInfo.loginId}
+			)TODO
+				ON DC.DOC_UID = TODO.DOC_UID
+				AND TODO.ORD_NO = MAX_DC.ORD_NO
+		<where>
+			<if test="docUid != null and !docUid.equals('')">
+	           	AND DC.DOC_UID  = #{docUid}
+			</if>
+			<if test="solMasUid != null and !solMasUid.equals('')">
+	           	AND DC.SOL_MAS_UID  = #{solMasUid}
+			</if>
+			<if test="stuCd != null and !stuCd.equals('')">
+	           	AND DC.STU_CD  = #{stuCd}
+			</if>
+			<if test="lastYn != null and !lastYn.equals('')">
+	           	AND DC.LAST_YN  = #{lastYn}
+			</if>
+		</where>
+	</select>
+	<select id="listIndexLeft" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT
+			DC.*
+			,CONVERT(VARCHAR(8),DC.REG_DTE,11) REG_DTE_SHOT
+			,CONVERT(VARCHAR(8),DC.UPT_DTE,11) UPT_DTE_SHOT
+			,(CASE
+					WHEN DC.STU_DTL = 'T' AND DC.REG_LOGIN_ID = #{loginInfo.loginId} then 'true'
+					WHEN ISNULL(TODO.TODO_ID,'') !='' THEN  'true'
+					ELSE 'false'
+			  END
+			) AS IS_TODO
+			,DSM.LANG_CD AS STU_LANG_CD
+		FROM T_SYS_DATA_CUBE DC
+			INNER JOIN T_SYS_DEF_STU_MAS DSM
+				ON DC.STU_CD = DSM.STU_CD
+			INNER JOIN (
+				SELECT SOL_MAS_UID, MAX(ORD_NO) AS ORD_NO FROM T_SYS_DATA_CUBE GROUP BY SOL_MAS_UID
+			)MAX_DC
+				ON MAX_DC.SOL_MAS_UID = DC.SOL_MAS_UID
+			LEFT OUTER JOIN(
+		        SELECT
+					'PROC' AS TODO_TYPE
+					,RM.REL_NO AS TODO_ID
+					,DC.DOC_UID
+					,DC.ORD_NO
+					,DSI.IN_UID
+				FROM T_SYS_DATA_CUBE DC
+					INNER JOIN T_SYS_ROLE_MAS RM
+						ON RM.SOL_MAS_UID = DC.SOL_MAS_UID
+					INNER JOIN T_SYS_DEF_STU_IN DSI
+						ON DSI.STU_CD = DC.STU_CD
+					   AND DSI.STU_DTL = DC.STU_DTL
+					   AND DSI.ROLE_CD = RM.ROLE_CD
+				WHERE REL_NO = #{loginInfo.loginId}
+				UNION ALL
+				SELECT
+					'APRV' AS TODO_TYPE
+					,AL.APR_LOGIN_ID
+					,DC.DOC_UID
+					,DC.ORD_NO
+					,NULL IN_UID
+				FROM T_SYS_DATA_CUBE DC
+					INNER JOIN T_SYS_APR_LINE AL
+						ON AL.DOC_UID = DC.DOC_UID
+					   AND AL.APR_STU = 'W'
+					   AND AL.APR_LOGIN_ID = #{loginInfo.loginId}
+			)TODO
+				ON DC.DOC_UID = TODO.DOC_UID
+				AND TODO.ORD_NO = MAX_DC.ORD_NO
+		WHERE DC.SOL_MAS_UID = #{solMasUid}
+	</select>
+	<select id="listMinOrdNo" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT * FROM (
+			SELECT GROUP_UID, MIN(ORD_NO) AS MIN_SEQ  FROM T_SYS_DATA_CUBE CUBE
+			WHERE CUBE.SOL_MAS_UID = #{solMasUid}
+			AND STU_DTL != 'T'
+			GROUP BY GROUP_UID
+		)TBL
+		ORDER BY MIN_SEQ
+	</select>
+	<delete id="deleteOne" parameterType="map">
+		DELETE FROM t_sys_data_cube O
+		WHERE doc_uid = #{docUid}
+	</delete>
+	<insert id="insert" parameterType="com.vertexid.paragon.datacube.DataCubeDTO">
+		INSERT INTO T_SYS_DATA_CUBE(
+				DOC_UID
+				,SOL_MAS_UID
+				,GROUP_UID
+				,ORD_NO
+				,LAST_YN
+				,STU_TYPE1
+				,STU_TYPE2
+				,STU_CD
+				,STU_DTL
+				,NEXT_STU_CD
+				,JSON_DATA
+				,REG_DTE
+				,REG_LOGIN_ID
+				,UPT_DTE
+				,UPT_LOGIN_ID
+		)VALUES(
+				#{docUid}
+				,#{solMasUid}
+				,#{groupUid}
+		<choose>
+			<when test="ordNo != null and ordNo != '' and ordNo = 'MAX'">
+           		,(SELECT ISNULL(MAX(ORD_NO),0 ) + 1 FROM T_SYS_DATA_CUBE WHERE SOL_MAS_UID = #{solMasUid})
+            </when>
+            <otherwise>
+				,#{ordNo}
+            </otherwise>
+		</choose>
+				,#{lastYn}
+				,#{stuType1}
+				,#{stuType2}
+				,#{stuCd}
+				,#{stuDtl}
+				,#{nextStuCd}
+				,#{jsonData}
+				,SYSDATETIME()
+				,#{regLoginId}
+				,SYSDATETIME()
+				,#{uptLoginId}
+		)
+	</insert>
+	<update id="updateForDTO" parameterType="com.vertexid.paragon.datacube.DataCubeDTO">
+		UPDATE t_sys_data_cube
+		SET UPT_DTE = SYSDATETIME()
+        	, UPT_LOGIN_ID = #{uptLoginId}
+        	, next_stu_cd = #{nextStuCd, jdbcType=VARCHAR}
+		<if test="lastYn != null and lastYn != ''">
+            , LAST_YN = #{lastYn}
+        </if>
+		<if test="groupUid != null and groupUid != ''">
+            , GROUP_UID = #{groupUid}
+        </if>
+        <if test="ordNo != null and ordNo != ''">
+        	<choose>
+				<when test="ordNo.equals('PLUS')">
+	           		, ORD_NO = (ORD_NO+1)
+	            </when>
+	            <otherwise>
+		            , ORD_NO = #{ordNo}
+	            </otherwise>
+			</choose>
+        </if>
+        <if test="jsonData != null and jsonData != ''">
+            , json_data = #{jsonData}
+        </if>
+        <if test="stuType1 != null and stuType1 != ''">
+            , stu_type1 = #{stuType1}
+        </if>
+        <if test="stuType2 != null and stuType2 != ''">
+            , stu_type2 = #{stuType2}
+        </if>
+        <if test="stuCd != null and stuCd != ''">
+            , stu_cd = #{stuCd}
+        </if>
+        <if test="stuDtl != null and stuDtl != ''">
+            , stu_dtl = #{stuDtl}
+        </if>
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+			<choose>
+				<when test="docUid != null and docUid != ''">
+	           		DOC_UID = #{docUid}
+	            </when>
+	            <otherwise>
+		            DOC_UID IS NOT NULL
+	            </otherwise>
+			</choose>
+        </trim>
+		<if test="solMasUid != null and solMasUid != ''">
+            AND SOL_MAS_UID = #{solMasUid}
+        </if>
+	</update>
+	<update id="update" parameterType="map">
+		UPDATE t_sys_data_cube
+		SET UPT_DTE = SYSDATETIME()
+        	, UPT_LOGIN_ID = #{uptLoginId}
+        	, next_stu_cd = #{nextStuCd, jdbcType=VARCHAR}
+		<if test="lastYn != null and lastYn != ''">
+            , LAST_YN = #{lastYn}
+        </if>
+		<if test="groupUid != null and groupUid != ''">
+            , GROUP_UID = #{groupUid}
+        </if>
+        <if test="ordNo != null and ordNo != ''">
+        	<choose>
+				<when test="ordNo.equals('PLUS')">
+	           		, ORD_NO = (ORD_NO+1)
+	            </when>
+	            <otherwise>
+		            , ORD_NO = #{ordNo}
+	            </otherwise>
+			</choose>
+        </if>
+        <if test="jsonData != null and jsonData != ''">
+            , json_data = #{jsonData}
+        </if>
+        <if test="stuType1 != null and stuType1 != ''">
+            , stu_type1 = #{stuType1}
+        </if>
+        <if test="stuType2 != null and stuType2 != ''">
+            , stu_type2 = #{stuType2}
+        </if>
+        <if test="stuCd != null and stuCd != ''">
+            , stu_cd = #{stuCd}
+        </if>
+        <if test="stuDtl != null and stuDtl != ''">
+            , stu_dtl = #{stuDtl}
+        </if>
+        <if test="groupUid != null and groupUid != ''">
+            , group_uid = #{groupUid}
+        </if>
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+			<choose>
+				<when test="docUid != null and docUid != ''">
+	           		DOC_UID = #{docUid}
+	            </when>
+	            <otherwise>
+		            DOC_UID IS NOT NULL
+	            </otherwise>
+			</choose>
+        </trim>
+		<if test="solMasUid != null and solMasUid != ''">
+            AND SOL_MAS_UID = #{solMasUid}
+        </if>
+		<if test="ordNoGteq != null and ordNoGteq != ''">
+            AND ORD_NO >= #{ordNoGteq}
+        </if>
+	</update>
+</mapper>

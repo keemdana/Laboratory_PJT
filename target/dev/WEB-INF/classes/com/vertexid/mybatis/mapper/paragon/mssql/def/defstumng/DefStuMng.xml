@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.def.defstumng.DefStuMng.mssql">
+    <select id="listOne" parameterType="map" resultType="paramMap" fetchSize="1000">
+    	SELECT TBL.*
+				, CASE WHEN (SELECT COUNT(*) FROM T_SYS_DEF_STU_MAIL M WHERE M.STU_CD = TBL.STU_CD) = 0 THEN 'N' ELSE 'Y' END AS JIJUNG_YN
+				,'U' as cud
+			FROM T_SYS_DEF_STU_MAS TBL
+			WHERE TBL.STU_CD = #{stuCd}
+    </select>
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+		<include refid="Common.prefixPaging" />
+	     SELECT
+	        	ROW_NUMBER() OVER (ORDER BY ORD_NO ASC) RN
+	            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+	            , PAGING.*
+	        FROM (
+	       	 SELECT TBL.*
+	       	 	, V1.LANG_CD AS STU_TYPE1_LANG_CD
+	       	 	, V2.LANG_CD AS STU_TYPE2_LANG_CD
+	       	 	, dbo.F_SYS_CD_LANGS(TBL.PROC_TYPE) AS PROC_TYPE_LANG_CD
+				, CASE WHEN (SELECT COUNT(*) FROM T_SYS_DEF_STU_MAIL M WHERE M.STU_CD = TBL.STU_CD) = 0 THEN 'N' ELSE 'Y' END AS JIJUNG_YN
+				,'U' as cud
+			FROM T_SYS_DEF_STU_MAS TBL
+				LEFT OUTER JOIN V_SYS_CODE V1
+					ON TBL.STU_TYPE1 = V1.CD
+				LEFT OUTER JOIN V_SYS_CODE V2
+					ON TBL.STU_TYPE2 = V2.CD
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<choose>
+				<when test="stuCd != null and stuCd != ''">
+	           		TBL.STU_CD = #{stuCd}
+	            </when>
+	            <otherwise>
+		            TBL.STU_CD IS NOT NULL
+	            </otherwise>
+			</choose>
+        </trim>
+		<if test="schStuCd != null and schStuCd != ''">
+           	AND TBL.STU_CD LIKE '%'+#{schStuCd}+'%'
+		</if>
+		<if test="stuType != null and stuType != ''">
+           	AND TBL.STU_TYPE = #{stuType}
+		</if>
+		<if test="ordNoGteq != null and ordNoGteq != ''">
+			<![CDATA[
+           	AND TBL.ORD_NO >= #{ordNoGteq}
+           	]]>
+		</if>
+		<if test="ordNoLteq != null and ordNoLteq != ''">
+			<![CDATA[
+           	AND TBL.ORD_NO <= #{ordNoLteq}
+           	]]>
+		</if>
+		<if test="stuBaseNm != null and stuBaseNm != ''">
+           	AND TBL.STU_BASE_NM like '%'+#{stuBaseNm}+'%'
+		</if>
+		<if test="jijungYn != null and jijungYn != ''">
+           	AND TBL.JIJUNG_YN like '%'+#{jijungYn}+'%'
+		</if>
+		<if test="schword != null and schword != ''">
+           	AND TBL.STU_CD like '%'+#{schword}+'%'
+		</if>
+		) PAGING
+		<include refid="Common.postfixPaging" />
+    </select>
+    <insert id="insert" parameterType="paramMap">
+        INSERT T_SYS_DEF_STU_MAS(
+             STU_CD
+           , STU_TYPE1
+           , STU_TYPE2
+           , HEAD_END
+           , ORD_NO
+           , STU_BASE_NM
+           , LANG_CD
+           , PROC_TYPE
+           , STU_DESC
+           , DOC_NM_LANG_CD
+           , TIT_DSP_YN
+           , MEMO_DSP_YN
+           , FILE_DSP_YN
+           , MEMO_TIT_LANG_CD
+           , STU_REG_AUTH
+           , STU_VIEW_AUTH
+           , REL_DATA_STU_CD
+           , USE_YN
+           , REG_DTE
+           , REG_LOGIN_ID
+           , UPT_DTE
+           , UPT_LOGIN_ID
+        )VALUES(
+             #{stuCd}
+           , #{stuType1}
+           , #{stuType2}
+           , #{headEnd}
+           , #{ordNo}
+           , #{stuBaseNm}
+           , #{langCd}
+           , #{procType}
+           , #{stuDesc}
+           , #{docNmLangCd}
+           , #{titDspYn}
+           , #{memoDspYn}
+           , #{fileDspYn}
+           , #{memoTitLangCd}
+           , #{stuRegAuth}
+           , #{stuViewAuth}
+           , #{relDataStuCd}
+           , #{useYn}
+			, SYSDATETIME()
+			, 'SYSTEM'
+			, SYSDATETIME()
+			, 'SYSTEM'
+        )
+    </insert>
+	<update id="update" parameterType="paramMap">
+        UPDATE T_SYS_DEF_STU_MAS
+        SET UPT_DTE = SYSDATETIME()
+        , UPT_LOGIN_ID = 'SYSTEM'
+        <if test="stuType1 != null and stuType1 != ''">
+            , STU_TYPE1 = #{stuType1}
+        </if>
+        <if test="stuType2 != null and stuType2 != ''">
+            , STU_TYPE2 = #{stuType2}
+        </if>
+        <if test="headEnd != null and headEnd != ''">
+            , HEAD_END = #{headEnd}
+        </if>
+        <if test="ordNo != null and ordNo != ''">
+            , ORD_NO = #{ordNo}
+        </if>
+        <if test="stuBaseNm != null and stuBaseNm != ''">
+            , STU_BASE_NM = #{stuBaseNm}
+        </if>
+        <if test="langCd != null and langCd != ''">
+            , LANG_CD = #{langCd}
+        </if>
+        <if test="procType != null and procType != ''">
+            , PROC_TYPE = #{procType}
+        </if>
+        <if test="stuDesc != null and stuDesc != ''">
+            , STU_DESC = #{stuDesc}
+        </if>
+        <if test="docNmLangCd != null and docNmLangCd != ''">
+            , DOC_NM_LANG_CD = #{docNmLangCd}
+        </if>
+        <if test="titDspYn != null and titDspYn != ''">
+            , TIT_DSP_YN = #{titDspYn}
+        </if>
+        <if test="memoDspYn != null and memoDspYn != ''">
+            , MEMO_DSP_YN = #{memoDspYn}
+        </if>
+        <if test="fileDspYn != null and fileDspYn != ''">
+            , FILE_DSP_YN = #{fileDspYn}
+        </if>
+        <if test="memoTitLangCd != null and memoTitLangCd != ''">
+            , MEMO_TIT_LANG_CD = #{memoTitLangCd}
+        </if>
+        <if test="stuRegAuth != null and stuRegAuth != ''">
+            , STU_REG_AUTH = #{stuRegAuth}
+        </if>
+        <if test="stuViewAuth != null and stuViewAuth != ''">
+            , STU_VIEW_AUTH = #{stuViewAuth}
+        </if>
+        <if test="relDataStuCd != null and relDataStuCd != ''">
+            , REL_DATA_STU_CD = #{relDataStuCd}
+        </if>
+        <if test="useYn != null and useYn != ''">
+            , USE_YN = #{useYn}
+        </if>
+        WHERE STU_CD = #{stuCd}
+    </update>
+	<delete id="delete" parameterType="map">
+        DELETE FROM T_SYS_DEF_STU_MAS
+        WHERE STU_CD = #{stuCd}
+    </delete>
+</mapper>

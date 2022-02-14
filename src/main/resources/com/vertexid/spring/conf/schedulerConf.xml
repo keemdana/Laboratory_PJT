@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <description>
+        <!--
+          ~ Copyright (c) 2021 Vertex ID., KOREA
+          ~ All rights reserved.
+          ~
+          ~ This software is the confidential
+          ~ and proprietary information of emFrontier.com ("Confidential Information").
+          ~ You shall not disclose such Confidential Information
+          ~ and shall use it only in accordance with
+          ~ the terms of the license agreement you entered into
+          ~ with Vertex ID. Networks
+          -->
+        <![CDATA[
+            Scheduler 설정
+                - quartz 설정
+        ]]>
+    </description>
+
+
+
+</beans>
+

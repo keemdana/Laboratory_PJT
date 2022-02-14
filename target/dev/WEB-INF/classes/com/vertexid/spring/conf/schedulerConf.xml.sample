@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <description>
+        <!--
+          ~ Copyright (c) 2021 Vertex ID., KOREA
+          ~ All rights reserved.
+          ~
+          ~ This software is the confidential
+          ~ and proprietary information of emFrontier.com ("Confidential Information").
+          ~ You shall not disclose such Confidential Information
+          ~ and shall use it only in accordance with
+          ~ the terms of the license agreement you entered into
+          ~ with Vertex ID. Networks
+          -->
+        <![CDATA[
+            Scheduler 설정
+                - quartz 설정
+        ]]>
+    </description>
+
+    <!-- jobs -->
+    <bean id="eaiBatchJob"
+          class="com.vertexid.ims.scheduler.EAIBatchJobSvc">
+        <description><![CDATA[
+            EAI 일괄 Job 서비스
+            내부적으로
+            - SAP 오더번호 반영 및 요청
+            - SAP 예산관리 전송
+            이 동작 하고 있음
+        ]]></description>
+    </bean>
+
+    <bean id="mailBatchJob" class="com.vertexid.ims.scheduler.MailBatchJobSvc">
+        <description><![CDATA[
+            메일발송 일괄 Job 서비스
+        ]]></description>
+    </bean>
+
+    <!-- job details -->
+    <bean id="eaiJobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <description><![CDATA[
+            EAI 일괄 Job 상세
+        ]]></description>
+        <property name="targetObject" ref="eaiBatchJob"/>
+        <property name="targetMethod" value="execBatchJob"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <bean id="mailJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <description><![CDATA[
+            mail 일괄전송 Job 상세
+        ]]></description>
+        <property name="targetObject" ref="mailBatchJob"/>
+        <property name="targetMethod" value="execBatchJob"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <!-- triggers -->
+    <bean id="eaiBatchJobTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <description><![CDATA[
+            EAI 일괄 Job 트리거
+            크론표현식(매1분마다): 0 0/1 * * * ?
+        ]]></description>
+        <property name="jobDetail" ref="eaiJobDetail"/>
+        <property name="startDelay" value="3000"/>
+        <property name="cronExpression" value="0 0/1 * * * ?"/>
+    </bean>
+
+    <bean id="mailBatchJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <description><![CDATA[
+            mail 일괄전송 Job 트리거
+            크론표현식(매3분마다): 0 0/3 * * * ?
+        ]]></description>
+        <property name="jobDetail" ref="mailJobDetail"/>
+        <property name="startDelay" value="3000"/>
+        <property name="cronExpression" value="0 0/3 * * * ?"/>
+    </bean>
+
+    <!-- scheduler -->
+    <bean id="schedulerFactoryBean"
+          class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <description><![CDATA[
+            스케줄러 설정
+        ]]></description>
+        <property name="triggers">
+            <list>
+                <ref bean="eaiBatchJobTrigger"/>
+                <!--
+                <ref bean="mailBatchJobTrigger"/>
+                -->
+            </list>
+        </property>
+    </bean>
+
+</beans>
+

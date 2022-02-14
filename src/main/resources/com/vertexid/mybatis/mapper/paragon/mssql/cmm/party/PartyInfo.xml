@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.cmm.party.PartyInfo.mssql">
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+        SELECT
+			ROW_NUMBER() OVER (ORDER BY PARTY_NM_KO ASC) RN
+            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+            , PAGING.*
+        FROM (
+            SELECT
+            	 O.*
+            FROM T_CMM_PARTY_MAS o
+            <trim prefix="WHERE" prefixOverrides="AND|OR">
+				<choose>
+					<when test="partyUid != null and partyUid != ''">
+		           		o.PARTY_UID like '%'+#{partyUid}+'%'
+		            </when>
+		            <otherwise>
+			            o.PARTY_UID IS NOT NULL
+		            </otherwise>
+				</choose>
+	        </trim>
+            <if test="partyNmKo != null and partyNmKo != ''">
+	           	AND O.PARTY_NM_KO LIKE '%'+ #{partyNmKo} +'%'
+			</if>
+            <if test="partyNmEn != null and partyNmEn != ''">
+	           	AND O.PARTY_NM_EN LIKE '%'+ #{partyNmEn} +'%'
+			</if>
+            <if test="corpRegNo != null and corpRegNo != ''">
+	           	AND O.CORP_REG_NO LIKE '%'+ #{corpRegNo} +'%'
+			</if>
+        ) PAGING
+        <include refid="Common.postfixPaging" />
+    </select>
+
+</mapper>

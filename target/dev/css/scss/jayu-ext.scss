@@ -1,0 +1,58 @@
+@charset "UTF-8";
+
+/*!
+ * Copyright 2019 JAYU.space
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import "colors", "sizes", "variables", "mixin";
+
+/**
+ * 확장 CSS
+ * @author 양기화(梁起華 Yang, Ki Hwa)
+ */
+.ctrl-sidebar {
+  /*
+  min-width: $ctrl-sidebar-width;
+  max-width: $ctrl-sidebar-width;
+  min-height: calc(100vh - 49px);
+  transition: all 0.3s;
+  */
+
+  display: block;
+  width: $ctrl-sidebar-width;
+  //height: calc(100vh - #{$nav-size});
+  height: calc(100vh);
+  position: fixed;
+  right: -100%;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  background: white;
+  z-index: 20;
+  //font-size: $fontSize - 1px;
+  box-shadow: -1px 0 20px rgba(0,0,0,.08);
+  //@include transition(all .4s ease);
+
+}
+
+.ctrl-sidebar.toggled {
+  right: 0;
+}
+
+
+// bootadmin 제어
+.sidebar [aria-expanded="true"]:before {
+ // content: "\f0d8";
+}

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx.xsd
+            http://www.springframework.org/schema/jee
+            http://www.springframework.org/schema/jee/spring-jee.xsd">
+    <description>
+        <!--
+          ~ Copyright (c) 2021 Vertex ID., KOREA
+          ~ All rights reserved.
+          ~
+          ~ This software is the confidential
+          ~ and proprietary information of emFrontier.com ("Confidential Information").
+          ~ You shall not disclose such Confidential Information
+          ~ and shall use it only in accordance with
+          ~ the terms of the license agreement you entered into
+          ~ with Vertex ID. Networks
+          -->
+        <![CDATA[
+            JNDI datasource 설정
+                - JNDI Name 을 설정한다.
+                - import resource 로 활용할 경우 사용
+                - JNDI 가 여러건일 경우 사용하길 권장하나
+                  transactionConf.xml 에 직접 설정해도 무방함
+                [주의!] xml namespace 에 tx, jee 같이 설정해야 합니다.
+        ]]>
+    </description>
+
+    <!-- JNDI 설정 -->
+    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/jayu"
+                     expected-type="javax.sql.DataSource"/>
+</beans>

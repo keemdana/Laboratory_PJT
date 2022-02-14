@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd" >
+<properties>
+    <comment>
+        <!--
+          ~ Copyright (c) 2021 Vertex ID., KOREA
+          ~ All rights reserved.
+          ~
+          ~ This software is the confidential
+          ~ and proprietary information of emFrontier.com ("Confidential Information").
+          ~ You shall not disclose such Confidential Information
+          ~ and shall use it only in accordance with
+          ~ the terms of the license agreement you entered into
+          ~ with Vertex ID. Networks
+          -->
+        Common Properties
+    </comment>
+
+    <!-- Base : 시스템 이전의 기본 -->
+    <!--    <entry key="base.srcRootPath">D:/Develop/Paragon/Yeoyu-IMS</entry>-->
+    <entry key="base.srcRootPath">D:\IdeaWorkspace\PROJECT\HDG\IMS</entry>
+    <entry key="base.solution">lms</entry>
+    <entry key="base.defaultContentUrl">/lms</entry>
+
+    <!-- Common : 공통 속성 -->
+    <entry key="cmm.vo.toString.style">SHORT_PREFIX_STYLE</entry>
+    <entry key="cmm.lang.default">KO</entry>
+    <entry key="cmm.lang.charSet">UTF-8</entry>
+    <entry key="cmm.paging.default.rowCount">20</entry>
+    <entry key="cmm.paging.default.pageCount">10</entry>
+    <entry key="cmm.webEditor"></entry>
+
+    <!-- System Properties -->
+    <entry key="sys.operation.mode">LOCAL</entry>
+    <entry key="sys.name">Paragon System</entry>
+    <entry key="sys.title.ko">Paragon System</entry>
+    <entry key="sys.title.en">Paragon System</entry>
+    <entry key="sys.organization.ko">버텍스아이디</entry>
+    <entry key="sys.organization.en">Vertex ID.</entry>
+    <entry key="sys.admin.name">System Admin</entry>
+    <entry key="sys.admin.email">service@vertexid.com</entry>
+    <entry key="sys.ip">127.0.0.1</entry>
+    <entry key="sys.port"></entry>
+    <entry key="sys.protocol">http://</entry>
+    <entry key="sys.domainName">localhost</entry>
+    <entry key="sys.contextPath"></entry>
+
+    <!-- DB Properties -->
+    <entry key="db.mybatis.mapper.root">com.vertexid</entry>
+    <entry key="db.mybatis.mapper.vendorRoot"></entry>
+
+    <!-- DB Connection Properties -->
+    <!--
+    db.%CON_NAME%.dbms
+    db.%CON_NAME%.jndi
+    db.%CON_NAME%.driverClass
+    db.%CON_NAME%.url
+    db.%CON_NAME%.username
+    db.%CON_NAME%.password
+    -->
+
+    <entry key="db.base.dbms">mssql</entry>
+    <entry key="db.base.driverClass">com.microsoft.sqlserver.jdbc.SQLServerDriver</entry>
+    <entry key="db.base.url">jdbc:sqlserver://:1412;database=</entry>
+    <entry key="db.base.username"></entry>
+    <entry key="db.base.password"></entry>
+
+    <!-- Attach -->
+    <entry key="attach.saveRootPath">D:/WebApp/attachment</entry>
+    <entry key="attach.saveTempPath">D:/WebApp/attachment/temp</entry>
+    <entry key="attach.default.maxFileSize">1048576</entry>
+    <entry key="attach.default.maxFileCount">20</entry>
+    <entry key="attach.default.allowExt"></entry>
+    <entry key="attach.default.denyExt"></entry>
+
+    <!-- Mail -->
+    <entry key="mail.useYn">N</entry>
+    <entry key="mail.svc.url"></entry>
+    <entry key="mail.svc.token"></entry>
+    <entry key="mail.smtp.host"></entry>
+    <entry key="mail.smtp.port"></entry>
+    <entry key="mail.smtp.username"></entry>
+    <entry key="mail.smtp.password"></entry>
+    <entry key="mail.smtp.maxFileSize">10485760</entry>
+    <entry key="mail.smtp.tlsYn">N</entry>
+    <entry key="mail.smtp.sslYn">N</entry>
+
+    <!-- SSO -->
+    <entry key="sso.useYn">N</entry>
+    <entry key="sso.svc.url"></entry>
+    <entry key="sso.svc.key"></entry>
+    <entry key="sso.svc.key"></entry>
+
+    <!-- LDAP -->
+    <entry key="ldap.useYn">N</entry>
+    <entry key="ldap.url"></entry>
+    <entry key="ldap.username"></entry>
+    <entry key="ldap.password"></entry>
+    <entry key="ldap.domain"></entry>
+    <entry key="ldap.baseDn"></entry>
+
+    <!-- Approval -->
+    <!--
+      ~     * aprv.if.userYn: 결재 인터페이스 사용여부
+      -->
+    <entry key="aprv.useYn">Y</entry>
+    <entry key="aprv.if.userYn">Y</entry>
+    <entry key="aprv.if.name">GlovisApprovalInterface</entry>
+    <entry key="aprv.preText"></entry>
+    <entry key="aprv.url"></entry>
+    <entry key="aprv.service.id"></entry>
+    <entry key="aprv.service.url"></entry>
+    <entry key="aprv.system.id"></entry>
+    <entry key="aprv.system.code"></entry>
+
+    <!-- PDF -->
+    <entry key="pdf.convertYn">N</entry>
+    <entry key="pdf.doc2pdf.url"></entry>
+    <entry key="pdf.split.url"></entry>
+    <entry key="pdf.watermark.position"></entry>
+
+    <!-- LMS function -->
+    <entry key="fnc.quitMenu.useYn">Y</entry>
+    <entry key="fnc.multiAuthLogin.useYn">N</entry>
+    <entry key="fnc.masterSearch.useYn">N</entry>
+    <entry key="fnc.changeLocale.useYn">N</entry>
+    <entry key="fnc.fileHistroy.useYn">N</entry>
+    <entry key="fnc.batchDownload.useYn">N</entry>
+    <entry key="fnc.listSorting.useYn">N</entry>
+    <entry key="fnc.checkSysAdminLoginIp.useYn">N</entry>
+    <entry key="fnc.schPwd.useYn">N</entry>
+    <entry key="fnc.userNameDisplay.useYn">N</entry>
+
+    <!-- System Security -->
+    <!--[CDATA[
+        [System Security]
+            자체 보안 필터 사용시 적용
+
+            applicationConf.xml에 사용자 정의 Security 설정 추가필요
+
+            * security.useYn: Y: 사용, Other: 미사용
+              web.xml, applicationConf.xml 에 설정이 동반되어야 한다.
+            * security.ignoreURIs: 검사 예외 URI
+                기본 URI 들()은 예외 처리 되어 있고 그외 예외 처리할 URI를 줄바꿈으로 구분해서 설정
+                url은 ANT URL 패턴형식으로 작성한다.
+            * security.loginURI: login form URI(기본 /login)
+            * security.loginProcURI: login process URI(기본 /login/proc)
+                - 로그인 처리시 해당 URI로 자동 redirec 되며
+                  security.loginProvider.class 에 설정된 class 에서 처리된다.
+            * security.expiredURI: session expired URI(기본 /login)
+            * security.defaultURI: 기본 URI(기본 /main)
+            * security.logoutURI: logout URI(기본 /logout)
+            * security.idParamName: ID 파라메터 명
+            * security.pwParamName: PW 파라메터 명
+            * security.csrfYn: CSRF Token 사용여부
+            * security.allowIfAllAbstainDecisions: 보류건 허가여부(true: 허가, other: 불가)
+                                                   Tip:최초 세팅시에는 허가로 놓고 개발 중반이후~운영 에는 불가로 운영
+    ]]-->
+    <entry key="security.useYn">Y</entry>
+    <entry key="security.ignoreURIs">
+        /css/**
+        /img/**
+        /js/vendor/**
+        /js/plugins.js
+        /js/module/main/login.js
+        /rsa/**
+        /_images/**
+        /error/**
+        /WEB-INF/tiles/**
+    </entry>
+    <entry key="security.loginURI">/login.do</entry>
+    <entry key="security.loginProcURI">/login/proc</entry>
+    <entry key="security.expiredURI">/login.do</entry>
+    <entry key="security.defaultURI">/main/main</entry>
+    <entry key="security.logoutURI">/logout</entry>
+    <entry key="security.idParamName">loginId</entry>
+    <entry key="security.pwParamName">loginPwd</entry>
+    <entry key="security.csrfYn">N</entry>
+    <entry key="security.allowIfAllAbstainDecisions">true</entry>
+
+    <!-- batch job yn : to Database? -->
+    <entry key="batch.yn">N</entry>
+
+    <!-- JWT -->
+    <entry key="jwt.alg"></entry>
+    <entry key="jwt.iss">space.jayu</entry>
+
+</properties>
+

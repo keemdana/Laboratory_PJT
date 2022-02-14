@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+  ~ All rights reserved.
+  ~
+  ~ This software is the confidential
+  ~ and proprietary information of emFrontier.com ("Confidential Information").
+  ~ You shall not disclose such Confidential Information
+  ~ and shall use it only in accordance with
+  ~ the terms of the license agreement you entered into
+  ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.viself.module.ModuleMng.mssql">
+
+    <select id="moduleList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+        SELECT tsm.*
+            , ROW_NUMBER() OVER(
+                ORDER BY tsm.MODULE_ID
+            ) AS RN
+            , COUNT(*) OVER() AS TOT_CNT
+        FROM T_SYS_MODULE tsm
+        <include refid="Common.postfixPaging" />
+    </select>
+
+    <insert id="insertModule" parameterType="com.vertexid.viself.module.ModuleDTO">
+        INSERT INTO T_SYS_MODULE(
+            module_id
+            , module_desc
+            , use_yn
+            , reg_login_id
+            , reg_dte
+            , upt_login_id
+            , upt_dte
+        )VALUES(
+            #{moduleId}
+            , #{moduleDesc}
+            , #{useYn}
+            , 'SYSTEM'
+            , CURRENT_TIMESTAMP
+            , 'SYSTEM'
+            , CURRENT_TIMESTAMP
+        )
+    </insert>
+
+    <update id="updateModule" parameterType="com.vertexid.viself.module.ModuleDTO">
+        UPDATE t_sys_module
+        SET upt_dte = CURRENT_TIMESTAMP
+            , upt_login_id = 'SYSTEM'
+        <if test="moduleDesc != null and moduleDesc != ''" >
+            , module_desc = #{moduleDesc}
+        </if>
+        <if test="useYn != null and useYn != ''" >
+            , use_yn = #{useYn}
+        </if>
+        WHERE module_id = #{moduleId}
+    </update>
+
+    <delete id="deleteModule" parameterType="com.vertexid.viself.module.ModuleDTO">
+        DELETE t_sys_module
+        WHERE module_id = #{moduleId}
+    </delete>
+
+    <select id="moduleUrlList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+        SELECT tsmu.*
+            , tsu.URL_DESC
+            , ROW_NUMBER() OVER(
+                ORDER BY tsmu.MODULE_ID ASC, tsmu.REPRE_URL_YN DESC, tsmu.ACCES_URL DESC
+            ) AS RN
+            , COUNT(*) OVER() AS TOT_CNT
+        FROM T_SYS_MODULE_URL tsmu
+            INNER JOIN T_SYS_URL tsu
+                ON tsmu.ACCES_URL COLLATE Korean_Wansung_CS_AS = tsu.ACCES_URL
+        WHERE tsmu.module_id = #{moduleId}
+        <include refid="Common.postfixPaging" />
+    </select>
+
+    <select id="urlList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+        SELECT tsu.*
+            , ROW_NUMBER() OVER(
+                ORDER BY tsu.ACCES_URL
+            ) AS RN
+            , COUNT(*) OVER() AS TOT_CNT
+        FROM t_sys_url tsu
+        WHERE tsu.alw_div != 'IS_AUTHENTICATED_ANONYMOUSLY'
+            AND tsu.use_yn = 'Y'
+            AND NOT EXISTS (
+                SELECT 1
+                FROM t_sys_module_url tsmu
+                WHERE tsmu.acces_url COLLATE Korean_Wansung_CS_AS = tsu.acces_url
+                    AND tsmu.module_id = #{moduleId}
+            )
+        <include refid="Common.postfixPaging" />
+    </select>
+
+    <insert id="insertUrl" parameterType="com.vertexid.viself.module.ModuleDTO">
+        INSERT INTO t_sys_module_url(
+            module_id
+            , acces_url
+            , repre_url_yn
+            , reg_login_id
+            , reg_dte
+            , upt_login_id
+            , upt_dte
+        )VALUES(
+            #{moduleId}
+            , #{accesUrl}
+            , 'N'
+            , 'SYSTEM'
+            , CURRENT_TIMESTAMP
+            , 'SYSTEM'
+            , CURRENT_TIMESTAMP
+        )
+    </insert>
+    <update id="udpateDefaultUrl" parameterType="com.vertexid.viself.module.ModuleDTO">
+        UPDATE t_sys_module_url
+        SET upt_dte = CURRENT_TIMESTAMP
+          , upt_login_id = 'SYSTEM'
+          , repre_url_yn = 'Y'
+        WHERE module_id = #{moduleId}
+            AND ACCES_URL = #{accesUrl}
+    </update>
+    <update id="udpateResetDefUrl" parameterType="com.vertexid.viself.module.ModuleDTO">
+        UPDATE t_sys_module_url
+        SET upt_dte = CURRENT_TIMESTAMP
+          , upt_login_id = 'SYSTEM'
+          , repre_url_yn = 'N'
+        WHERE module_id = #{moduleId}
+            AND repre_url_yn != 'N'
+    </update>
+
+    <delete id="deleteUrl" parameterType="com.vertexid.viself.module.ModuleDTO">
+        DELETE t_sys_module_url
+        <where>
+            <if test="moduleId != null and moduleId != ''" >
+                AND module_id = #{moduleId}
+            </if>
+            <if test="accesUrl != null and accesUrl != ''" >
+                AND ACCES_URL = #{accesUrl}
+            </if>
+        </where>
+    </delete>
+</mapper>

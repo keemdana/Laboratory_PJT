@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.bbs.BbsMas.mssql">
+    <!-- 게시글 상세보기 /paragon/bbs/BbsMas/bbsMasView/json -->
+    <resultMap id="resultClob" type="paramMap">
+        <result property="bbsContent" column="BBS_CONTENT" jdbcType="CLOB" javaType="java.lang.String"/>
+    </resultMap>
+    <select id="selectOne" parameterType="map" resultMap="resultClob" fetchSize="1000">
+        SELECT
+        B.BBS_UID
+        , B.BBS_TP_CD
+        , B.BBS_TIT
+        , B.BBS_CONTENT
+        --, DBMS_LOB.SUBSTR(B.BBS_CONTENT, DBMS_LOB.GETLENGTH(B.BBS_CONTENT)) AS BBS_CONTENT
+        , B.BBS_REG_LOGIN_ID
+        , CONVERT(VARCHAR(10), B.BBS_REG_DTE, 120) AS BBS_REG_DTE
+        , B.BBS_UPT_LOGIN_ID
+        , B.BBS_UPT_DTE
+        , B.BBS_USE_YN
+        , B.BBS_TOP_YN
+        , CONVERT(VARCHAR(10), B.BBS_POPUP_ST_DTE, 120) AS BBS_POPUP_ST_DTE
+        , CONVERT(VARCHAR(10), B.BBS_POPUP_ED_DTE, 120) AS BBS_POPUP_ED_DTE
+        , U.DSP_NM_KO AS BBS_REG_LOGIN_NM
+        FROM T_CMM_BOARD B
+        LEFT OUTER JOIN V_SYS_USER U ON U.LOGIN_ID=B.BBS_REG_LOGIN_ID
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <choose>
+                <when test="bbsUid != null and bbsUid != ''">
+                    B.BBS_UID  = #{bbsUid}
+                </when>
+                <otherwise>
+                    B.BBS_UID IS NOT NULL
+                </otherwise>
+            </choose>
+        </trim>
+    </select>
+
+    <!-- 게시글 리스트 조회 /paragon/bbs/BbsMas/list/json -->
+    <select id="list" parameterType="map" resultMap="resultClob" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY BBS_TOP_YN DESC, BBS_REG_DTE DESC) RN
+            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+            , PAGING.*
+        FROM (
+            SELECT * FROM (
+                SELECT
+                    B.BBS_UID
+                    , B.BBS_TP_CD
+                    , B.BBS_TIT
+                    , B.BBS_CONTENT
+                    --, DBMS_LOB.SUBSTR(B.BBS_CONTENT, DBMS_LOB.GETLENGTH(B.BBS_CONTENT)) as BBS_CONTENT
+                    , B.BBS_REG_LOGIN_ID
+                    , U.DSP_NM_KO AS BBS_REG_LOGIN_NM
+                    , CONVERT(VARCHAR(10), B.BBS_REG_DTE, 120) AS BBS_REG_DTE
+                    , B.BBS_UPT_LOGIN_ID
+                    , CONVERT(VARCHAR(10), B.BBS_UPT_DTE, 120) AS BBS_UPT_DTE
+                    , C.LANG_CD AS BBS_TP_CD_NM
+                    , B.BBS_USE_YN
+                    , B.BBS_TOP_YN
+                FROM T_CMM_BOARD B
+                    LEFT OUTER JOIN V_SYS_CODE C ON C.CD_ABB=B.BBS_TP_CD
+                    LEFT OUTER JOIN V_SYS_USER U ON U.LOGIN_ID=B.BBS_REG_LOGIN_ID
+            ) TBL
+            <trim prefix="WHERE" prefixOverrides="AND|OR">
+                <choose>
+                    <when test="bbsUid != null and bbsUid != ''">
+                        BBS_UID  = #{bbsUid}
+                    </when>
+                    <otherwise>
+                        BBS_UID IS NOT NULL
+                    </otherwise>
+                </choose>
+            </trim>
+            <if test="bbsTit != null and bbsTit != ''">
+                AND BBS_TIT LIKE '%' + #{bbsTit} + '%'
+            </if>
+        <!--            <if test="bbsRegLoginNm != null and bbsRegLoginNm != ''">
+                           AND REG_LOGIN_NM LIKE '%'+ #{regLoginNm} +'%'
+                    </if>
+                     <if test="regDte != null and RegDte != ''">
+                           AND O.CORP_REG_NO LIKE '%'+ #{corpRegNo} +'%'
+                    </if>
+                     <if test="regDteStr != null and regDteStr != ''">
+                        AND REG_DTE <![CDATA[>=]]> #{regDteStr}
+                  </if>
+                  <if test="regDteEnd != null and regDteEnd !=''">
+                        AND REG_DTE <![CDATA[<=]]> #{regDteEnd}
+                  </if>
+                    AND BOARD_TYPE='LMS_BBS_BOARD'-->
+            AND BBS_USE_YN = 'Y'
+        ) PAGING
+        <include refid="Common.postfixPaging" />
+    </select>
+
+    <insert id="insert" parameterType="com.vertexid.paragon.bbs.bbsMasDTO" >
+        INSERT INTO T_CMM_BOARD(
+            BBS_UID
+            , BBS_TP_CD
+            , BBS_TIT
+            , BBS_CONTENT
+            , BBS_HIT_CNT
+            , BBS_REG_LOGIN_ID
+            , BBS_REG_DTE
+            , BBS_USE_YN
+            , BBS_TOP_YN
+            <set>
+                <if test="bbsPopupStDte != null and !bbsPopupStDte.equals('')">
+                , BBS_POPUP_ST_DTE
+                </if>
+                <if test="bbsPopupEdDte != null and !bbsPopupEdDte.equals('')">
+                , BBS_POPUP_ED_DTE
+                </if>
+            </set>
+        )VALUES(
+            #{bbsUid}
+            , #{bbsTpCd}
+            , #{bbsTit}
+            , #{bbsContent}
+            , 0
+            , #{bbsRegLoginId}
+            , SYSDATETIME()
+            , 'Y'
+            , #{bbsTopYn}
+            <set>
+                <if test="bbsPopupStDte != null and !bbsPopupStDte.equals('')">
+                    , #{bbsPopupStDte}
+                </if>
+                <if test="bbsPopupEdDte != null and !bbsPopupEdDte.equals('')">
+                    , #{bbsPopupEdDte}
+                </if>
+            </set>
+        )
+    </insert>
+
+    <!-- 게시글 수정 /paragon/bbs/bbsmas/update/json-->
+    <update id="update" parameterType="com.vertexid.paragon.bbs.bbsMasDTO" >
+        UPDATE T_CMM_BOARD
+        SET BBS_UPT_DTE = SYSDATETIME()
+        ,BBS_UPT_LOGIN_ID = #{bbsUptLoginId}
+        <if test="bbsTit != null and bbsTit != ''">
+            , BBS_TIT = #{bbsTit}
+        </if>
+        <if test="bbsContent != null and bbsContent != ''">
+            , BBS_CONTENT = #{bbsContent}
+        </if>
+        <if test="bbsTopYn != null and bbsTopYn != ''">
+            , BBS_TOP_YN = #{bbsTopYn}
+        </if>
+        <if test="bbsPopupStDte != null and bbsPopupStDte != ''">
+            , BBS_POPUP_ST_DTE = #{bbsPopupStDte}
+        </if>
+        <if test="bbsPopupEdDte != null and bbsPopupEdDte != ''">
+            , BBS_POPUP_ED_DTE = #{bbsPopupEdDte}
+        </if>
+        WHERE BBS_UID = #{bbsUid}
+    </update>
+
+    <!-- 게시글 삭제 /paragon/bbs/BbsMas/delete/json-->
+    <update id="delete" parameterType="com.vertexid.paragon.bbs.bbsMasDTO" >
+        UPDATE T_CMM_BOARD
+        SET BBS_USE_YN='N'
+        WHERE BBS_UID = #{bbsUid}
+    </update>
+</mapper>

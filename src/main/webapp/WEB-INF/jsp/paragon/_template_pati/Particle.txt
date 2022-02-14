@@ -1,0 +1,54 @@
+package [|PARTICLE_PACKAGE|];
+
+import com.vertexid.commons.utils.ParamMap;
+import com.vertexid.paragon.datacube.BeanInterfaceParticle;
+import com.vertexid.viself.base.CmmDAO;
+
+/**
+ * [|PATI_TITLE|] 파티클 클래스
+ * @author
+ *
+ */
+public class [|PATI_CLASS_NAME|] implements BeanInterfaceParticle{
+
+
+//	private static final String NAMESPACE =  "com.vertexid.lms.LmsCd"; //--계약 Mapper Xml Namespace
+
+	private CmmDAO cmmDAO;
+
+	@Override
+	public CmmDAO getCmmDAO() {
+		return cmmDAO;
+	}
+
+	@Override
+	public void setCmmDAO(CmmDAO cmmDAO) {
+		this.cmmDAO = cmmDAO;
+	}
+
+	/**
+	 * [|PATI_TITLE|] 파티클에 해당하는 테이블에 데이터 입력하기
+	 * @param request
+	 * @param sqlExe
+ 	 * @param mode
+	 * @return
+	 * @throws Exception
+	 */
+	@Override
+	public void particleExecuteQuery(ParamMap<String, Object> jsonMap, String mode) {
+		if("BASIC_DATA_UPDATE".equals(mode)) {
+
+			/**
+			 * 베이직 데이터 없데이트 예제
+			 */
+//			ParamMap<String, Object> jsonMap = params.getJsonDataObject();
+//			ParamMap<String, Object> updateMap = new ParamMap<String, Object>();
+//			updateMap.put("solMasUid", params.getSolMasUid());
+//			updateMap.put("nmKo", jsonMap.get("lms_pati_nm_ko"));
+//			cmmDAO.update(cmmDAO.getStmtByNS(NAMESPACE, "update"), updateMap);
+
+		}
+
+	}
+
+}

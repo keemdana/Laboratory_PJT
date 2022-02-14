@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+  ~ All rights reserved.
+  ~
+  ~ This software is the confidential
+  ~ and proprietary information of emFrontier.com ("Confidential Information").
+  ~ You shall not disclose such Confidential Information
+  ~ and shall use it only in accordance with
+  ~ the terms of the license agreement you entered into
+  ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.viself.code.CodeMng.mssql">
+    <select id="listCode" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT V1.*
+        	,'U' as cud
+        FROM V_SYS_CODE V1
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+        	<if test="parentCd == null or parentCd.equals('')">
+				AND v1.parent_cd IS NULL
+			</if>
+        	<if test="parentCd != null and parentCd.equals('ROOT')">
+				AND v1.parent_cd IS NULL
+			</if>
+        	<if test="parentCd != null and !parentCd.equals('') and !parentCd.equals('ROOT')">
+				AND v1.parent_cd  = #{parentCd}
+			</if>
+        	<if test="cd != null and cd != ''">
+	            AND v1.cd = #{cd}
+			</if>
+        	<if test="schValue != null and schValue != ''">
+                <if test="schField != null and schField.equals('LANG_CD')">
+					AND V1.LANG_CD LIKE '%'+#{schValue}+'%'
+				</if>
+				<if test="schField != null and schField.equals('CD')">
+					AND V1.CD LIKE '%'+#{schValue}+'%'
+				</if>
+			</if>
+        </trim>
+		<if test="useYn != null and useYn != ''">
+			AND v1.use_yn = #{useYn}
+		</if>
+
+        ORDER BY ord_no ASC
+
+    </select>
+    <delete id="deleteByCd" parameterType="map">
+        DELETE FROM t_sys_code where CD = #{cd}
+    </delete>
+    <delete id="deleteByParent" parameterType="map">
+        DELETE FROM t_sys_code where PARENT_CD = #{parentCd}
+    </delete>
+    <delete id="deleteVCode" >
+        DELETE FROM v_sys_code
+    </delete>
+    <insert id="selectVInsert" >
+        INSERT INTO v_sys_code
+        SELECT * FROM v_sys_code_temp
+    </insert>
+    <delete id="deleteDtlCode" parameterType="com.vertexid.viself.code.CodeDTO" >
+        DELETE FROM t_sys_code
+        WHERE CD = #{cd}
+    </delete>
+    <insert id="insertDtlCode" parameterType="com.vertexid.viself.code.CodeDTO">
+        INSERT t_sys_code(
+             CD
+           , ORD_NO
+           , CD_ABB
+           , LANG_CD
+            <if test="parentCd != null and !parentCd.equals('')">
+           , PARENT_CD
+            </if>
+           , CD_ATTR_1
+           , CD_ATTR_2
+           , CD_ATTR_3
+           , CD_ATTR_4
+           , ATTR_DESC_1
+           , ATTR_DESC_2
+           , ATTR_DESC_3
+           , ATTR_DESC_4
+           , CD_DATA
+           , USE_YN
+           , REG_DTE
+           , REG_LOGIN_ID
+           , UPT_DTE
+           , UPT_LOGIN_ID
+        )VALUES(
+              #{cd}
+			, #{ordNo}
+			, #{cdAbb}
+			, #{langCd}
+            <if test="parentCd != null and !parentCd.equals('')">
+            , #{parentCd}
+            </if>
+			, #{cdAttr1}
+			, #{cdAttr2}
+			, #{cdAttr3}
+			, #{cdAttr4}
+			, #{attrDesc1}
+			, #{attrDesc2}
+			, #{attrDesc3}
+			, #{attrDesc4}
+			, #{cdData}
+			, #{useYn}
+           , SYSDATETIME()
+           , 'SYSTEM'
+           , SYSDATETIME()
+           , 'SYSTEM'
+        )
+    </insert>
+    <update id="updateDtlCode" parameterType="com.vertexid.viself.code.CodeDTO">
+        UPDATE t_sys_code
+        SET UPT_DTE = SYSDATETIME()
+        , UPT_LOGIN_ID = 'SYSTEM'
+        <if test="ordNo != null and ordNo != ''">
+            , ORD_NO = #{ordNo}
+        </if>
+        <if test="cdAbb != null and cdAbb != ''">
+            , CD_ABB = #{cdAbb}
+        </if>
+        <if test="langCd != null and langCd != ''">
+            , LANG_CD = #{langCd}
+        </if>
+        <if test="parentCd != null and parentCd != ''">
+            , PARENT_CD = #{parentCd}
+        </if>
+        <if test="cdAttr1 != null and cdAttr1 != ''">
+            , CD_ATTR_1 = #{cdAttr1}
+        </if>
+        <if test="cdAttr2 != null and cdAttr2 != ''">
+            , CD_ATTR_2 = #{cdAttr2}
+        </if>
+        <if test="cdAttr3 != null and cdAttr3 != ''">
+            , CD_ATTR_3 = #{cdAttr3}
+        </if>
+        <if test="cdAttr4 != null and cdAttr4 != ''">
+            , CD_ATTR_4 = #{cdAttr4}
+        </if>
+        <if test="attrDesc1 != null and attrDesc1 != ''">
+            , ATTR_DESC_1 = #{attrDesc1}
+        </if>
+        <if test="attrDesc2 != null and attrDesc2 != ''">
+            , ATTR_DESC_2 = #{attrDesc2}
+        </if>
+        <if test="attrDesc3 != null and attrDesc3 != ''">
+            , ATTR_DESC_3 = #{attrDesc3}
+        </if>
+        <if test="attrDesc4 != null and attrDesc4 != ''">
+            , ATTR_DESC_4 = #{attrDesc4}
+        </if>
+        <if test="cdData != null and cdData != ''">
+            , CD_DATA = #{cdData}
+        </if>
+        <if test="useYn != null and useYn != ''">
+            , USE_YN = #{useYn}
+        </if>
+        WHERE cd = #{cd}
+    </update>
+    <delete id="deleteCode" parameterType="com.vertexid.viself.code.CodeDTO">
+        DELETE FROM T_SYS_CODE
+		WHERE CD IN (
+		 SELECT CD FROM V_SYS_CODE
+		 WHERE '≫'+CD_PATH+'≫' LIKE '%≫'+#{cd}+'≫%'
+		)
+
+    </delete>
+</mapper>

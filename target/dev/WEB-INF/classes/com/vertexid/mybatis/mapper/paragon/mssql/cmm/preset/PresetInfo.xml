@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.ips.cmm.preset.PresetInfo.mssql">
+
+	<select id="myList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT * FROM T_SYS_PRE_SET
+		WHERE LOGIN_ID = #{loginId}
+		  AND PRE_TYPE = #{preType}
+	</select>
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+        SELECT
+			ROW_NUMBER() OVER (ORDER BY MNG_NO ASC) RN
+            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+            , PAGING.*
+        FROM (
+            SELECT
+            	 O.*
+            FROM T_SYS_PRE_SET o
+            <trim prefix="WHERE" prefixOverrides="AND|OR">
+				<choose>
+					<when test="partyUid != null and partyUid != ''">
+		           		o.SOL_MAS_UID  = #{partyUid}
+		            </when>
+		            <otherwise>
+			            o.SOL_MAS_UID IS NOT NULL
+		            </otherwise>
+				</choose>
+	        </trim>
+        ) PAGING
+        <include refid="Common.postfixPaging" />
+    </select>
+</mapper>

@@ -1,0 +1,85 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@page import="com.vertexid.commons.utils.StringUtil"%>
+<%@page import="com.vertexid.commons.utils.CommonConstants"%>
+<%@page import="com.vertexid.viself.hr.SysLoginVO"%>
+<%@page import="com.vertexid.spring.utils.SessionUtils"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%
+    SysLoginVO loginUser     =     (SysLoginVO) SessionUtils.getLoginVO();
+    String siteLocale            = loginUser.getSiteLocale();
+    String siteCapital        = StringUtil.capitalize(siteLocale.toLowerCase());
+%>
+
+<div id="div_[|PATI_MNG_NO|]<c:out value="${param.docUid}"/>" data-ord-no="<c:out value="${param.ordNo}"/>">
+    <div  class="particleHeader">
+        <span class="particleHeader"><i class="far fa-dot-circle" data-term="파티클 제목"> </i></span>
+        <span class="particleBtn">
+        </span>
+    </div>
+    <table class="paticle">
+        <tr>
+            <th class="th2" data-term="다국어코드ex)L.제목"></th>
+            <td class="td2">
+                content
+                <!--
+                    paticle에 구현된 Html 값들은 기존에는 파티클 테이블에 각 각 저장 되는 형태에서
+                    T_SYS_DOC_MAS.JSON_DATA에  JSON String 형태로 저장되 도록 수정 되었다.
+                    paticle에서는 파티클 데이터에 대한 CRUD가 따로 필요 하지 않는다.
+                    가져올때는 request Attribute에  'CommonConstants._JSON_DATA' 키 명으로 담아온다
+
+                    사용예제 ex)
+                -->
+                <input type="text" name="_pati_test" id="_pati_test" class="text width_max" value=""/>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    var [|HASHMAP_VALUE|]_PATI_<c:out value='${param.docUid}'/> = function(){
+        var POST_FIX = "<c:out value='${param.docUid}'/>";
+        var $prnt        = $("#div_[|PATI_MNG_NO|]" +POST_FIX);
+        var ordNo = $prnt.data("ord-no");
+
+        var tmpValidation = function(){    //--임시저장 필수체크
+            return true;
+        }
+        var validation = function(){    //-- 저장 필수체크
+            <%--  첨부체크
+                var filechk = paragonCmm.validateAttachFile("IPS/DTL_DFT");
+                if(filechk == false){
+                    alert("<%=StringUtil.getLocaleMessage("M.명세서첨부파일", siteLocale, "")%>");
+                    return false;
+                }
+            --%>
+            return true;
+        }
+        var loadForm = function(){    //-- 내용 불러오기(코드,select 등..)
+            //-- 첨부로드 예시
+            var options = {}
+            options.relUid = $("#docUid").val();    //-- 관례 키 UID
+            options.fileTypeCd = "CMM/CMM";            //-- 파일 유형 코드
+            options.defaultRelUid = "";                //-- 기본 로드 첨부파일(수정시)
+            htmlUtils.loadFileHtml("testParticle", options);    //([파일이 로드될 ID], [파일옵션])
+        }
+        var loadData = function(jsonData){    //-- 수정모드시 데이터 로드
+            $("#lms_pati_test").val(jsonData.lms_pati_test);
+        }
+        var init = function(){
+            paragonCmm.formMap.get("<c:out value="${param.docUid}"/>").tmpValiFuncs.push({ordNo: ordNo, fnc: tmpValidation});    //-- 필수 체크 함수 추가(임시저장)
+            paragonCmm.formMap.get("<c:out value="${param.docUid}"/>").valiFuncs.push({ordNo: ordNo, fnc: validation});    //-- 필수 체크 함수 추가(일반처리,결재상신 등..)
+            loadData(paragonCmm.formMap.get("<c:out value="${param.docUid}"/>").jsonData);            //-- 폼이 로드된 후 데이터를 로드 시킴
+            loadForm();                                    //-- HTML 폼 로드
+        }
+        //-- Function 외부에서 호출할 수 있는 함수 지정.
+        return{
+            init : init
+        }
+    }
+
+    var [|HASHMAP_VALUE|]_<c:out value='${param.docUid}'/> = new [|HASHMAP_VALUE|]_PATI_<c:out value='${param.docUid}'/>();
+    $(function(){
+        [|HASHMAP_VALUE|]_<c:out value='${param.docUid}'/>.init();
+    });
+</script>

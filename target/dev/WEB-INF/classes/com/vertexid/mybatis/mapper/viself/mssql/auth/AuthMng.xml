@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.viself.auth.AuthMng.mssql">
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+    	SELECT
+			AM.*
+		FROM T_SYS_AUTH_CD AM
+		<where>
+			<if test="authCd != null and !authCd.equals('')">
+	           	AND AM.AUTH_CD  = #{authCd}
+			</if>
+		</where>
+		ORDER BY AM.ORD_NO
+    </select>
+
+    <insert id="insert" parameterType="com.vertexid.viself.auth.AuthMngDTO">
+		INSERT INTO T_SYS_AUTH_CD(
+			AUTH_CD
+			, AUTH_NM
+			, AUTH_TP_CD
+			, USE_YN
+			, REG_LOGIN_ID
+			, REG_DTE
+			, UPT_LOGIN_ID
+			, UPT_DTE
+		)VALUES(
+			#{authCd}
+			, #{authNm}
+			, #{authTpCd}
+			, #{useYn}
+			, #{loginInfo.loginId}
+			, GETDATE()
+			, #{loginInfo.loginId}
+			, GETDATE()
+		)
+    </insert>
+    <delete id="delete" parameterType="com.vertexid.viself.auth.AuthMngDTO" >
+    	DELETE FROM T_SYS_AUTH_CD
+    	WHERE AUTH_CD = #{authCd}
+    </delete>
+    <update id="update" parameterType="com.vertexid.viself.auth.AuthMngDTO" >
+    	UPDATE T_SYS_AUTH_CD
+    	SET AUTH_NM = #{authNm}
+    	WHERE AUTH_CD = #{authCd}
+    </update>
+    <update id="updateSort" parameterType="com.vertexid.viself.auth.AuthMngDTO" >
+    	UPDATE T_SYS_AUTH_CD
+    	SET ORD_NO = #{ordNo}
+    	WHERE AUTH_CD = #{authCd}
+    </update>
+</mapper>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.file.File.mssql">
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT
+			ROW_NUMBER() OVER (ORDER BY ORD_NO ASC) RN
+            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+            , PAGING.*
+        FROM (
+            SELECT
+            	 V1.*
+<!-- 	            , dbo.F_SYS_LANG(V1.TYPE_LANG_CD,'KO') AS TYPE_NM_KO -->
+            FROM T_SYS_ATCH_FILE V1
+            <trim prefix="WHERE" prefixOverrides="AND|OR">
+				<choose>
+					<when test="relUid != null and relUid != ''">
+		           		V1.REL_UID = #{relUid}
+		            </when>
+		            <otherwise>
+			            V1.REL_UID IS NOT NULL
+		            </otherwise>
+				</choose>
+	        </trim>
+            <if test="atchUid != null and atchUid != ''">
+	           	AND V1.ATCH_UID  = #{atchUid}
+			</if>
+            <if test="solMasUid != null and solMasUid != ''">
+	           	AND V1.SOL_MAS_UID  = #{solMasUid}
+			</if>
+            <if test="fileTpCd != null and fileTpCd != ''">
+	           	AND V1.FILE_TP_CD  = #{fileTpCd}
+			</if>
+            <if test="useYn != null and useYn != ''">
+	           	AND V1.USE_YN  = #{useYn}
+			</if>
+<!--             <if test="atchUid != null and atchUid != ''"> -->
+<!-- 	           	AND O.NM_KO LIKE '%'+ #{nmKo} +'%' -->
+<!-- 			</if> -->
+        ) PAGING
+    </select>
+	<update id="update" parameterType="com.vertexid.paragon.file.FileDTO" >
+		UPDATE t_sys_atch_file
+		SET upt_login_id = #{uptLoginId}
+		,upt_dte = SYSDATETIME()
+		<if test="useYn != null and useYn != ''">
+           	,use_Yn  = #{useYn}
+		</if>
+		<if test="ordNo != null and ordNo != ''">
+           	,ord_no  = #{ordNo}
+		</if>
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<choose>
+				<when test="atchUid != null and atchUid != ''">
+	           		atch_uid = #{atchUid}
+	            </when>
+				<when test="relUid != null and relUid != ''">
+	           		rel_uid  = #{relUid}
+	            </when>
+	            <otherwise>
+		            atch_uid IS NULL
+	            </otherwise>
+			</choose>
+	        <if test="fileTpCd != null and fileTpCd != ''">
+	           	AND FILE_TP_CD  = #{fileTpCd}
+			</if>
+        </trim>
+	</update>
+	<delete id="delete" parameterType="com.vertexid.paragon.file.FileDTO" >
+		DELETE FROM t_sys_atch_file
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<choose>
+				<when test="atchUid != null and atchUid != ''">
+	           		atch_uid = #{atchUid}
+	            </when>
+	            <otherwise>
+		            atch_uid IS NULL
+	            </otherwise>
+			</choose>
+        </trim>
+        <if test="relUid != null and relUid != ''">
+           	AND REL_UID  = #{relUid}
+		</if>
+	</delete>
+	<insert id="insert" parameterType="map" >
+		INSERT INTO t_sys_atch_file(
+			 ATCH_UID
+			,SOL_MAS_UID
+			,REL_UID
+			,ORD_NO
+			,FILE_TP_CD
+			,FILE_SAVE_NM
+			,FILE_NM
+			,FILE_SIZE
+			,USE_YN
+			,REG_LOGIN_ID
+			,REG_DTE
+			,UPT_LOGIN_ID
+			,UPT_DTE
+		)VALUES(
+			 #{atchUid}
+			,#{solMasUid}
+			,#{relUid}
+			,#{ordNo}
+			,#{fileTpCd}
+			,#{fileSaveNm}
+			,#{fileNm}
+			,#{fileSize}
+			,#{useYn}
+			,#{regLoginId}
+			,SYSDATETIME()
+			,#{uptLoginId}
+			,SYSDATETIME()
+		)
+	</insert>
+</mapper>

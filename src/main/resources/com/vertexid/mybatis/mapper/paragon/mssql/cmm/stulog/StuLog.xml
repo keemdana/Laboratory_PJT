@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.cmm.stulog.StuLog.mssql">
+
+
+	<!-- 상태 로그 Insert-->
+    <insert id="insert" parameterType="com.vertexid.paragon.cmm.StuLogDTO" >
+ 		INSERT INTO T_SYS_STU_LOG(
+			CHANGE_UID
+			, SOL_MAS_UID
+			, ORD_NO
+			, DOC_UID
+			, BE_STU_CD
+			, BE_STU_DTL
+			, STU_CD
+			, STU_DTL
+			, DOC_JSON_DATA
+			, MAS_JSON_DATA
+			, REG_DTE
+			, REG_LOGIN_ID
+    	)VALUES(
+    		F_SYS_UID()
+			, #{solMasUid}
+			, #{ordNo}
+			, #{docUid}
+			, #{beStuCd}
+			, #{beStuDtl}
+			, #{stuCd}
+			, #{stuDtl}
+			, #{docJsonData}
+			, #{masJsonData}
+            , CURRENT_TIMESTAMP
+			, #{loginInfo.username}
+    	)
+    </insert>
+
+
+</mapper>

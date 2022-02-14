@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2019 JAYU.space
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/jee
+            http://www.springframework.org/schema/jee/spring-jee.xsd">
+
+    <context:annotation-config />
+
+    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/jayu"
+                     expected-type="javax.sql.DataSource"/>
+
+    <!--<bean id="dataSource"-->
+          <!--class="org.springframework.jdbc.datasource.SimpleDriverDataSource">-->
+        <!--<property name="driverClass" value="com.mysql.jdbc.Driver"/>-->
+        <!--<property name="url" value="jdbc:mysql://112.220.221.117:3309/porco"/>-->
+        <!--<property name="username" value="porco"/>-->
+        <!--<property name="password" value="porco"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="ds001"-->
+          <!--class="org.apache.commons.dbcp.datasources.SharedPoolDataSource">-->
+        <!--<property name="dataSourceName" value=""/>-->
+    <!--</bean>-->
+
+    <!-- id = transactionManager -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+
+    <!-- 어노테이션 트랜잭션 -->
+    <tx:annotation-driven />
+
+    <bean id="userDao" class="com.vertexid.paragon.jyself.user.UserDaoJdbc">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="userService" class="com.vertexid.paragon.jyself.user.UserServiceImpl">
+        <property name="userDao" ref="userDao"/>
+        <!--<property name="transactionManager" ref="txManager"/>-->
+        <!--<property name="mailSender" ref="mailSender"/>-->
+    </bean>
+
+
+    <!-- aop/tx 트랜잭션 -->
+    <!--<tx:advice id="transactionAdvice"-->
+               <!--transaction-manager="txManager">-->
+        <!--<tx:attributes>-->
+            <!--<tx:method name="get*" propagation="REQUIRED" read-only="true"-->
+                       <!--timeout="30"/>-->
+            <!--<tx:method name="upgrade*" propagation="REQUIRES_NEW"-->
+                       <!--isolation="SERIALIZABLE" />-->
+            <!--<tx:method name="*" propagation="REQUIRED" />-->
+        <!--</tx:attributes>-->
+    <!--</tx:advice>-->
+
+    <!--<bean id="transactionAdvice"-->
+          <!--class="com.vertexid.commons.TransactionAdvice">-->
+        <!--<property name="transactionManager" ref="txManager"/>-->
+    <!--</bean>-->
+
+    <!--<aop:config>-->
+        <!--<aop:advisor advice-ref="transactionAdvice"-->
+                     <!--pointcut="execution(* *..*ServiceImpl.upgrade*(..))"/>-->
+    <!--</aop:config>-->
+
+    <!--<bean-->
+            <!--class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>-->
+
+    <!--<bean id="transactionPointcut"-->
+          <!--class="org.springframework.aop.aspectj.AspectJExpressionPointcut">-->
+        <!--<property name="expression"-->
+                  <!--value="execution(* *..*ServiceImpl.upgrade*(..))"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="transactionPointcut"-->
+          <!--class="com.vertexid.commons.NameMatchClassMethodPointcut">-->
+        <!--<property name="mappedClassName" value="*ServiceImpl"/>-->
+        <!--<property name="mappedName" value="upgrade*"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="transactionAdvisor"-->
+          <!--class="org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor">-->
+        <!--<property name="advice" ref="transactionAdvice"/>-->
+        <!--<property name="pointcut" ref="transactionPointcut"/>-->
+    <!--</bean>-->
+
+    <bean id="helloSpring" class="com.vertexid.paragon.jyself.HelloSpring"/>
+
+    <!--<bean id="codeTypeDao" class="com.vertexid.paragon.jyself.code.CodeTypeDaoJdbc">-->
+        <!--<property name="dataSource" ref="dataSource"/>-->
+    <!--</bean>-->
+
+    <!-- Svc -->
+    <bean id="codeSvc" class="com.vertexid.paragon.jyself.code.CodeSvcImpl">
+        <property name="codeDao" ref="codeDao"/>
+    </bean>
+
+    <bean id="codeTypeSvc" class="com.vertexid.paragon.jyself.code.CodeTypeSvcImpl">
+        <property name="codeTypeDao" ref="codeTypeDao"/>
+        <property name="codeSvc" ref="codeSvc"/>
+    </bean>
+
+    <!-- DAO -->
+    <bean id="mybatis" class="com.vertexid.paragon.mybaits.MybatisDAOFunction">
+        <property name="sqlSessionTemplate" ref="sqlSessionTemplate"/>
+    </bean>
+
+    <bean id="codeDao" class="com.vertexid.paragon.jyself.code.CodeDaoMybatisBaseDAO">
+        <property name="mybatis" ref="mybatis"/>
+        <property name="namespace" value="kr.pe.kihwa.conf.sql.code.Code"/>
+    </bean>
+
+    <bean id="codeTypeDao" class="com.vertexid.paragon.jyself.code.CodeTypeDaoMybatisBaseDAO">
+        <property name="mybatis" ref="mybatis"/>
+        <property name="namespace" value="kr.pe.kihwa.conf.sql.code.CodeType"/>
+        <property name="codeDao" ref="codeDao"/>
+    </bean>
+
+    <!-- Mybatis-->
+    <bean id="sqlSessionFactoryBean"
+          class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation"
+                  value="classpath:/space/jayu/mybaits/conf/mybatis-config.xml"/>
+        <property name="mapperLocations">
+            <array>
+                <value>classpath:space/jayu/mybaits/mapper/*/*/*.xml</value>
+            </array>
+        </property>
+    </bean>
+    <bean id="sqlSessionTemplate"
+          class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactoryBean"/>
+    </bean>
+
+</beans>

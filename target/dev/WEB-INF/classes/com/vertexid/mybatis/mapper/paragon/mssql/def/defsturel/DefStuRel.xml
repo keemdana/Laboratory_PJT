@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.def.defsturel.DefStuRel.mssql">
+    <select id="outListOne" parameterType="map" resultType="paramMap" fetchSize="1000">
+    	SELECT A.*
+			,DI.STU_CD
+			,DI.ROLE_CD
+			,B.STU_TYPE1
+			,B.STU_TYPE2
+			,B.STU_BASE_NM AS STU_NM
+			,dbo.F_SYS_CD_ABB_LANG('USER_ROLE',DI.ROLE_CD) as AUTH_LANG_CD
+			,dbo.F_SYS_CD_ABB_LANG('SYS_LMS',B.STU_TYPE1) as STU_TYPE1_LANG_CD
+			,dbo.F_SYS_CD_ABB_LANG('SYS_LMS',B.STU_TYPE2) as STU_TYPE2_LANG_CD
+			,B.PROC_TYPE
+			,B.DOC_NM_LANG_CD	NEXT_STU_NM
+		FROM T_SYS_DEF_STU_OUT A
+			INNER JOIN T_SYS_DEF_STU_IN DI
+				ON (DI.IN_UID = A.IN_UID)
+			INNER JOIN T_SYS_DEF_STU_MAS B
+				ON (A.NEXT_STU_CD = B.STU_CD)
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<choose>
+				<when test="inUid != null and inUid != ''">
+	           		DI.IN_UID = #{inUid}
+	            </when>
+	            <otherwise>
+		            DI.IN_UID IS NOT NULL
+	            </otherwise>
+			</choose>
+        </trim>
+		<if test="stuCd != null and stuCd != ''">
+           	AND DI.STU_CD = #{stuCd}
+		</if>
+		<if test="nextStuCd != null and nextStuCd != ''">
+           	AND A.NEXT_STU_CD = #{nextStuCd}
+		</if>
+    </select>
+    <select id="outList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT
+        	ROW_NUMBER() OVER (ORDER BY ORD_NO ASC) RN
+            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+            , PAGING.*
+        FROM (
+			SELECT A.*
+				,DI.STU_CD
+				,DI.ROLE_CD
+				,B.STU_TYPE1
+				,B.STU_TYPE2
+				,B.STU_BASE_NM AS STU_NM
+				,dbo.F_SYS_CD_ABB_LANG('USER_ROLE',DI.ROLE_CD) as AUTH_LANG_CD
+				,dbo.F_SYS_CD_ABB_LANG('SYS_LMS',B.STU_TYPE1) as STU_TYPE1_LANG_CD
+				,dbo.F_SYS_CD_ABB_LANG('SYS_LMS',B.STU_TYPE2) as STU_TYPE2_LANG_CD
+				,B.PROC_TYPE
+				,B.DOC_NM_LANG_CD	NEXT_STU_NM
+			FROM T_SYS_DEF_STU_OUT A
+				INNER JOIN T_SYS_DEF_STU_IN DI
+					ON (DI.IN_UID = A.IN_UID)
+				INNER JOIN T_SYS_DEF_STU_MAS B
+					ON (A.NEXT_STU_CD = B.STU_CD)
+			<trim prefix="WHERE" prefixOverrides="AND|OR">
+				<choose>
+					<when test="inUid != null and inUid != ''">
+		           		A.IN_UID = #{inUid}
+		            </when>
+		            <otherwise>
+			            A.IN_UID IS NOT NULL
+		            </otherwise>
+				</choose>
+	        </trim>
+			<if test="outUid != null and outUid != ''">
+	           	AND A.OUT_UID  = #{outUid}
+			</if>
+			<if test="actionOutUid != null and actionOutUid != ''">
+	           	AND A.ACTION_OUT_UID = #{actionOutUid}
+			</if>
+			<if test="stuDtl != null and stuDtl != ''">
+	           	AND A.STU_DTL = #{stuDtl}
+			</if>
+			<if test="stuCd != null and stuCd != ''">
+	           	AND A.STU_CD = #{stuCd}
+			</if>
+			<if test="nextStuCd != null and nextStuCd != ''">
+	           	AND A.NEXT_STU_CD = #{nextStuCd}
+			</if>
+			<if test="stuType1 != null and stuType1 != ''">
+	           	AND A.STU_TYPE1 = #{stuType1}
+			</if>
+			<if test="stuType2 != null and stuType2 != ''">
+	           	AND A.STU_TYPE2 = #{stuType2}
+			</if>
+			<if test="roleCd != null and roleCd != ''">
+	           	AND DI.ROLE_CD = #{roleCd}
+			</if>
+			<if test="stuNm != null and stuNm != ''">
+	           	AND B.STU_BASE_NM like '%'+ #{stuNm} + '%'
+			</if>
+			<if test="nextStuNm != null and nextStuNm != ''">
+	           	AND B.STU_BASE_NM like '%'+ #{nextStuNm} + '%'
+			</if>
+			<if test="ordNoGteq != null and ordNoGteq != ''">
+				<![CDATA[
+	           	AND A.ORD_NO >= #{ordNoGteq}
+	           	]]>
+			</if>
+			<if test="ordNoLteq != null and ordNoLteq != ''">
+				<![CDATA[
+	           	AND A.ORD_NO <= #{ordNoLteq}
+	           	]]>
+			</if>
+		) PAGING
+		ORDER BY IN_UID, CONVERT(FLOAT,ORD_NO) ASC
+    </select>
+    <select id="inList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT
+        	ROW_NUMBER() OVER (ORDER BY ORD_NO ASC) RN
+            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+            , PAGING.*
+        FROM (
+			SELECT A.*
+				,dbo.F_SYS_CD_ABB_LANG('USER_ROLE',A.ROLE_CD) as AUTH_LANG_CD
+				,dbo.F_SYS_CD_LANG(B.STU_TYPE1) as STU_TYPE1_LANG_CD
+				,dbo.F_SYS_CD_LANG(B.STU_TYPE2) as STU_TYPE2_LANG_CD
+				,B.STU_BASE_NM AS STU_NM
+				,B.PROC_TYPE
+			FROM T_SYS_DEF_STU_IN A
+				INNER JOIN T_SYS_DEF_STU_MAS B
+					ON (A.STU_CD = B.STU_CD)
+			<trim prefix="WHERE" prefixOverrides="AND|OR">
+				<choose>
+					<when test="inUid != null and inUid != ''">
+		           		A.IN_UID = #{inUid}
+		            </when>
+		            <otherwise>
+			            A.IN_UID IS NOT NULL
+		            </otherwise>
+				</choose>
+	        </trim>
+			<if test="outUid != null and outUid != ''">
+	           	AND A.OUT_UID  = #{outUid}
+			</if>
+			<if test="actionUid != null and actionUid != ''">
+	           	AND A.ACTION_UID = #{actionUid}
+			</if>
+			<if test="stuDtl != null and stuDtl != ''">
+	           	AND A.STU_DTL = #{stuDtl}
+			</if>
+			<if test="stuCd != null and stuCd != ''">
+	           	AND A.STU_CD = #{stuCd}
+			</if>
+			<if test="nextStuCd != null and nextStuCd != ''">
+	           	AND A.IN_UID IN(SELECT IN_UID FROM T_SYS_DEF_STU_OUT WHERE NEXT_STU_CD LIKE '%'+#{nextStuCd}+'%')
+			</if>
+			<if test="stuType1 != null and stuType1 != ''">
+	           	AND B.STU_TYPE1 = #{stuType1}
+			</if>
+			<if test="stuType2 != null and stuType2 != ''">
+	           	AND B.STU_TYPE2 = #{stuType2}
+			</if>
+			<if test="stuNm != null and stuNm != ''">
+	           	AND B.STU_BASE_NM like '%'+ #{stuNm} + '%'
+			</if>
+			<if test="nextStuNm != null and nextStuNm != ''">
+	           	AND A.IN_UID IN (SELECT IN_UID FROM T_SYS_DEF_STU_OUT OT INNER JOIN T_SYS_DEF_STU_MAS SM ON( OT.NEXT_STU_CD = SM.STU_CD) WHERE SM.STU_BASE_NM LIKE '%'+#{nextStuNm}+'%')
+			</if>
+			<if test="roleCd != null and roleCd != ''">
+	           	AND A.ROLE_CD = #{roleCd}
+			</if>
+			<if test="ordNoGteq != null and ordNoGteq != ''">
+				<![CDATA[
+	           	AND A.ORD_NO >= #{ordNoGteq}
+	           	]]>
+			</if>
+			<if test="ordNoLteq != null and ordNoLteq != ''">
+				<![CDATA[
+	           	AND A.ORD_NO <= #{ordNoLteq}
+	           	]]>
+			</if>
+		) PAGING
+		ORDER BY CONVERT(FLOAT,ORD_NO) ASC
+    </select>
+    <insert id="outInsert" parameterType="paramMap">
+        INSERT T_SYS_DEF_STU_OUT(
+             OUT_UID
+           , ORD_NO
+           , IN_UID
+           , NEXT_STU_CD
+           , REG_DTE
+           , REG_LOGIN_ID
+           , UPT_DTE
+           , UPT_LOGIN_ID
+        )VALUES(
+             #{outUid}
+           , #{ordNo}
+           , #{inUid}
+           , #{nextStuCd}
+           , SYSDATETIME()
+           , 'SYSTEM'
+           , SYSDATETIME()
+           , 'SYSTEM'
+        )
+    </insert>
+    <update id="outUpdate" parameterType="paramMap">
+        UPDATE T_SYS_DEF_STU_OUT
+          SET UPT_DTE = SYSDATETIME()
+       		, UPT_LOGIN_ID = 'SYSTEM'
+       	<if test="ordNo != null and ordNo != ''">
+	        , ORD_NO = #{ordNo}
+        </if>
+       	<if test="nextStuCd != null and nextStuCd != ''">
+	        , NEXT_STU_CD = #{nextStuCd}
+        </if>
+        WHERE OUT_UID = #{outUid}
+    </update>
+    <delete id="outDelete" parameterType="map">
+        DELETE FROM T_SYS_DEF_STU_OUT
+        WHERE OUT_UID = #{outUid}
+    </delete>
+    <delete id="outAllDelete" parameterType="map">
+        DELETE FROM T_SYS_DEF_STU_OUT
+        WHERE IN_UID = #{inUid}
+    </delete>
+    <insert id="inInsert" parameterType="paramMap">
+        INSERT T_SYS_DEF_STU_IN(
+             IN_UID
+           , ORD_NO
+           , STU_CD
+           , STU_DTL
+           , ROLE_CD
+           , REG_DTE
+           , REG_LOGIN_ID
+           , UPT_DTE
+           , UPT_LOGIN_ID
+        )VALUES(
+             #{inUid}
+           , #{ordNo}
+           , #{stuCd}
+           , #{stuDtl}
+           , #{roleCd}
+           , SYSDATETIME()
+           , 'SYSTEM'
+           , SYSDATETIME()
+           , 'SYSTEM'
+        )
+    </insert>
+    <update id="inUpdate" parameterType="paramMap">
+        UPDATE T_SYS_DEF_STU_IN
+          SET UPT_DTE = SYSDATETIME()
+       		, UPT_LOGIN_ID = 'SYSTEM'
+       	<if test="ordNo != null and ordNo != ''">
+	        , ORD_NO = #{ordNo}
+        </if>
+       	<if test="stuCd != null and stuCd != ''">
+	        , STU_CD = #{stuCd}
+        </if>
+       	<if test="stuDtl != null and stuDtl != ''">
+	        , STU_DTL = #{stuDtl}
+        </if>
+       	<if test="roleCd != null and roleCd != ''">
+	        , ROLE_CD = #{roleCd}
+        </if>
+        WHERE IN_UID = #{inUid}
+    </update>
+    <delete id="inDelete" parameterType="map">
+        DELETE FROM T_SYS_DEF_STU_IN
+        WHERE IN_UID = #{inUid}
+    </delete>
+</mapper>

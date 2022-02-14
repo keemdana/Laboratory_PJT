@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/mvc
+            http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <description>
+        <!--
+          ~ Copyright (c) 2021 Vertex ID., KOREA
+          ~ All rights reserved.
+          ~
+          ~ This software is the confidential
+          ~ and proprietary information of emFrontier.com ("Confidential Information").
+          ~ You shall not disclose such Confidential Information
+          ~ and shall use it only in accordance with
+          ~ the terms of the license agreement you entered into
+          ~ with Vertex ID. Networks
+          -->
+        <![CDATA[
+            Dispatcher Servlet Configuration
+
+            1. MVC 어노테이션 기반 설정 사용
+
+            2. 컴포넌트 스캔: controller 만 dispatcher servlet 에서 스캔
+
+            3. View 를 맵핑해주는 Resolver 설정
+                - 이름기반으로 맵핑하는 BeanNameResolver
+                - JSP 맵핑을 위한 InternalResourceViewResolver
+                - Apache Tiles 를 맵핑하기위한 UrlBaseViewResolver
+
+                * Exception 처리를 위해 GlobalExceptionResolver 를 설정할 경우 해당주석을 해제하면됨
+                * 현재는 GlobalExceptionResolver 대신 GlobalExceptionHandler 사용
+
+            4. JSON 을 처리하는 JSON View 설정
+        ]]>
+    </description>
+
+    <mvc:annotation-driven/>
+
+    <!-- was 혹은 servlet container 의 기본 서블릿 핸들러 설정 -->
+    <mvc:default-servlet-handler/>
+
+    <!--
+      ~ Controller 만 스켄 나머지는 ContextLoaderListener 를 통해서 로딩
+      -->
+    <context:component-scan base-package="com.vertexid">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+    </context:component-scan>
+
+    <!-- aop 설정 -->
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+
+    <!-- INFO exception resolver 를 사용해서 exception 을 처리할 경우 아래 주석을 해제한다. -->
+    <!--<bean class="com.vertexid.spring2.exception.GlobalExceptionResolver">
+        <property name="defaultErrorView" value="/error/page"/>
+    </bean>-->
+
+    <bean
+            class="org.springframework.web.servlet.view.BeanNameViewResolver">
+        <property name="order" value="2"/>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp"/>
+        <property name="suffix" value=".jsp"/>
+        <!--<property name="contentType" value="text/html; charset=UTF-8"/>-->
+        <property name="order" value="3"/>
+    </bean>
+
+    <bean name="jsonView" class="com.vertexid.commons.view.JsonView"/>
+    <bean name="download" class="com.vertexid.paragon.file.FileDownload"/>
+
+    <!--<bean-->
+            <!--class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">-->
+        <!--<property name="supportedMediaTypes">-->
+            <!--<list>-->
+                <!--<value>application/json</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--  tiles viewResolver -->
+    <bean id="tilesViewResolver"
+          class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.tiles3.TilesView"/>
+        <property name="order" value="2"/>
+    </bean>
+
+    <bean id="tilesConfigurer"
+          class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+        <property name="definitions">
+            <list>
+                <value>/WEB-INF/config/tiles/*.xml</value>
+            </list>
+        </property>
+    </bean>
+</beans>

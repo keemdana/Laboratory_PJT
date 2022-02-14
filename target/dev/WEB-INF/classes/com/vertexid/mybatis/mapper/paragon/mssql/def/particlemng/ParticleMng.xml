@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.def.particlemng.ParticleMng.mssql">
+	<select id="listOne" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT TBL.*
+		FROM T_SYS_DEF_PATI_MAS TBL
+		WHERE TBL.PATI_UID = #{patiUid}
+	</select>
+	<select id="listOfNewMngNo" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT
+			('PTC-' + #{patiTypeAbb1} + '-' + #{patiTypeAbb2} + '-' + RIGHT('000'+CONVERT(VARCHAR(4), ISNULL(MAX(CONVERT(INT, SUBSTRING(PATI_MNG_NO, 12, 3))),0)+1), 3) )PATI_MNG_NO
+			,( RIGHT('000'+CONVERT(VARCHAR(4), ISNULL(MAX(CONVERT(INT, SUBSTRING(PATI_MNG_NO, 12, 3))),0)+1), 3))MAX_CNT
+		FROM T_SYS_DEF_PATI_MAS
+		WHERE PATI_MNG_NO LIKE 'PTC-' + #{patiTypeAbb1} + '-' + #{patiTypeAbb2} + '-%'
+	</select>
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+		<include refid="Common.prefixPaging" />
+	     SELECT
+	        	ROW_NUMBER() OVER (ORDER BY PATI_MNG_NO ASC) RN
+	            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+	            , PAGING.*
+	        FROM (
+	       	 SELECT
+				(SELECT COUNT(1) FROM T_SYS_DEF_STU_PATI B INNER JOIN T_SYS_DEF_STU_MAS C ON B.STU_CD = C.STU_CD WHERE B.PATI_MNG_NO = TBL.PATI_MNG_NO) USE_DOC_CNT
+				,TBL.*
+				,V1.LANG_CD AS PATI_TYPE1_LANG_CD
+				,V2.LANG_CD AS PATI_TYPE2_LANG_CD
+				,'U' AS cud
+				,'CMM_ISJ' AS VIEW_AUTH
+			FROM T_SYS_DEF_PATI_MAS TBL
+				LEFT OUTER JOIN V_SYS_CODE  V1
+					ON TBL.PATI_TYPE1 = V1.CD
+				LEFT OUTER JOIN V_SYS_CODE  V2
+					ON TBL.PATI_TYPE2 = V2.CD
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<choose>
+				<when test="patiUid != null and patiUid != ''">
+	           		TBL.PATI_UID like '%'+#{patiUid}+'%'
+	            </when>
+	            <otherwise>
+		            TBL.PATI_UID IS NOT NULL
+	            </otherwise>
+			</choose>
+        </trim>
+		<if test="patiType1 != null and patiType1 != ''">
+           	AND TBL.PATI_TYPE1 = #{patiType1}
+		</if>
+		<if test="patiType2 != null and patiType2 != ''">
+           	AND TBL.PATI_TYPE2 = #{patiType2}
+		</if>
+		<if test="patiMngNo != null and patiMngNo != ''">
+           	AND TBL.PATI_MNG_NO like '%'+#{patiMngNo}+'%'
+		</if>
+		<if test="patiNm != null and patiNm != ''">
+           	AND TBL.PATI_NM like '%'+#{patiNm}+'%'
+		</if>
+		<if test="schword != null and schword != ''">
+           	AND (UPPER(PATI_MNG_NO) LIKE UPPER('%'+#{schword}+'%') OR UPPER(PATI_NM) LIKE UPPER('%'+#{schword}+'%'))
+		</if>
+		) PAGING
+		<include refid="Common.postfixPaging" />
+    </select>
+    <insert id="saveData" parameterType="com.vertexid.paragon.def.particlemng.ParticleMngDTO">
+        INSERT T_SYS_DEF_PATI_MAS(
+	        PATI_UID
+			, PATI_MNG_NO
+			, PATI_TYPE1
+			, PATI_TYPE_ABB1
+			, PATI_TYPE2
+			, PATI_TYPE_ABB2
+			, PATI_NM
+			, PATI_DESC
+			, PATI_CLASS_PATH
+			, PATI_JSP_WRT_PATH
+			, PATI_JSP_VIEW_PATH
+			, PATI_SOURCE_WRT_YN
+			, PATI_ONLY_VIEW_YN
+			, REG_DTE
+			, REG_LOGIN_ID
+			, UPT_DTE
+			, UPT_LOGIN_ID
+        )VALUES(
+              #{patiUid}
+			, #{patiMngNo}
+			, #{patiType1}
+			, #{patiTypeAbb1}
+			, #{patiType2}
+			, #{patiTypeAbb2}
+			, #{patiNm}
+			, #{patiDesc}
+			, #{patiClassPath}
+			, #{patiJspWrtPath}
+			, #{patiJspViewPath}
+			, #{patiSourceWrtYn}
+			, #{patiOnlyViewYn}
+			, SYSDATETIME()
+           	, 'SYSTEM'
+			, SYSDATETIME()
+           	, 'SYSTEM'
+        )
+    </insert>
+	<update id="update" parameterType="com.vertexid.paragon.def.particlemng.ParticleMngDTO">
+        UPDATE T_SYS_DEF_PATI_MAS
+        SET UPT_DTE = SYSDATETIME()
+        , UPT_LOGIN_ID = 'SYSTEM'
+        <if test="patiSourceWrtYn != null and patiSourceWrtYn != ''">
+            , PATI_SOURCE_WRT_YN = #{patiSourceWrtYn}
+        </if>
+        WHERE LANG_UID = #{langUid}
+    </update>
+</mapper>

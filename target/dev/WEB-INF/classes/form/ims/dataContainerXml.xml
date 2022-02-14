@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataContainer>
+    <Header>
+        <Source>GLOVIS</Source>
+        <Destination>AUTOWAY</Destination>
+        <ContentID></ContentID>
+        <SelectType>${selectType}</SelectType>
+        <IntegrationYn>${integrationYn}</IntegrationYn>
+        <ExistAttachYn>${existAttachYn}</ExistAttachYn>
+    </Header>
+    <Form>
+        <SELECTTYPE>${selectType}</SELECTTYPE>
+        <COMP_CLAS>${compClass}</COMP_CLAS>
+        <COMP_NAME><![CDATA[${compName}]]></COMP_NAME>
+        <DEPT_CD>${deptCd}</DEPT_CD>
+        <DEPT_NM><![CDATA[${deptNm}]]></DEPT_NM>
+        <NAME><![CDATA[${emplName}]]></NAME>
+        <EMPL_NO>${emplNo}</EMPL_NO>
+        <RANK><![CDATA[${rankCd}]]></RANK>
+        <APPN><![CDATA[${appn}]]></APPN>
+        <PHON><![CDATA[${phon}]]></PHON>
+        <SECURITY>${security}</SECURITY>
+        <WK_PLC><![CDATA[${wkPlc}]]></WK_PLC>
+        <SAVEDURATION><![CDATA[${saveduration}]]></SAVEDURATION>
+        <EXPIREDATE><![CDATA[${expiredate}]]></EXPIREDATE>
+        <DOC_TITL><![CDATA[${docTitl}]]></DOC_TITL>
+        <DOC_CD><![CDATA[${docCd}]]></DOC_CD>
+        <CO_PLC><![CDATA[${coPlc}]]></CO_PLC>
+        <REF_PLC><![CDATA[${refPlc}]]></REF_PLC>
+        <COMMENT><![CDATA[${emplComment}]]></COMMENT>
+    </Form>
+    <SendSignList>
+        ${sendSignList}
+    </SendSignList>
+    <Body><![CDATA[${body}]]></Body>
+    <ETC>
+        <REQUEST_ID>${requestId}</REQUEST_ID>
+        <FILE_LIST>${fileList}</FILE_LIST>
+    </ETC>
+</DataContainer>

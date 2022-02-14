@@ -1,0 +1,1302 @@
+-- DROP SCHEMA dbo;
+
+CREATE SCHEMA dbo;
+-- DBD_TEST.dbo.T_CMM_BOARD definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_CMM_BOARD;
+
+CREATE TABLE DBD_TEST.dbo.T_CMM_BOARD (
+	BBS_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	BBS_TP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	BBS_TIT nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	BBS_CONTENT nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	BBS_HIT_CNT int NULL,
+	BBS_REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	BBS_REG_DTE date NULL,
+	BBS_UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	BBS_UPT_DTE date NULL,
+	BBS_USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	BBS_TOP_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	BBS_POPUP_ST_DTE date NULL,
+	BBS_POPUP_ED_DTE date NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_APR_LINE definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_APR_LINE;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_APR_LINE (
+	APR_LINE_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_NO varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	SOL_MAS_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	DOC_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	APR_TP varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_STU varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_DEPT_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_DEPT_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_USER_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	REAL_APR_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	REAL_APR_USER_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_DTE date NULL,
+	APR_MEMO nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_POS_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_POS_LANG_CD varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_DUTY_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_DUTY_LANG_CD varchar(255) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_APR_MAS definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_APR_MAS;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_APR_MAS (
+	APR_NO varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	SOL_MAS_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	DOC_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_MAS_STU varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_ED_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_ED_DTE date NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_APR_RELDPT definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_APR_RELDPT;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_APR_RELDPT (
+	APR_NO varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	SOL_MAS_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	DOC_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_APR_RELDPT_DTL definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_APR_RELDPT_DTL;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_APR_RELDPT_DTL (
+	APR_LINE_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_NO varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	SOL_MAS_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	DOC_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	APR_DEPT_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_DEPT_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_USER_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	REAL_APR_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	REAL_APR_USER_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	APR_DTE date NULL,
+	APR_MEMO nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_ATCH_FILE definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_ATCH_FILE;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_ATCH_FILE (
+	ATCH_UID char(32) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	SOL_MAS_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	REL_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	FILE_TP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	FILE_SAVE_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	FILE_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	FILE_SIZE int NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS DEFAULT 'Y' NOT NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CONSTRAINT T_SYS_ATCH_FILE_PK PRIMARY KEY (ATCH_UID)
+);
+ CREATE NONCLUSTERED INDEX T_SYS_ATCH_FILE_ATCH_UID_IDX ON dbo.T_SYS_ATCH_FILE (  ATCH_UID ASC  , SOL_MAS_UID ASC  , REL_UID ASC  , FILE_TP_CD ASC  , USE_YN ASC  )  
+	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
+	 ON [PRIMARY ] ;
+
+
+-- DBD_TEST.dbo.T_SYS_AUTH_CD definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_AUTH_CD;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_AUTH_CD (
+	AUTH_CD varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	AUTH_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	AUTH_TP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS DEFAULT 'Y' NOT NULL,
+	REMARK nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	REG_DTE date NOT NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	UPT_DTE date NOT NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	CONSTRAINT T_SYS_AUTH_CD_PK PRIMARY KEY (AUTH_CD)
+);
+
+
+-- DBD_TEST.dbo.T_SYS_BATCH_STATUS definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_BATCH_STATUS;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_BATCH_STATUS (
+	JOB_NM varchar(500) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	JOB_ST_DTIME datetime NOT NULL,
+	CONSTRAINT T_SYS_BATCH_STATUS_PK PRIMARY KEY (JOB_NM)
+);
+
+
+-- DBD_TEST.dbo.T_SYS_CODE definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_CODE;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_CODE (
+	CD varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	ORD_NO int NULL,
+	CD_ABB varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	LANG_CD nvarchar(510) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	PARENT_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CD_ATTR_1 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CD_ATTR_2 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CD_ATTR_3 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CD_ATTR_4 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	ATTR_DESC_1 nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	ATTR_DESC_2 nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	ATTR_DESC_3 nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	ATTR_DESC_4 nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	CD_DATA nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CONSTRAINT T_SYS_CODE_PK PRIMARY KEY (CD)
+);
+
+
+-- DBD_TEST.dbo.T_SYS_DATA_CUBE definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_DATA_CUBE;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_DATA_CUBE (
+	DOC_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	SOL_MAS_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	GROUP_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	LAST_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_TP varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_TP_2 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_DTL varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	NEXT_STU_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	JSON_DATA nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_USER_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_USER_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_DEF_PATI_MAS definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_DEF_PATI_MAS;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_DEF_PATI_MAS (
+	PATI_MNG_NO varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_TP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_TP_ABB_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_TP_CD2 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_TP_ABB_CD2 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_DESC nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_CLASS_PATH varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_JSP_WRT_PATH varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_JSP_VIEW_PATH varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_SOURCE_WRT_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	PATI_ONLY_VIEW_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_DEF_STU_GROUP definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_DEF_STU_GROUP;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_DEF_STU_GROUP (
+	STU_GROUP_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_GROUP varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_DTL varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_TP varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_DEF_STU_IN definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_DEF_STU_IN;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_DEF_STU_IN (
+	IN_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	STU_DTL varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	ROLE_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_DEF_STU_MAS definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_DEF_STU_MAS;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_DEF_STU_MAS (
+	STU_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_TP varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_TP_2 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	HEAD_END varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	STU_BASE_NM nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	PROC_TP varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_DESC nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	DOC_NM_LANG_CD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	TIT_DSP_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	MEMO_DSP_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	FILE_DSP_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	MEMO_TIT_LANG_CD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_REG_AUTH varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_VIEW_AUTH varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	REL_DATA_STU_CD varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	PROC_AREA_MEMO nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_DEF_STU_OUT definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_DEF_STU_OUT;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_DEF_STU_OUT (
+	OUT_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	IN_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	NEXT_STU_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_DEPT definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_DEPT;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_DEPT (
+	DEPT_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	NM_KO nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_EN nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_JA nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_ZH nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	PARENT_DEPT_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_TP varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_CHIEF_USER_NO varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	CORP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CORP_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	COST_CENT varchar(10) COLLATE Korean_Wansung_CI_AS NULL,
+	DP_ORDER varchar(6) COLLATE Korean_Wansung_CI_AS NULL,
+	KOKRS varchar(4) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_ERRCODE definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_ERRCODE;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_ERRCODE (
+	ERRCODE int NOT NULL,
+	LANG_CD varchar(40) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	ERR_NM varchar(40) COLLATE Korean_Wansung_CI_AS NULL,
+	ERR_DESC nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	CONSTRAINT T_SYS_ERRCODE_PK PRIMARY KEY (ERRCODE,LANG_CD)
+);
+
+
+-- DBD_TEST.dbo.T_SYS_LANG_MAS definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_LANG_MAS;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_LANG_MAS (
+	LANG_UID char(32) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	LANG_CD varchar(200) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	KO nvarchar(2000) COLLATE Korean_Wansung_CI_AS NULL,
+	EN nvarchar(2000) COLLATE Korean_Wansung_CI_AS NULL,
+	JA nvarchar(2000) COLLATE Korean_Wansung_CI_AS NULL,
+	ZH nvarchar(2000) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE datetime NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE datetime NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CONSTRAINT T_SYS_LANG_MAS_PK PRIMARY KEY (LANG_UID)
+);
+
+
+-- DBD_TEST.dbo.T_SYS_MAIL_MAS definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_MAIL_MAS;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_MAIL_MAS (
+	EMAIL_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	REL_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	SOL_MAS_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_DTL varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	SEND varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	REC nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	[REF] nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	SECU_REF nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	TIT nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	CONTENT nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	SEND_DTE datetime NULL,
+	SEND_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	HTML_USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	RESV_DTE datetime NULL,
+	REG_DTE datetime NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE datetime NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_MENU definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_MENU;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_MENU (
+	MENU_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	PARENT_MENU_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	JSON_DATA nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	MODULE_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	LANG_CD varchar(80) COLLATE Korean_Wansung_CI_AS NULL,
+	CONSTRAINT T_SYS_MENU_PK PRIMARY KEY (MENU_ID)
+);
+
+
+-- DBD_TEST.dbo.T_SYS_MODULE definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_MODULE;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_MODULE (
+	MODULE_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	MODULE_DESC nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS DEFAULT 'Y' NOT NULL,
+	REG_DTE date NOT NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	UPT_DTE date NOT NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	CONSTRAINT T_SYS_MODULE_PK PRIMARY KEY (MODULE_ID)
+);
+
+
+-- DBD_TEST.dbo.T_SYS_NO_LANG definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_NO_LANG;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_NO_LANG (
+	NO_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	NO_LANG nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_ROLE_MAS definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_ROLE_MAS;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_ROLE_MAS (
+	SOL_MAS_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	DOC_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	ROLE_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	ROLE_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	REL_NO varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	REL_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_STU_LOG definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_STU_LOG;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_STU_LOG (
+	CHANGE_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	SOL_MAS_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	DOC_UID char(32) COLLATE Korean_Wansung_CI_AS NULL,
+	BE_STU_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	BE_STU_DTL varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	STU_DTL varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	DOC_JSON_DATA nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	MAS_JSON_DATA nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_URL definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_URL;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_URL (
+	ACCES_URL varchar(500) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	URL_DESC nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	ALW_DIV varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	REG_DTE date NOT NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	UPT_DTE date NOT NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	CONSTRAINT T_SYS_URL_PK PRIMARY KEY (ACCES_URL)
+);
+
+
+-- DBD_TEST.dbo.T_SYS_USER definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_USER;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_USER (
+	LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	USER_NO varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	LOGIN_PWD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_KO nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_EN nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_JA nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_ZH nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	EMAIL varchar(150) COLLATE Korean_Wansung_CI_AS NULL,
+	TEL_NO varchar(30) COLLATE Korean_Wansung_CI_AS NULL,
+	MOBILE_NO varchar(30) COLLATE Korean_Wansung_CI_AS NULL,
+	POS_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	DUTY_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	USER_TP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CHIEF_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	SITE_LOCALE varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CORP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CORP_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	LOGIN_IP varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	PWD_ST_DTE date NULL,
+	PWD_ED_DTE date NULL,
+	LOGIN_TRY_CNT int NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	TEMP_PWD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	LAST_LOGIN_DTE date NULL,
+	PWD_CHANGE_DTE date NULL,
+	LOGIN_TRY_DTE date NULL
+);
+
+
+-- DBD_TEST.dbo.V_SYS_CODE definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.V_SYS_CODE;
+
+CREATE TABLE DBD_TEST.dbo.V_SYS_CODE (
+	CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	CD_ABB varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	LANG_CD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	PARENT_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	PARENT_LANG_CD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	CHILD_CNT int NULL,
+	LEVEL_NO int NULL,
+	CD_ATTR_1 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CD_ATTR_2 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CD_ATTR_3 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CD_ATTR_4 varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	ATTR_DESC_1 nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	ATTR_DESC_2 nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	ATTR_DESC_3 nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	ATTR_DESC_4 nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	CD_DATA nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	CD_PATH varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	LANG_CD_PATH nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.V_SYS_DEPT definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.V_SYS_DEPT;
+
+CREATE TABLE DBD_TEST.dbo.V_SYS_DEPT (
+	DEPT_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	ORD_NO int NULL,
+	NM_KO nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_EN nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_JA nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_ZH nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	LEVEL_NO int NULL,
+	CHILD_CNT int NULL,
+	PARENT_DEPT_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	PARENT_DEPT_NM_KO nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	PARENT_DEPT_NM_EN nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	PARENT_DEPT_NM_JA nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	PARENT_DEPT_NM_ZH nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_TP varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_TP_LANG_CD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_CHIEF_USER_NO varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_CD_PATH varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_PATH_KO nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_PATH_EN nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_PATH_JA nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_PATH_ZH nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	CORP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CORP_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	COST_CENT varchar(10) COLLATE Korean_Wansung_CI_AS NULL,
+	DP_ORDER varchar(6) COLLATE Korean_Wansung_CI_AS NULL,
+	KOKRS varchar(4) COLLATE Korean_Wansung_CI_AS NULL
+);
+
+
+-- DBD_TEST.dbo.V_SYS_USER definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.V_SYS_USER;
+
+CREATE TABLE DBD_TEST.dbo.V_SYS_USER (
+	LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	USER_NO varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	LOGIN_PWD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_KO nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_EN nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_JA nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	NM_ZH nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	DSP_NM_KO nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	DSP_NM_EN nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	DSP_NM_JA nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	DSP_NM_ZH nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	EMAIL varchar(150) COLLATE Korean_Wansung_CI_AS NULL,
+	TEL_NO varchar(30) COLLATE Korean_Wansung_CI_AS NULL,
+	MOBILE_NO varchar(30) COLLATE Korean_Wansung_CI_AS NULL,
+	POS_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	POS_LANG_CD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	DUTY_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	DUTY_LANG_CD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	USER_TP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	USER_TP_LANG_CD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_KO nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_EN nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_JA nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_ZH nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_CD_PATH nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_PATH_KO nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_PATH_EN nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_PATH_JA nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	DEPT_NM_PATH_ZH nvarchar(MAX) COLLATE Korean_Wansung_CI_AS NULL,
+	CHIEF_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	SITE_LOCALE varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CORP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CORP_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	AUTH_CD varchar(255) COLLATE Korean_Wansung_CI_AS NULL,
+	USE_YN varchar(2) COLLATE Korean_Wansung_CI_AS NULL,
+	LOGIN_IP varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	PWD_ST_DTE date NULL,
+	PWD_ED_DTE date NULL,
+	LOGIN_TRY_CNT int NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	KOKRS varchar(4) COLLATE Korean_Wansung_CI_AS NULL,
+	TEMP_PWD nvarchar(510) COLLATE Korean_Wansung_CI_AS NULL,
+	LAST_LOGIN_DTE date NULL,
+	PWD_CHANGE_DTE date NULL,
+	LOGIN_TRY_DTE date NULL
+);
+
+
+-- DBD_TEST.dbo.T_SYS_AUTH_MEMBER definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_AUTH_MEMBER;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_AUTH_MEMBER (
+	AUTH_CD varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	MBR_TP_CD varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	MBR_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	USER_NM nvarchar(160) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NOT NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	UPT_DTE date NOT NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	CONSTRAINT T_SYS_AUTH_MEMBER_PK PRIMARY KEY (AUTH_CD,MBR_TP_CD,MBR_ID),
+	CONSTRAINT T_SYS_AUTH_MEMBER_FK FOREIGN KEY (AUTH_CD) REFERENCES DBD_TEST.dbo.T_SYS_AUTH_CD(AUTH_CD)
+);
+ CREATE NONCLUSTERED INDEX T_SYS_AUTH_MEMBER_MBR_ID_IDX ON dbo.T_SYS_AUTH_MEMBER (  MBR_ID ASC  , MBR_TP_CD ASC  )  
+	 WITH (  PAD_INDEX = OFF ,FILLFACTOR = 100  ,SORT_IN_TEMPDB = OFF , IGNORE_DUP_KEY = OFF , STATISTICS_NORECOMPUTE = OFF , ONLINE = OFF , ALLOW_ROW_LOCKS = ON , ALLOW_PAGE_LOCKS = ON  )
+	 ON [PRIMARY ] ;
+
+
+-- DBD_TEST.dbo.T_SYS_AUTH_MENU definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_AUTH_MENU;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_AUTH_MENU (
+	AUTH_CD varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	MENU_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	ALW_CD varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	REG_DTE date NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	UPT_DTE date NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NULL,
+	CONSTRAINT T_SYS_AUTH_MENU_PK PRIMARY KEY (AUTH_CD,MENU_ID),
+	CONSTRAINT T_SYS_AUTH_MENU_FK FOREIGN KEY (AUTH_CD) REFERENCES DBD_TEST.dbo.T_SYS_AUTH_CD(AUTH_CD)
+);
+
+
+-- DBD_TEST.dbo.T_SYS_MODULE_URL definition
+
+-- Drop table
+
+-- DROP TABLE DBD_TEST.dbo.T_SYS_MODULE_URL;
+
+CREATE TABLE DBD_TEST.dbo.T_SYS_MODULE_URL (
+	MODULE_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	ACCES_URL varchar(500) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	REPRE_URL_YN varchar(2) COLLATE Korean_Wansung_CI_AS DEFAULT 'N' NOT NULL,
+	REG_DTE date NOT NULL,
+	REG_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	UPT_DTE date NOT NULL,
+	UPT_LOGIN_ID varchar(50) COLLATE Korean_Wansung_CI_AS NOT NULL,
+	CONSTRAINT T_SYS_MODULE_URL_PK PRIMARY KEY (MODULE_ID,ACCES_URL),
+	CONSTRAINT T_SYS_MODULE_URL_FK FOREIGN KEY (MODULE_ID) REFERENCES DBD_TEST.dbo.T_SYS_MODULE(MODULE_ID),
+	CONSTRAINT T_SYS_MODULE_URL_FK_1 FOREIGN KEY (ACCES_URL) REFERENCES DBD_TEST.dbo.T_SYS_URL(ACCES_URL)
+);
+
+
+-- dbo.V_SYS_CODE_TEMP source
+
+CREATE VIEW V_SYS_CODE_TEMP
+AS
+WITH SYS_TEMP 
+(
+		 CD
+		, ORD_NO
+		, CD_ABB
+		, LANG_CD
+		, PARENT_CD
+		, PARENT_LANG_CD
+		, LEVEL_NO
+		, CD_ATTR_1
+		, CD_ATTR_2
+		, CD_ATTR_3
+		, CD_ATTR_4
+		, ATTR_DESC_1
+		, ATTR_DESC_2
+		, ATTR_DESC_3
+		, ATTR_DESC_4
+		, CD_DATA
+		, CD_PATH
+		, LANG_CD_PATH
+		, USE_YN
+		, REG_DTE
+		, REG_LOGIN_ID
+		, UPT_DTE
+		, UPT_LOGIN_ID
+)AS
+(
+   SELECT
+			CD
+            , ORD_NO
+			, CD_ABB 
+			, LANG_CD
+			, PARENT_CD
+			, CONVERT(NVARCHAR(510), '') AS PARENT_LANG_CD
+			, 1 AS  LEVEL_NO
+			, CD_ATTR_1
+			, CD_ATTR_2
+			, CD_ATTR_3
+			, CD_ATTR_4
+			, ATTR_DESC_1
+			, ATTR_DESC_2
+			, ATTR_DESC_3
+			, ATTR_DESC_4
+            , CD_DATA
+			, CONVERT(VARCHAR(1000), CD) + '¡í' AS CD_PATH
+			, CONVERT(varchar(1000), LANG_CD) + '¡í' AS LANG_CD_PATH
+			, USE_YN
+			, REG_DTE
+			, REG_LOGIN_ID
+			, UPT_DTE
+			, UPT_LOGIN_ID
+   FROM T_SYS_CODE DI
+   WHERE PARENT_CD IS NULL
+   UNION ALL
+   SELECT
+			  DI.CD
+			, DI.ORD_NO
+			, DI.CD_ABB
+			, DI.LANG_CD
+			, DI.PARENT_CD
+			, CDL.LANG_CD AS PARENT_LANG_CD
+			, (CDL.LEVEL_NO+1 )AS LEVEL_NO
+			, DI.CD_ATTR_1
+			, DI.CD_ATTR_2
+			, DI.CD_ATTR_3
+			, DI.CD_ATTR_4
+			, DI.ATTR_DESC_1
+			, DI.ATTR_DESC_2
+			, DI.ATTR_DESC_3
+			, DI.ATTR_DESC_4
+            , DI.CD_DATA
+			, CONVERT(VARCHAR(1000), CDL.CD_PATH + DI.CD ) + '¡í' AS CD_PATH
+			, CONVERT(VARCHAR(1000), CDL.LANG_CD_PATH + DI.LANG_CD ) + '¡í' AS CD_PATH
+			, DI.USE_YN
+			, DI.REG_DTE
+			, DI.REG_LOGIN_ID
+			, DI.UPT_DTE
+			, DI.UPT_LOGIN_ID
+            
+   FROM T_SYS_CODE DI
+       JOIN SYS_TEMP CDL
+         ON DI.PARENT_CD = CDL.CD
+)
+SELECT 
+		  CONVERT(VARCHAR(50), CD) AS CD
+		, CONVERT(INT, ORD_NO ) AS ORD_NO
+		, CONVERT(VARCHAR(50), CD_ABB ) AS CD_ABB
+		, CONVERT(NVARCHAR(255), LANG_CD ) AS LANG_CD
+		, CONVERT(VARCHAR(50), T1.PARENT_CD ) AS PARENT_CD
+		, CONVERT(NVARCHAR(255), PARENT_LANG_CD ) AS PARENT_LANG_CD
+		, CONVERT(INT, ISNULL(ccnt.cnt, 0) ) AS CHILD_CNT
+		, CONVERT(INT, LEVEL_NO) AS LEVEL_NO
+		, CONVERT(VARCHAR(50), CD_ATTR_1 ) AS CD_ATTR_1
+		, CONVERT(VARCHAR(50), CD_ATTR_2 ) AS CD_ATTR_2
+		, CONVERT(VARCHAR(50), CD_ATTR_3 ) AS CD_ATTR_3
+		, CONVERT(VARCHAR(50), CD_ATTR_4 ) AS CD_ATTR_4
+		, CONVERT(NVARCHAR(2000), ATTR_DESC_1 ) AS ATTR_DESC_1
+		, CONVERT(NVARCHAR(2000), ATTR_DESC_2 ) AS ATTR_DESC_2
+		, CONVERT(NVARCHAR(2000), ATTR_DESC_3 ) AS ATTR_DESC_3
+		, CONVERT(NVARCHAR(2000), ATTR_DESC_4 ) AS ATTR_DESC_4
+		, CONVERT(NVARCHAR(2000), CD_DATA ) AS CD_DATA
+		, CONVERT(VARCHAR(255), CD_PATH  ) AS CD_PATH
+		, CONVERT(NVARCHAR(2000), LANG_CD_PATH ) AS LANG_CD_PATH
+		, CONVERT(VARCHAR(2), USE_YN ) AS USE_YN
+		, REG_DTE
+		, REG_LOGIN_ID
+		, UPT_DTE
+		, UPT_LOGIN_ID
+FROM SYS_TEMP T1
+	LEFT OUTER JOIN (
+	    SELECT PARENT_CD , COUNT(*) cnt
+	    FROM T_SYS_CODE 
+	    GROUP BY PARENT_CD
+	) ccnt
+		ON t1.cd = ccnt.parent_cd;
+
+
+-- dbo.V_SYS_DEPT_TEMP source
+
+CREATE VIEW V_SYS_DEPT_TEMP 
+AS
+WITH CTE(
+	DEPT_CD
+			 ,ORD_NO
+			 ,NM_KO
+			 ,NM_EN
+			 ,NM_JA
+			 ,NM_ZH
+			 ,LEVEL_NO
+			 ,PARENT_DEPT_CD
+			 ,PARENT_DEPT_NM_KO
+			 ,PARENT_DEPT_NM_EN
+			 ,PARENT_DEPT_NM_JA
+			 ,PARENT_DEPT_NM_ZH
+			 ,DEPT_TP
+			 ,DEPT_TP_LANG_CD
+			 ,DEPT_CHIEF_USER_NO
+			 ,DEPT_CD_PATH
+			 ,DEPT_NM_PATH_KO
+			 ,DEPT_NM_PATH_EN
+			 ,DEPT_NM_PATH_JA
+			 ,DEPT_NM_PATH_ZH
+			 ,CORP_CD
+			 ,CORP_NM
+			 ,USE_YN
+			 ,REG_DTE
+			 ,REG_LOGIN_ID
+			 ,UPT_DTE
+			 ,UPT_LOGIN_ID
+			 ,COST_CENT
+			 ,DP_ORDER
+			 ,KOKRS
+)
+AS 
+(
+		 SELECT 
+				  DEPT_CD
+				, ORD_NO
+				, NM_KO
+				, NM_EN
+				, NM_JA
+				, NM_ZH
+				, 1 AS LEVEL_NO
+				
+				, PARENT_DEPT_CD
+				, CAST('' AS NVARCHAR(2000))  AS PARENT_DEPT_NM_KO
+				, CAST('' AS NVARCHAR(2000)) AS PARENT_DEPT_NM_EN
+				, CAST('' AS NVARCHAR(2000)) AS PARENT_DEPT_NM_JA
+				, CAST('' AS NVARCHAR(2000)) AS PARENT_DEPT_NM_ZH
+				, DEPT_TP
+                , dbo.F_SYS_CD_ABB_LANG('DEPT_TYPE',DEPT_TP) AS DEPT_TP_LANG_CD
+				, DEPT_CHIEF_USER_NO
+				, CAST(  DEPT_CD + '¡í' AS NVARCHAR(2000) )  AS DEPT_CD_PATH 
+                , CAST(  NM_KO + '¡í' AS NVARCHAR(2000) )  AS DEPT_NM_PATH_KO 
+                , CAST(  NM_EN + '¡í' AS NVARCHAR(2000) )  AS DEPT_NM_PATH_EN
+				, CAST(  NM_JA + '¡í' AS NVARCHAR(2000) )  AS DEPT_NM_PATH_JA
+				, CAST(  NM_ZH + '¡í' AS NVARCHAR(2000) )  AS DEPT_NM_PATH_ZH
+				, CORP_CD
+				, CORP_NM
+				, USE_YN
+				, REG_DTE
+				, REG_LOGIN_ID
+				, UPT_DTE
+				, UPT_LOGIN_ID
+				, COST_CENT
+				, DP_ORDER
+				, KOKRS
+		FROM T_SYS_DEPT DI
+		WHERE PARENT_DEPT_CD IS NULL
+		UNION ALL
+		SELECT 
+				  DI.DEPT_CD
+				, DI.ORD_NO
+				, DI.NM_KO
+				, DI.NM_EN
+				, DI.NM_JA
+				, DI.NM_ZH
+				, CDL.LEVEL_NO + 1 AS LEVEL_NO
+				, DI.PARENT_DEPT_CD
+				, CAST( CDL.NM_KO   AS NVARCHAR(2000) )  AS PARENT_DEPT_NM_KO
+				, CAST( CDL.NM_EN   AS NVARCHAR(2000) )  AS PARENT_DEPT_NM_EN
+				, CAST( CDL.NM_JA   AS NVARCHAR(2000) )  AS PARENT_DEPT_NM_JA
+				, CAST( CDL.NM_ZH   AS NVARCHAR(2000) )  AS PARENT_DEPT_NM_ZH
+				, DI.DEPT_TP
+                , dbo.F_SYS_CD_ABB_LANG('DEPT_TYPE',DI.DEPT_TP) AS DEPT_TP_LANG_CD
+				, DI.DEPT_CHIEF_USER_NO
+				, CAST( CDL.DEPT_CD_PATH + DI.DEPT_CD + '¡í'  AS NVARCHAR(2000) )  AS DEPT_CD_PATH 
+                , CAST( CDL.DEPT_NM_PATH_KO + DI.NM_KO + '¡í'  AS NVARCHAR(2000) )   AS DEPT_NM_PATH_KO 
+                , CAST( CDL.DEPT_NM_PATH_EN + DI.NM_EN + '¡í'  AS NVARCHAR(2000) )   AS DEPT_NM_PATH_EN
+				, CAST( CDL.DEPT_NM_PATH_JA + DI.NM_JA + '¡í'  AS NVARCHAR(2000) )   AS DEPT_NM_PATH_JA
+				, CAST( CDL.DEPT_NM_PATH_ZH + DI.NM_ZH + '¡í'  AS NVARCHAR(2000) )   AS DEPT_NM_PATH_ZH
+				, DI.CORP_CD
+				, DI.CORP_NM
+				, DI.USE_YN
+				, DI.REG_DTE
+				, DI.REG_LOGIN_ID
+				, DI.UPT_DTE
+				, DI.UPT_LOGIN_ID
+				, DI.COST_CENT
+				, DI.DP_ORDER
+				, DI.KOKRS
+		 FROM T_SYS_DEPT  DI 
+				INNER JOIN CTE  CDL 
+						ON DI.PARENT_DEPT_CD = CDL.DEPT_CD
+		 WHERE DI.PARENT_DEPT_CD IS NOT NULL
+  ) 
+		SELECT 
+			DEPT_CD
+			 ,ORD_NO
+			 ,NM_KO
+			 ,NM_EN
+			 ,NM_JA
+			 ,NM_ZH
+			 ,LEVEL_NO
+			 , ISNULL(ccnt.cnt, 0) CHILD_CNT
+			 ,vs.PARENT_DEPT_CD
+			 ,PARENT_DEPT_NM_KO
+			 ,PARENT_DEPT_NM_EN
+			 ,PARENT_DEPT_NM_JA
+			 ,PARENT_DEPT_NM_ZH
+			 ,DEPT_TP
+			 ,DEPT_TP_LANG_CD
+			 ,DEPT_CHIEF_USER_NO
+			 ,DEPT_CD_PATH
+			 ,DEPT_NM_PATH_KO
+			 ,DEPT_NM_PATH_EN
+			 ,DEPT_NM_PATH_JA
+			 ,DEPT_NM_PATH_ZH
+			 ,CORP_CD
+			 ,CORP_NM
+			 ,USE_YN
+			 ,REG_DTE
+			 ,REG_LOGIN_ID
+			 ,UPT_DTE
+			 ,UPT_LOGIN_ID
+			 ,COST_CENT
+			 ,DP_ORDER
+			 ,KOKRS
+		FROM CTE VS
+		    LEFT OUTER JOIN (
+		    	SELECT PARENT_DEPT_CD, COUNT(*) cnt
+                FROM T_SYS_DEPT 
+                GROUP BY PARENT_DEPT_CD
+			) ccnt
+				ON vs.DEPT_CD = ccnt.PARENT_DEPT_CD;
+
+
+-- dbo.V_SYS_UID source
+
+CREATE VIEW [dbo].[V_SYS_UID] AS SELECT NEWID() as UID;
+
+
+-- dbo.V_SYS_USER_TEMP source
+
+CREATE VIEW V_SYS_USER_TEMP 
+AS
+SELECT 
+    TSU.LOGIN_ID
+   , TSU.USER_NO
+   , TSU.DEPT_CD 
+   , TSU.LOGIN_PWD
+   , TSU.NM_KO
+   , TSU.NM_EN
+   , TSU.NM_JA
+   , TSU.NM_ZH
+   , VSD.NM_KO + ' ' + TSU.NM_KO + ' ' + dbo.F_SYS_LANG(dbo.F_SYS_CD_ABB_LANG('USER_POS', TSU.POS_CD),'KO') DSP_NM_KO
+   , VSD.NM_EN + ' ' + TSU.NM_EN + ' ' + dbo.F_SYS_LANG(dbo.F_SYS_CD_ABB_LANG('USER_POS', TSU.POS_CD),'EN') DSP_NM_EN
+   , VSD.NM_JA + ' ' + TSU.NM_JA + ' ' + dbo.F_SYS_LANG(dbo.F_SYS_CD_ABB_LANG('USER_POS', TSU.POS_CD),'JA') DSP_NM_JA
+   , VSD.NM_ZH + ' ' + TSU.NM_ZH + ' ' + dbo.F_SYS_LANG(dbo.F_SYS_CD_ABB_LANG('USER_POS', TSU.POS_CD),'JH') DSP_NM_JH
+   , TSU.EMAIL
+   , TSU.TEL_NO
+   , TSU.MOBILE_NO
+   , TSU.POS_CD
+   , dbo.F_SYS_CD_ABB_LANG('USER_POS', TSU.POS_CD) AS POS_LANG_CD
+   , TSU.DUTY_CD
+   , dbo.F_SYS_CD_ABB_LANG('USER_DUTY', TSU.DUTY_CD)  AS DUTY_LANG_CD
+   , TSU.USER_TP_CD
+   , dbo.F_SYS_CD_ABB_LANG('USER_TYPE', TSU.USER_TP_CD) AS  USER_TP_LANG_CD
+   , VSD.NM_KO AS DEPT_NM_KO
+   , VSD.NM_EN AS DEPT_NM_EN
+   , VSD.NM_JA AS DEPT_NM_JA
+   , VSD.NM_ZH AS DEPT_NM_ZH
+   , VSD.DEPT_CD_PATH
+   , VSD.DEPT_NM_PATH_KO
+   , VSD.DEPT_NM_PATH_EN
+   , VSD.DEPT_NM_PATH_JA
+   , VSD.DEPT_NM_PATH_ZH
+   , TSU.CHIEF_YN
+   , TSU.SITE_LOCALE
+   , TSU.CORP_CD
+   , TSU.CORP_NM
+   ,  CONCAT('CMM_ISJ,',(
+		SELECT 
+     		string_agg(AUTH_CD, ',')  AUTH_CD  
+    	FROM T_SYS_AUTH_MEMBER
+    	WHERE MBR_ID = TSU.LOGIN_ID
+    	GROUP BY MBR_ID
+	)
+    )AS AUTH_CD 
+   , TSU.USE_YN
+   , TSU.LOGIN_IP
+   , PWD_ST_DTE
+   , PWD_ED_DTE
+   , LOGIN_TRY_CNT
+   , TSU.REG_DTE
+   , TSU.REG_LOGIN_ID
+   , TSU.UPT_DTE
+   , TSU.UPT_LOGIN_ID
+   , VSD.KOKRS
+   , TSU.TEMP_PWD
+   , TSU.LAST_LOGIN_DTE
+   , TSU.PWD_CHANGE_DTE
+   , TSU.LOGIN_TRY_DTE
+  FROM T_SYS_USER TSU
+   INNER JOIN V_SYS_DEPT VSD
+    ON VSD.DEPT_CD = TSU.DEPT_CD;
+
+
+-- dbo.V_TREE_GROUP source
+
+CREATE VIEW V_TREE_GROUP 
+AS
+SELECT
+    0 USR_SEQ  ,
+    C.ORD_NO DEPT_SEQ  ,
+    U.USER_NO UUID  ,
+    U.NM_KO ,
+    U.NM_EN ,
+    0 AS CHILD_CNT,
+    G.PARENT_DEPT_CD PARENT_UUID  ,
+    G.DEPT_CD PARENT_DEPT_CD  ,
+    G.NM_KO PARENT_DEPT_NM_PATH_KO  ,
+    G.NM_EN PARENT_DEPT_NM_PATH_EN  ,
+    (G.LEVEL_NO + 1) LEVEL_NO  ,
+    G.DEPT_CD_PATH DEPT_CD_PATH  ,
+    G.DEPT_NM_PATH_KO DEPT_NM_PATH_KO  ,
+    G.DEPT_NM_PATH_EN DEPT_NM_PATH_EN  ,
+    U.DEPT_CD ,
+    U.CORP_CD,
+    U.USER_TP_CD AS DEPT_TP_CD,
+    U.USE_YN,
+    G.DP_ORDER
+FROM V_SYS_USER U
+    INNER JOIN V_SYS_DEPT G 
+        ON U.DEPT_CD = G.DEPT_CD
+    LEFT OUTER JOIN V_SYS_CODE C 
+        ON U.POS_CD = C.CD_ABB 
+        AND C.PARENT_CD = 'USER_POS'
+WHERE U.USE_YN = 'Y'
+UNION ALL
+SELECT 
+    1 USR_SEQ  ,
+    A.ORD_NO ,
+    A.DEPT_CD UUID  ,
+    A.NM_KO ,
+    A.NM_EN ,
+    ( 
+        SELECT COUNT(*)
+        FROM ( 
+            SELECT G.DEPT_CD PARENT_DEPT_CD
+            FROM V_SYS_USER U
+                JOIN V_SYS_DEPT G   
+                    ON U.DEPT_CD = G.DEPT_CD
+                LEFT JOIN V_SYS_CODE C   
+                    ON U.POS_CD = C.CD_ABB
+                    AND C.PARENT_CD = 'USER_POS'
+            WHERE  U.USE_YN = 'Y'
+            UNION ALL
+            SELECT A1.PARENT_DEPT_CD
+            FROM V_SYS_DEPT A1
+            WHERE  A1.USE_YN = 'Y' 
+        ) A2
+        WHERE  A2.PARENT_DEPT_CD = A.DEPT_CD 
+    ) CHILD_CNT  ,
+    A.PARENT_DEPT_CD AS PARENT_UUID ,
+    A.PARENT_DEPT_CD ,
+    B.NM_KO ,
+    B.NM_EN ,
+    A.LEVEL_NO ,
+    A.DEPT_CD_PATH ,
+    A.DEPT_NM_PATH_KO ,
+    A.DEPT_NM_PATH_EN ,
+    A.DEPT_CD,
+    A.CORP_CD,
+    A.DEPT_TP,
+    A.USE_YN,
+    A.DP_ORDER
+FROM V_SYS_DEPT A
+    LEFT JOIN V_SYS_DEPT B   
+        ON A.PARENT_DEPT_CD = B.DEPT_CD
+WHERE  A.USE_YN = 'Y';
+
+
+-- dbo.V_TREE_MENU source
+
+CREATE VIEW V_TREE_MENU 
+AS
+WITH SYS_TEMP (
+   MENU_ID
+			,PARENT_MENU_ID
+			,PARENT_ORD_NO
+			,ORD_NO
+			,LANG_CD
+			,USE_YN
+			,MODULE_ID
+			,MENU_ID_PATH
+			,JSON_DATA
+			,REG_DTE
+			,REG_LOGIN_ID
+			,UPT_DTE
+			,UPT_LOGIN_ID
+			,LEVEL_NO
+			
+  ) AS
+(
+   SELECT
+			MENU_ID
+			,PARENT_MENU_ID
+			,ORD_NO AS PARENT_ORD_NO
+			,ORD_NO
+			,LANG_CD
+			,USE_YN
+			,MODULE_ID
+			, CAST(  CONVERT(VARCHAR, ORD_NO) +'||' + MENU_ID + '¡í' AS NVARCHAR(MAX) )  AS MENU_ID_PATH 
+			,JSON_DATA
+			,REG_DTE
+			,REG_LOGIN_ID
+			,UPT_DTE
+			,UPT_LOGIN_ID
+			,  1 LEVEL_NO
+		FROM T_SYS_MENU DI
+		WHERE PARENT_MENU_ID IS NULL
+		UNION ALL
+		SELECT
+			DI.MENU_ID
+			,DI.PARENT_MENU_ID
+			,CDL.PARENT_ORD_NO
+			,DI.ORD_NO
+			,DI.LANG_CD
+			,DI.USE_YN
+			,DI.MODULE_ID
+			, CAST( CDL.MENU_ID_PATH + CONVERT(VARCHAR, DI.ORD_NO) +'||' + DI.MENU_ID + '¡í'  AS NVARCHAR(MAX) )  AS MENU_ID_PATH 
+			,DI.JSON_DATA
+			,DI.REG_DTE
+			,DI.REG_LOGIN_ID
+			,DI.UPT_DTE
+			,DI.UPT_LOGIN_ID
+			,CDL.LEVEL_NO+1 AS LEVEL_NO
+		FROM T_SYS_MENU DI
+			JOIN SYS_TEMP CDL
+				ON DI.PARENT_MENU_ID = CDL.MENU_ID
+)
+SELECT 
+		 
+		     T1.MENU_ID
+			,T1.PARENT_MENU_ID
+			,T1.PARENT_ORD_NO
+			,T1.ORD_NO
+			,T1.LANG_CD
+			,T1.USE_YN
+			,T1.JSON_DATA
+			,T1.REG_DTE
+			,T1.REG_LOGIN_ID
+			,T1.UPT_DTE
+			,T1.UPT_LOGIN_ID
+			,(SELECT COUNT(*) FROM T_SYS_MENU WHERE PARENT_MENU_ID = T1.MENU_ID) CHILD_CNT
+			,T1.LEVEL_NO
+			,T1.MODULE_ID
+			,MU.ACCES_URL
+			,T1.MENU_ID_PATH
+FROM SYS_TEMP T1 
+	LEFT OUTER JOIN T_SYS_MODULE_URL MU
+		ON T1.MODULE_ID = MU.MODULE_ID
+		AND MU.REPRE_URL_YN = 'Y';
+
+

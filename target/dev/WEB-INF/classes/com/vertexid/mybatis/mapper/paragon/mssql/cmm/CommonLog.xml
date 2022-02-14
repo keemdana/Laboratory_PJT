@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<!--
+  ~ Description:
+  ~     공용 > 로그기록
+  -->
+<mapper namespace="com.vertexid.paragon.cmm.CommonLog.mssql">
+
+    <!-- 에러로그 기록 -->
+    <select id="setErrorLog" parameterType="map" statementType="CALLABLE" fetchSize="1000">
+        {
+            CALL SP_SET_ERROR_LOG(
+            #{objectName}
+            , #{objectStep}
+            , #{errorCode}
+            , #{errorDesc}
+            , #{inArgument}
+            , #{userId}
+            , #{keyValue}
+            )
+        }
+    </select>
+
+    <!-- CURRENT_TIMESTAMP + UID(30) 얻기 -->
+    <select id="getVUIDdata" resultType="paramMap">
+        SELECT F_SYS_VUID() vuid
+        FROM DUAL
+    </select>
+
+    <!-- 인터페이스 로그 기록 -->
+    <select id="saveIfLog" parameterType="com.vertexid.paragon.cmm.IFLogDTO" statementType="CALLABLE" resultType="paramMap">
+        {
+            CALL SP_SET_IF_LOG(
+                #{ifId}
+                , #{ifItemCd}
+                , #{ifRstCd}
+                , #{opertParams}
+                , #{opertRst}
+                , #{opertStage}
+                , #{errorDtl}
+                , #{opertLoginId}
+            )
+        }
+    </select>
+
+    <delete id="deleteLog" parameterType="com.vertexid.paragon.cmm.IFLogDTO">
+        DELETE FROM T_SYS_IF_LOG
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <choose>
+                <when test="ifRstCd != null and !ifRstCd.equals('')">
+                    AND (IF_RST_CD IS NULL OR IF_RST_CD != 'F')
+                </when>
+                <otherwise>
+                    AND IF_RST_CD = #{ifRstCd}
+                </otherwise>
+            </choose>
+            <if test="delMonth != null and !delMonth.equals('')">
+            AND REG_DTE <![CDATA[ < ]]> ADD_MONTHS(SYSDATE, (#{delMonth} * -1))
+            </if>
+        </trim>
+    </delete>
+</mapper>

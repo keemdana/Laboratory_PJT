@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.viself.auth.AuthMenu.mssql">
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT
+			A.*
+		FROM V_TREE_MENU A
+		WHERE EXISTS (
+			SELECT 1
+			FROM T_SYS_AUTH_MENU AM
+				INNER JOIN (
+				    SELECT *
+				    FROM dbo.FN_SPLIT(#{authCds},',')
+				)SP
+					ON SP.VAL = AM.AUTH_CD
+			WHERE AM.MENU_ID = A.MENU_ID
+		)
+		<if test="useYn != null and !useYn.equals('')">
+		   AND A.USE_YN  = #{useYn}
+		</if>
+        ORDER BY A.LEVEL_NO,A.ORD_NO
+
+    </select>
+
+    <select id="authList" parameterType="map" resultType="paramMap" fetchSize="1000">
+    	SELECT
+			A.*
+			, ROW_NUMBER() OVER (ORDER BY PARENT_ORD_NO ASC) RN
+			, COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+			,B.AUTH_CD
+			,B.ALW_CD
+	    FROM V_TREE_MENU A
+			LEFT OUTER JOIN T_SYS_AUTH_MENU B
+				ON A.MENU_ID = B.MENU_ID
+	    	<choose>
+               <when test="authCd != null and !authCd.equals('')">
+					AND B.AUTH_CD = #{authCd}
+				</when>
+               <otherwise>
+                  AND B.AUTH_CD = 'NONE'
+               </otherwise>
+           </choose>
+		<where>
+			<if test="useYn != null and !useYn.equals('')">
+			   AND A.USE_YN  = #{useYn}
+			</if>
+		</where>
+		ORDER BY A.PARENT_ORD_NO,A.ORD_NO
+    </select>
+    <select id="allList" parameterType="map" resultType="paramMap" fetchSize="1000">
+
+        <![CDATA[
+        	SELECT
+        		V1.*
+        		, 'U' as cud
+        	FROM V_TREE_MENU V1
+        ]]>
+        <trim prefix="WHERE" prefixOverrides="AND|OR">
+            <choose>
+                <when test="parentCd != null and parentCd != ''">
+                    v1.parent_menu_id  = #{parentCd}
+                </when>
+                <when test="parentMenuId != null and parentMenuId != ''">
+                    v1.parent_menu_id  = #{parentMenuId}
+                </when>
+                <when test="menuId != null and menuId != ''">
+	                v1.menu_id = #{menuId}
+                </when>
+                <otherwise>
+                    v1.parent_menu_id IS NULL
+                </otherwise>
+            </choose>
+        </trim>
+         <![CDATA[
+			ORDER BY V1.LEVEL_NO,V1.ORD_NO
+        ]]>
+    </select>
+
+	<select id="nodeList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT mnu.*
+		, ccnt.cnt
+		<![CDATA[
+            , (CASE
+                WHEN ISNULL(ccnt.cnt, 0) > 0 THEN 'root'
+                ELSE 'node'
+            END) type
+            ]]>
+		FROM t_sys_menu mnu
+		LEFT OUTER JOIN (
+		SELECT parent_menu_id, COUNT(*) cnt
+		FROM t_sys_menu
+		GROUP BY parent_menu_id
+		) ccnt
+		ON mnu.menu_id = ccnt.parent_menu_id
+		<trim prefix="WHERE" prefixOverrides="AND|OR">
+			<choose>
+				<when test="parentMenuId == null or parentMenuId == ''">
+					mnu.parent_menu_id = 'menu'
+				</when>
+				<otherwise>
+					mnu.parent_menu_id = #{parentMenuId}
+				</otherwise>
+			</choose>
+			<if test="useEnable != null and useEnable != ''">
+				AND mnu.use_enable = #{useEnable}
+			</if>
+		</trim>
+		ORDER BY mnu.sort_ord
+	</select>
+
+	<select id="accessList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <![CDATA[
+		WITH CTE_MENU
+				 AS ((
+						 SELECT
+							 1 AS LEVEL
+							  , menu_id
+							  , menu_nm
+							  , sort_ord
+							  , parent_menu_id
+							  , remark
+							  , menu_icon
+							  , module_id
+							  , module_url
+							  , CONVERT(VARCHAR(200),
+										'1_' + CAST(ISNULL(SORT_ORD, 0) AS VARCHAR(10)) + '||' + MENU_ID + ' > '
+							 ) AS PATH_NAME
+						 FROM T_SYS_MENU
+						 WHERE PARENT_MENU_ID = 'menu'
+						   AND use_enable = 'Y'
+					 )UNION ALL(
+						 SELECT
+							 LEVEL + 1
+							  , C.menu_id
+							  , C.menu_nm
+							  , C.sort_ord
+							  , C.parent_menu_id
+							  , C.remark
+							  , C.menu_icon
+							  , C.module_id
+							  , C.module_url
+							  , CONVERT(VARCHAR(200),
+										CAST(ISNULL(M.LEVEL, 0) AS VARCHAR(10)) + '_' + CAST(ISNULL(M.SORT_ORD, 0) AS VARCHAR(10)) + '||' + M.MENU_ID + ' > '
+											+ CAST(ISNULL(M.LEVEL, 0) + 1 AS VARCHAR(10)) + '_' + CAST(ISNULL(C.SORT_ORD, 0) AS VARCHAR(10)) + '||' + C.MENU_ID + ' > '
+							 )  AS CATE_NAME
+						 FROM T_SYS_MENU C
+								  INNER JOIN CTE_MENU M
+											 ON M.MENU_ID = C.PARENT_MENU_ID
+						 WHERE C.use_enable = 'Y'
+					 ))
+		SELECT CM.*
+			 , CCNT.CNT
+			 , (CASE
+					WHEN ISNULL(ccnt.cnt, 0) > 0 THEN 'root'
+					ELSE 'node'
+			END) type
+			 , ISNULL(amnu.ALW_CD, 'NONE') ALW_CD
+		FROM CTE_MENU CM
+				 LEFT OUTER JOIN (
+			SELECT parent_menu_id, COUNT(*) cnt
+			FROM t_sys_menu
+			GROUP BY parent_menu_id
+		) ccnt
+								 ON CM.menu_id = ccnt.parent_menu_id
+				 LEFT OUTER JOIN (
+			SELECT *
+			FROM T_SYS_AUTH_MENU
+			WHERE AUTH_CD = #{authCd}
+		) amnu
+								 ON CM.menu_id = amnu.MENU_ID
+		ORDER BY CM.PATH_NAME, CM.SORT_ORD
+		]]>
+    </select>
+
+	<select id="count" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT COUNT(*) cnt
+		FROM T_SYS_AUTH_MENU
+		WHERE AUTH_CD = #{authCd}
+		  AND MENU_ID = #{menuId}
+	</select>
+
+	<insert id="insert" parameterType="com.vertexid.viself.auth.AuthMenuDTO">
+		INSERT INTO t_sys_auth_menu(
+									 AUTH_CD
+								   , MENU_ID
+								   , ALW_CD
+								   , REG_LOGIN_ID
+								   , REG_DTE
+								   , UPT_LOGIN_ID
+								   , UPT_DTE
+		)VALUES(
+				   #{authCd}
+			   , #{menuId}
+			   , #{alwCd}
+			   , 'SYSTEM'
+			   , CURRENT_TIMESTAMP
+			   , 'SYSTEM'
+			   , CURRENT_TIMESTAMP
+			   )
+	</insert>
+
+	<update id="update" parameterType="com.vertexid.viself.auth.AuthMenuDTO">
+		UPDATE t_sys_auth_menu
+		SET UPT_LOGIN_ID = 'SYSTEM'
+		  , UPT_DTIME = CURRENT_TIMESTAMP
+		  , ALW_CD = #{alwCd}
+		WHERE AUTH_CD = #{authCd}
+		  AND MENU_ID = #{menuId}
+	</update>
+
+	<delete id="delete" parameterType="com.vertexid.viself.auth.AuthMenuDTO">
+		DELETE FROM t_sys_auth_menu
+		WHERE auth_cd = #{authCd}
+	</delete>
+
+	<select id="authNMenuList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT AMM.MENU_ID
+			 , AMM.MENU_NM
+			 , AMM.SORT_ORD
+			 , AMM.PARENT_MENU_ID
+			 , AMM.MODULE_ID
+			 , AMM.MODULE_URL
+			 , AMM.AUTH_CD
+			 , ISNULL(C.ALW_CD, 'DENY') ALW_YN
+		FROM (
+				 SELECT A.*
+					  , B.AUTH_CD
+					  , B.AUTH_NM
+					  , B.AUTH_TP_CD
+				 FROM V_TREE_MENU A
+						  CROSS JOIN (
+					 SELECT AUTH_CD
+						  , AUTH_NM
+						  , AUTH_TP_CD
+					 FROM T_SYS_AUTH_CD
+					 WHERE USE_ENABLE = 'Y'
+				 )  B
+			 ) AMM
+				 LEFT OUTER JOIN T_SYS_AUTH_MENU C
+								 ON AMM.MENU_ID = C.MENU_ID
+									 AND AMM.AUTH_CD = C.AUTH_CD
+		WHERE ISNULL(C.ALW_CD, 'DENY') = 'ALLOW'
+		  AND AMM.MODULE_URL IS NOT NULL
+		ORDER BY AMM.AUTH_CD ASC, AMM.SN DESC
+	</select>
+
+	<select id="authNUrlList" resultType="paramMap" fetchSize="1000">
+		SELECT a.AUTH_CD
+			 , a.ACCES_URL
+			 , ROW_NUMBER() OVER( ORDER BY a.AUTH_TP, a.ACCES_URL COLLATE Korean_Wansung_CS_AS DESC) RN
+		FROM (
+				 SELECT ALW_DIV AUTH_CD
+					  , ACCES_URL
+					  , 'BASE' AUTH_TP
+				 FROM T_SYS_URL
+				 UNION ALL
+				 SELECT tsam.AUTH_CD
+					  , tsmu.ACCES_URL
+					  , 'CSTM' AUTH_TP
+				 FROM T_SYS_AUTH_MENU tsam
+						  INNER JOIN T_SYS_MENU tsm
+									 ON tsam.MENU_ID = tsm.MENU_ID
+						  INNER JOIN T_SYS_MODULE_URL tsmu
+									 ON tsm.MODULE_ID = tsmu.MODULE_ID
+				 WHERE tsam.ALW_CD = 'ALLOW'
+			 ) a
+		WHERE NOT EXISTS(
+				SELECT 1
+				FROM T_SYS_MODULE_URL k
+				WHERE k.ACCES_URL COLLATE Korean_Wansung_CS_AS = a.ACCES_URL
+				  AND a.AUTH_TP = 'BASE'
+			)
+	</select>
+</mapper>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+  ~ Copyright (c) 2021 Vertex ID., KOREA
+ ~ All rights reserved.
+ ~
+ ~ This software is the confidential
+ ~ and proprietary information of emFrontier.com ("Confidential Information").
+ ~ You shall not disclose such Confidential Information
+ ~ and shall use it only in accordance with
+ ~ the terms of the license agreement you entered into
+ ~ with Vertex ID. Networks
+  -->
+<mapper namespace="com.vertexid.paragon.def.defstumail.DefStuMail.mssql">
+    <select id="list" parameterType="map" resultType="paramMap" fetchSize="1000">
+    <include refid="Common.prefixPaging" />
+		SELECT
+        	ROW_NUMBER() OVER (ORDER BY UPT_DTE ASC) RN
+            , COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+            , PAGING.*
+		FROM (
+        	SELECT
+	             A.*
+				, STU.STU_TYPE1
+				, STU.STU_TYPE2
+		        , 'U' AS cud
+		        , V1.LANG_CD AS STU_DTL_LANG_CD
+	      	FROM T_SYS_DEF_STU_EMAIL A
+	      		INNER JOIN T_SYS_DEF_STU_MAS STU
+	      			ON STU.stu_cd = A.stu_cd
+	      		LEFT OUTER JOIN v_sys_code  V1
+	          		ON A.stu_dtl = V1.cd
+		    <trim prefix="WHERE" prefixOverrides="AND|OR">
+		      <choose>
+		        <when test="stuCd != null and stuCd != ''">
+		                 A.STU_CD = #{stuCd}
+		              </when>
+		              <otherwise>
+		                A.STU_CD IS NOT NULL
+		              </otherwise>
+		      </choose>
+	        </trim>
+	        <if test="stuCd != null and stuCd != ''">
+            	AND A.STU_DTL = #{stuCd}
+            </if>
+	        <if test="stuEmailUid != null and stuEmailUid != ''">
+            	AND A.STU_EMAIL_UID = #{stuEmailUid}
+            </if>
+
+	    ) PAGING
+	    <include refid="Common.postfixPaging" />
+    </select>
+    <insert id="insert" parameterType="com.vertexid.paragon.def.defstumail.DefStuMailDTO">
+        INSERT INTO T_SYS_DEF_STU_EMAIL(
+             STU_EMAIL_UID
+           , STU_CD
+           , STU_DTL
+           , REC_ROLE_CD
+           , REC_ROLE_NM
+           , REC_USER_CD
+           , REC_USER_NM
+           , REF_ROLE_CD
+           , REF_ROLE_NM
+           , REF_USER_CD
+           , REF_USER_NM
+           , TIT_KO
+           , TIT_EN
+           , TIT_JA
+           , TIT_ZH
+           , CONTENT_KO
+           , CONTENT_EN
+           , CONTENT_JA
+           , CONTENT_ZH
+           , REG_DTE
+           , REG_LOGIN_ID
+           , UPT_DTE
+           , UPT_LOGIN_ID
+        )VALUES(
+            #{stuEmailUid}
+	      , #{stuCd}
+	      , #{stuDtl}
+	      , #{recRoleCd}
+	      , #{recRoleNm}
+	      , #{recUserCd}
+	      , #{recUserNm}
+	      , #{refRoleCd}
+	      , #{refRoleNm}
+	      , #{refUserCd}
+	      , #{refUserNm}
+	      , #{titKo}
+	      , #{titEn}
+	      , #{titJa}
+	      , #{titZh}
+	      , #{contentKo}
+	      , #{contentEn}
+	      , #{contentJa}
+	      , #{contentZh}
+	      , CURRENT_TIMESTAMP
+	      , 'SYSTEM'
+	      , CURRENT_TIMESTAMP
+	      , 'SYSTEM'
+        )
+    </insert>
+    <update id="update" parameterType="com.vertexid.paragon.def.defstumail.DefStuMailDTO">
+        UPDATE T_SYS_DEF_STU_EMAIL
+        SET UPT_DTE = SYSDATE
+        , UPT_LOGIN_ID = 'SYSTEM'
+        <if test="stuDtl != null and stuDtl != ''">
+			, STU_DTL         = #{stuDtl}
+		</if>
+        <if test="recRoleCd != null and recRoleCd != ''">
+			, REC_ROLE_CD     = #{recRoleCd}
+		</if>
+        <if test="recRoleNm != null and recRoleNm != ''">
+			, REC_ROLE_NM     = #{recRoleNm}
+		</if>
+        <if test="recUserCd != null and recUserCd != ''">
+			, REC_USER_CD     = #{recUserCd}
+		</if>
+        <if test="recUserNm != null and recUserNm != ''">
+			, REC_USER_NM     = #{recUserNm}
+		</if>
+        <if test="refRoleCd != null and refRoleCd != ''">
+			, REF_ROLE_CD     = #{refRoleCd}
+		</if>
+        <if test="refRoleNm != null and refRoleNm != ''">
+			, REF_ROLE_NM     = #{refRoleNm}
+		</if>
+        <if test="refUserCd != null and refUserCd != ''">
+			, REF_USER_CD     = #{refUserCd}
+		</if>
+        <if test="refUserNm != null and refUserNm != ''">
+			, REF_USER_NM     = #{refUserNm}
+		</if>
+        <if test="titKo != null and titKo != ''">
+			, TIT_KO          = #{titKo}
+		</if>
+        <if test="titEn != null and titEn != ''">
+			, TIT_EN          = #{titEn}
+		</if>
+        <if test="titJa != null and titJa != ''">
+			, TIT_JA          = #{titJa}
+		</if>
+        <if test="titZh != null and titZh != ''">
+			, TIT_ZH          = #{titZh}
+		</if>
+        <if test="contentKo != null and contentKo != ''">
+			, CONTENT_KO      = #{contentKo}
+		</if>
+        <if test="contentEn != null and contentEn != ''">
+			, CONTENT_EN      = #{contentEn}
+		</if>
+        <if test="contentJa != null and contentJa != ''">
+			, CONTENT_JA      = #{contentJa}
+		</if>
+        <if test="contentZh != null and contentZh != ''">
+			, CONTENT_ZH      = #{contentZh}
+		</if>
+        WHERE STU_EMAIL_UID = #{stuEmailUid}
+    </update>
+    <delete id="delete" parameterType="map">
+        DELETE FROM T_SYS_DEF_STU_EMAIL
+        WHERE STU_CD = #{stuCd}
+    </delete>
+    <delete id="deleteData" parameterType="map">
+        DELETE FROM T_SYS_DEF_STU_EMAIL
+        WHERE STU_EMAIL_UID = #{stuEmailUid}
+    </delete>
+</mapper>

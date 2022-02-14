@@ -1,0 +1,136 @@
+@charset "UTF-8";
+/*!
+ * Copyright 2019 JAYU.space
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
+ * 확장 CSS
+ * @author 양기화(梁起華 Yang, Ki Hwa)
+ */
+
+
+
+.login-bg-wrap {
+  /*background: url("../img/bg_login17.jpg") no-repeat center #dee1e3;*/
+  overflow: auto; }
+
+.login-bg-wrap::after {
+  width: 100%;
+  height: 100%;
+  content: "";
+  background: url("../img/bg_login.jpg") no-repeat center #dee1e3;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0.5;
+  overflow: auto; }
+
+.login-inner {
+  width: 511px;
+  margin: 0 auto;
+  padding-top: 200px; }
+
+.login-box {
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 10px 10px 20px gray;
+  border-radius: 5px;
+  color: #666; }
+
+.login {
+  width: 390px;
+  margin: 0 auto;
+  padding-top: 45px;
+  overflow: hidden; }
+
+.login-title {
+  /*color: #00aae7; }*/
+  color: black; }
+/*color: #0c0c0c; }*/
+/*color: #00bbee; }*/
+
+.login-subtitle {
+  font-weight: bold;
+  color: black; }
+/*color: #ffbd00; }*/
+/*color: #0c0c0c; }*/
+
+/*.login-logo {
+    background: url("../img/lf_logo_s.png") no-repeat center;
+    height: 30px; }*/
+
+.login-logo span {
+  display: none; }
+
+.login-title {
+  margin-bottom: 15px;
+  text-align: left; }
+
+.login-innner .login-title p {
+  font-size: 26px;
+  overflow: hidden;
+  font-weight: 600;
+  color: #393939; }
+.login-innner .login-title i {
+  vertical-align: text-bottom; }
+.login-innner .login-title p .sysNm {
+  font-size: 26px;
+  overflow: hidden;
+  font-weight: 600;
+  color: #0f70a7; }
+.login-innner .login-title p small {
+  vertical-align: text-bottom;
+  font-size: 14px;
+  font-weight: normal;
+  color: #616161; }
+
+.ctrl-sidebar {
+  /*
+  min-width: $ctrl-sidebar-width;
+  max-width: $ctrl-sidebar-width;
+  min-height: calc(100vh - 49px);
+  transition: all 0.3s;
+  */
+  display: block;
+  width: 350px;
+  height: calc(100vh);
+  position: fixed;
+  right: -100%;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
+  background: white;
+  z-index: 20;
+  box-shadow: -1px 0 20px rgba(0, 0, 0, 0.08);
+}
+
+.ctrl-sidebar.toggled {
+  right: 0;
+}
+
+.error-bg-wrap {
+  /*background: url("../img/bg_login17.jpg") no-repeat center #dee1e3;*/
+  overflow: auto; }
+
+.error-bg-wrap::after {
+  width: 100%;
+  height: 100%;
+  content: "";
+  background: url("../img/bg_login21.jpg") no-repeat center #dee1e3;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0.5;
+  overflow: auto; }

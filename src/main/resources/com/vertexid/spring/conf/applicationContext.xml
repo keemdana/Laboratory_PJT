@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <description>
+        <!--
+          ~ Copyright (c) 2021 Vertex ID., KOREA
+          ~ All rights reserved.
+          ~
+          ~ This software is the confidential
+          ~ and proprietary information of emFrontier.com ("Confidential Information").
+          ~ You shall not disclose such Confidential Information
+          ~ and shall use it only in accordance with
+          ~ the terms of the license agreement you entered into
+          ~ with Vertex ID. Networks
+          -->
+        <![CDATA[
+            Spring Application Context 설정
+
+            - application, data transaction, scheduler 부분으로 나뉘어서 설정함
+
+            - application 설정: applicationConf.xml
+                어노테이션설정, 컴포넌트 스캔설정, 프로퍼티 설정(util namespace)
+
+            - data transaction 설정: transactionConf.xml
+                JNDI/JDBC 설정, transaction Manager 설정, Mybatis 설정, 공통 DAO 설정 등
+
+            - scheduler 설정: schedulerConf.xml
+                quartz 설정
+        ]]>
+    </description>
+
+    <!-- application 설정-->
+    <import resource="applicationConf.xml"/>
+
+    <!-- datasource 및 transaction 설정 -->
+    <import resource="transactionConf.xml"/>
+
+    <!-- scheduler 설정 -->
+    <import resource="schedulerConf.xml"/>
+</beans>
