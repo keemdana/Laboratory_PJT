@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.vertexid.pcf.Pcf.mssql">    
+    <!-- 조회 조건 -->
+    <select id="deptList" parameterType="map" resultType="paramMap" fetchSize="1000">        
+	    SELECT MCODE, MCODE_NM 
+	    FROM dbo.WORK_LAB_MDM
+		WHERE HCODE = #{hcode}	
+		ORDER BY ID	
+    </select>
+
+</mapper>
