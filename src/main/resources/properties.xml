@@ -60,7 +60,7 @@
 
     <entry key="db.base.dbms">mssql</entry>
     <entry key="db.base.driverClass">com.microsoft.sqlserver.jdbc.SQLServerDriver</entry>
-    <entry key="db.base.url">jdbc:sqlserver://10.10.11.85:3658;database=Research</entry>
+    <entry key="db.base.url">jdbc:sqlserver://10.10.11.85:3658;database=PCF_DB</entry>
     <entry key="db.base.username">dev_Research</entry>
     <entry key="db.base.password">ips@1234</entry>
 
