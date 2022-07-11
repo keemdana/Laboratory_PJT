@@ -92,6 +92,19 @@
 <script type="text/javascript" src="<c:url value='/js/vendor/jquery-easyui/extension/jquery-easyui-edatagrid/jquery.edatagrid.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/js/vendor/jquery-easyui/1.9.14/locale/easyui-lang-ko.js'/>"></script>
 
+<!-- 계측기예약 메인 이미지 슬라이더 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css">
+<script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
+<!-- 모달창 관련 추가 필요 -->
+<script type="text/javascript" src="<c:url value='/js/vendor/showmodaldialog.js'/>" ></script>
+<%-- <script type="text/javascript" src="<c:url value='/js/showModalDialogCallee.js'/>" ></script> --%>
+
+
+<!-- 퓨전차트 -->
+<script type="text/javascript" src="<c:url value='/js/vendor/fusionchartsXT/js/fusioncharts.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/vendor/fusionchartsXT/js/fusioncharts.gantt.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/js/vendor/fusionchartsXT/js/themes/fusioncharts.theme.fint.js'/>"></script>
+
 
 
 <!-- [주의!] 아래는 순서 준수!! -->

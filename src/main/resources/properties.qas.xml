@@ -16,7 +16,7 @@
         Common Properties
     </comment>
     <!-- System Properties -->
-    <entry key="sys.name">Paragon System</entry>
+    <entry key="sys.name">R&amp;D Portal</entry>
     <entry key="sys.operation.mode">QAS</entry>
     <entry key="db.base.dbms">mariadb</entry>
     <entry key="db.mybatis.mapper.root">com.vertexid</entry>

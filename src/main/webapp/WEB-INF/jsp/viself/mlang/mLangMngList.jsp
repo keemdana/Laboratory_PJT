@@ -1,68 +1,68 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%-- <%=SysStaticDataController.sysNoLang.toString() %> --%>
 <script type="text/javascript" src="/js/vendor/jquery-easyui/extension/datagrid-cellediting/datagrid-cellediting.js"></script>
-<section class="wrapper site-min-height">
-	<h3><i class="fa fa-angle-right" id="content_header" data-term="L.다국어코드"> </i></h3>
+<section class="wrapper_popup" style="margin:15px 15px 15px 15px">
+	<h3>코드추가</h3>
 	<div class="content-panel">
 		<form name="form1" method="post">
 		<table class="box">
-		<tr>
-			<td class="corner_lt"></td>
-			<td class="border_mt"></td>
-			<td class="corner_rt"></td>
-		</tr>
-		<tr>
-			<td class="border_lm"></td>
-			<td class="body">
-				<table>
-						<colgroup>
-							<col style="width:10%" />
-							<col style="width:32%" />
-							<col style="width:15%" />
-							<col style="width:32%" />
-							<col style="width:*" />
-						</colgroup>
-						<tr>
-							<th>코드</th>
-							<td colspan="3"><input type="text" name="langCd" tabindex="1"  ID="langCd" onkeydown="MLANG.doSearch(true)" value="" data-type="search" class="text width_max" style="width:98.3%;" /></td>
-							<td rowspan="4" class="verticalContainer">
-									<span class="ui_btn medium icon"><i class="fa fa-search" onclick="MLANG.doSearch();"><a href="javascript:void(0);" style="width:31px;">검색</a></i></span>
-									<span class="ui_btn medium icon"><i class="fa fa-minus" onclick="MLANG.doInit(document.form1)"><a href="javascript:void(0)"  >리셋</a></i></span>
-							</td>
-						</tr>
-						<tr>
-							<th>KO</th>
-							<td><input type="text" class="text width_max" name="ko" id="ko" tabindex="2" onkeydown="MLANG.doSearch(true)" data-type="search"/></td>
-							<th>EN</th>
-							<td><input type="text" class="text width_max" name="en" id="en" tabindex="3"  onkeydown="MLANG.doSearch(true)" data-type="search"/></td>
-						</tr>
-						<tr>
-							<th>JP</th>
-							<td><input type="text" class="text width_max" name="ja" id="ja" onkeydown="MLANG.doSearch(true)" data-type="search"/></td>
-							<th>CN</th>
-							<td><input type="text" class="text width_max" name="zh" id="zh" onkeydown="MLANG.doSearch(true)" data-type="search"/></td>
-						</tr>
-						<tr>
-							<th>Type</th>
-							<td colspan="3" style="padding-top:5px;">
-								<input type="radio" name="TYPE" id="TYPE" value=""  data-type="search"  onClick="MLANG.doSearch()" checked/>전체
-								<input type="radio" name="TYPE" id="TYPE" value="L"  data-type="search" onClick="MLANG.doSearch()" />라벨
-								<input type="radio" name="TYPE" id="TYPE" value="M" data-type="search"  onClick="MLANG.doSearch()" />메시지
-								<input type="radio" name="TYPE" id="TYPE" value="B"  data-type="search" onClick="MLANG.doSearch()" />버튼
-								<input type="radio" name="TYPE" id="TYPE" value="R"  data-type="search" onClick="MLANG.doSearch()" />라디오
-								<input type="radio" name="TYPE" id="TYPE" value="D"  data-type="search" onClick="MLANG.doSearch()" />문서
-								<input type="radio" name="TYPE" id="TYPE" value="C"  data-type="search" onClick="MLANG.doSearch()" />코드
-							</td>
-						</tr>
-				</table>
-				</td>
-			<td class="border_rm"></td>
-		</tr>
-		<tr>
-			<td class="corner_lb"></td>
-			<td class="border_mb"></td>
-			<td class="corner_rb"></td>
-		</tr>
+			<tr>
+				<td class="corner_lt"></td>
+				<td class="border_mt"></td>
+				<td class="corner_rt"></td>
+			</tr>
+			<tr>
+				<td class="border_lm"></td>
+				<td class="body">
+					<table>
+							<colgroup>
+								<col style="width:10%" />
+								<col style="width:32%" />
+								<col style="width:15%" />
+								<col style="width:32%" />
+								<col style="width:*" />
+							</colgroup>
+							<tr>
+								<th>코드</th>
+								<td colspan="3"><input type="text" name="langCd" tabindex="1"  ID="langCd" onkeydown="MLANG.doSearch(true)" value="" data-type="search" class="text width_max" style="width:98.3%;" /></td>
+								<td rowspan="4" class="verticalContainer">
+										<span class="ui_btn medium icon"><i class="fa fa-search" onclick="MLANG.doSearch();"><a href="javascript:void(0);" style="width:31px;">검색</a></i></span>
+										<span class="ui_btn medium icon"><i class="fa fa-minus" onclick="MLANG.doInit(document.form1)"><a href="javascript:void(0)"  >리셋</a></i></span>
+								</td>
+							</tr>
+							<tr>
+								<th>KO</th>
+								<td><input type="text" class="text width_max" name="ko" id="ko" tabindex="2" onkeydown="MLANG.doSearch(true)" data-type="search"/></td>
+								<th>EN</th>
+								<td><input type="text" class="text width_max" name="en" id="en" tabindex="3"  onkeydown="MLANG.doSearch(true)" data-type="search"/></td>
+							</tr>
+							<tr>
+								<th>JP</th>
+								<td><input type="text" class="text width_max" name="ja" id="ja" onkeydown="MLANG.doSearch(true)" data-type="search"/></td>
+								<th>CN</th>
+								<td><input type="text" class="text width_max" name="zh" id="zh" onkeydown="MLANG.doSearch(true)" data-type="search"/></td>
+							</tr>
+							<tr>
+								<th>Type</th>
+								<td colspan="3" style="padding-top:5px;">
+									<input type="radio" name="TYPE" id="TYPE" value=""  data-type="search"  onClick="MLANG.doSearch()" checked/>전체
+									<input type="radio" name="TYPE" id="TYPE" value="L"  data-type="search" onClick="MLANG.doSearch()" />라벨
+									<input type="radio" name="TYPE" id="TYPE" value="M" data-type="search"  onClick="MLANG.doSearch()" />메시지
+									<input type="radio" name="TYPE" id="TYPE" value="B"  data-type="search" onClick="MLANG.doSearch()" />버튼
+									<input type="radio" name="TYPE" id="TYPE" value="R"  data-type="search" onClick="MLANG.doSearch()" />라디오
+									<input type="radio" name="TYPE" id="TYPE" value="D"  data-type="search" onClick="MLANG.doSearch()" />문서
+									<input type="radio" name="TYPE" id="TYPE" value="C"  data-type="search" onClick="MLANG.doSearch()" />코드
+								</td>
+							</tr>
+					</table>
+					</td>
+				<td class="border_rm"></td>
+			</tr>
+			<tr>
+				<td class="corner_lb"></td>
+				<td class="border_mb"></td>
+				<td class="corner_rb"></td>
+			</tr>
 		</table>
 		</form>
 		<div class="buttonlist">

@@ -3110,9 +3110,11 @@ jsHelper_paragonCmm.prototype.submitAjax = function (url, data, callback, async,
 
 			var files = paragonFile.arrFileInfo[$(o).val()].files;
 			console.log("files:"+$(files).length);
+			
 			if($(files).length == 0){	//-- 첨부된 파일이 없다면 break;
-				return false;
+				//return false;	//하나의 첨부파일 컴포넌트만 체크하기 때문에 최초꺼 업로드가 안될 경우 return 해버리네...
 			}
+			
 			$(files).each(function(i, o){
 				formData.append('file',o);
 			});
@@ -3828,7 +3830,7 @@ jsHelper_paragonCmm.prototype.convertLang = function(parentObj){
 		}
 	});
 
-	this.updateLangMas();
+	//this.updateLangMas();
 }
 jsHelper_paragonCmm.prototype.updateLangMas = function(){
 	if($(noLangMas).length > 0){

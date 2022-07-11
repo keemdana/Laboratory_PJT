@@ -30,7 +30,7 @@ String siteLocale = loginUser.getSiteLocale();
           <img src="/js/vendor/dashio/img/main_top_logo.png">
           <div style="color:#93d1ff; font-weight:bold; padding:10px 0 0 0; font-size:18px; font-weight:bold; position:absolute; top:19px; left:200px;">Paragon 시스템</div>
           --%>
-          Paragon System
+          R&D Portal
       </a>
       <!--logo end-->
       <div class="top-menu">

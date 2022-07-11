@@ -5,7 +5,7 @@
          http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          id="Paragon" version="3.1">
 
-    <display-name>Paragon System</display-name>
+    <display-name>R&amp;D Portal</display-name>
 
     <!-- 필터 -->
 

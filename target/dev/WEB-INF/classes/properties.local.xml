@@ -32,9 +32,9 @@
 
     <!-- System Properties -->
     <entry key="sys.operation.mode">LOCAL</entry>
-    <entry key="sys.name">Paragon System</entry>
-    <entry key="sys.title.ko">Paragon System</entry>
-    <entry key="sys.title.en">Paragon System</entry>
+    <entry key="sys.name">R&amp;D Portal</entry>
+    <entry key="sys.title.ko">R&amp;D Portal</entry>
+    <entry key="sys.title.en">R&amp;D Portal</entry>
     <entry key="sys.organization.ko">버텍스아이디</entry>
     <entry key="sys.organization.en">Vertex ID.</entry>
     <entry key="sys.admin.name">System Admin</entry>

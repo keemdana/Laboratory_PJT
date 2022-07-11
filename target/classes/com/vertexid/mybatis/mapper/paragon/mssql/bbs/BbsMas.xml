@@ -116,14 +116,16 @@
             , BBS_REG_DTE
             , BBS_USE_YN
             , BBS_TOP_YN
-            <set>
+            , BBS_POPUP_ST_DTE
+            , BBS_POPUP_ED_DTE
+            <!--<set>
                 <if test="bbsPopupStDte != null and !bbsPopupStDte.equals('')">
                 , BBS_POPUP_ST_DTE
                 </if>
                 <if test="bbsPopupEdDte != null and !bbsPopupEdDte.equals('')">
                 , BBS_POPUP_ED_DTE
                 </if>
-            </set>
+            </set>-->
         )VALUES(
             #{bbsUid}
             , #{bbsTpCd}
@@ -131,17 +133,19 @@
             , #{bbsContent}
             , 0
             , #{bbsRegLoginId}
-            , SYSDATETIME()
+            , GETDATE()
             , 'Y'
             , #{bbsTopYn}
-            <set>
+            , #{bbsPopupStDte}
+            , #{bbsPopupEdDte}
+            <!-- <set>
                 <if test="bbsPopupStDte != null and !bbsPopupStDte.equals('')">
                     , #{bbsPopupStDte}
                 </if>
                 <if test="bbsPopupEdDte != null and !bbsPopupEdDte.equals('')">
                     , #{bbsPopupEdDte}
                 </if>
-            </set>
+            </set> -->
         )
     </insert>
 

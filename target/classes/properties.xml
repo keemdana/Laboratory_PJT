@@ -31,9 +31,9 @@
 
     <!-- System Properties -->
     <entry key="sys.operation.mode">LOCAL</entry>
-    <entry key="sys.name">Paragon System</entry>
-    <entry key="sys.title.ko">Paragon System</entry>
-    <entry key="sys.title.en">Paragon System</entry>
+    <entry key="sys.name">R&amp;D Portal</entry>
+    <entry key="sys.title.ko">R&amp;D Portal</entry>
+    <entry key="sys.title.en">R&amp;D Portal</entry>
     <entry key="sys.organization.ko">버텍스아이디</entry>
     <entry key="sys.organization.en">Vertex ID.</entry>
     <entry key="sys.admin.name">System Admin</entry>
@@ -60,13 +60,14 @@
 
     <entry key="db.base.dbms">mssql</entry>
     <entry key="db.base.driverClass">com.microsoft.sqlserver.jdbc.SQLServerDriver</entry>
-    <entry key="db.base.url">jdbc:sqlserver://localhost:1433;database=Research</entry>
-    <entry key="db.base.username">dev_Research</entry>
-    <entry key="db.base.password">ips@1234</entry>
+    <entry key="db.base.url">jdbc:sqlserver://10.10.11.58;database=LAB</entry>
+    <!-- <entry key="db.base.username">dev_Research</entry> -->
+    <entry key="db.base.username">LAB_ADMIN</entry>
+    <entry key="db.base.password">lab@1234</entry>
 
     <!-- Attach -->
-    <entry key="attach.saveRootPath">D:/DEV/attach</entry>
-    <entry key="attach.saveTempPath">D:/DEV/attach/TMP</entry>
+    <entry key="attach.saveRootPath">D:/LAP/attach</entry>
+    <entry key="attach.saveTempPath">D:/LAP/attach/TMP</entry>
     <!-- maxFileSize(KB) -->
     <entry key="attach.default.maxFileSize">1048576</entry>
     <entry key="attach.default.maxFileCount">20</entry>

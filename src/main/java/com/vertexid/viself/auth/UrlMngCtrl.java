@@ -13,7 +13,10 @@
  */
 package com.vertexid.viself.auth;
 
+import com.vertexid.spring.utils.SessionUtils;
 import com.vertexid.viself.base.BaseCtrl;
+import com.vertexid.viself.base.BaseModelVO;
+import com.vertexid.viself.hr.SysLoginVO;
 import com.vertexid.viself.security.SimpleReloadableSecurityMetadataSource;
 import com.vertexid.viself.security.SimpleSecureObjectSvc;
 import org.springframework.stereotype.Controller;
@@ -21,6 +24,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +52,21 @@ public class UrlMngCtrl extends BaseCtrl {
     private SimpleReloadableSecurityMetadataSource simpleReloadableSecurityMetadataSource;
 
 
+    @RequestMapping(value = "/viself/auth/urlMng/urlList/json",
+            method = RequestMethod.POST)
+    public String listUrl(ModelMap model, HttpServletRequest req, @RequestParam Map<String, Object> params) throws Exception {
+
+    	SysLoginVO loginUser = (SysLoginVO)SessionUtils.getLoginVO();
+        params.put("loginInfo",  loginUser);
+
+        log.debug("login..........." + loginUser.getLoginId());
+        log.debug("path..........." + req.getRequestURI());
+
+        BaseModelVO modelInfo =
+                new BaseModelVO("viself", "auth", null, null, "urlMng", "urlList");
+        return getJsonView(modelInfo, model, params);
+    }
+    
 
     @RequestMapping(value = "/viself/auth/urlMng/save/json",
             method = RequestMethod.POST)

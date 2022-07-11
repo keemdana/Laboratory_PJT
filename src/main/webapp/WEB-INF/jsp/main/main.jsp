@@ -30,7 +30,7 @@ String siteLocale = loginUser.getSiteLocale();
           <img src="/js/vendor/dashio/img/main_top_logo.png">
           <div style="color:#93d1ff; font-weight:bold; padding:10px 0 0 0; font-size:18px; font-weight:bold; position:absolute; top:19px; left:200px;">Paragon 시스템</div>
           --%>
-          Paragon System
+          R&D Portal
       </a>
       <!--logo end-->
       <div class="top-menu">
@@ -77,7 +77,7 @@ String siteLocale = loginUser.getSiteLocale();
     <!--main content end-->
     <!--footer start-->
     <footer class="site-footer navbar-fixed-bottom">
-      <div class="text-center">
+      <%-- <div class="text-center">
         <p>
         <%if(loginUser.isUserAuth("CMM_SYS")){ %>
          	<button type="button" title="Service Desk" id="vertexIdServiceDesk" class="btn btn-theme02 btn-xs" ><i class="fa fa-headset"> Vertex ID. SERVICE DESK</i></button>
@@ -89,7 +89,7 @@ String siteLocale = loginUser.getSiteLocale();
         <a href="#main-content" class="go-top">
           <i class="fa fa-angle-up"></i>
           </a>
-      </div>
+      </div> --%>
     </footer>
     <!--footer end-->
     <!--footer start-->

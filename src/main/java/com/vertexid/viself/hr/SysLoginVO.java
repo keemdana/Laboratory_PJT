@@ -169,6 +169,9 @@ public class SysLoginVO extends SimpleLoginVO {
     private String deptArea = "";
     // 부서권한
     private String deptAuth = "";
+    
+    //TSA 권한
+    private String tsaYn = "";
 
     // 부서영역
     public String getDeptArea() {
@@ -850,5 +853,15 @@ public class SysLoginVO extends SimpleLoginVO {
     public void setSessionId(String session_id) {
         this.sessionId = session_id;
     }
+
+	public String getTsaYn() {
+		return tsaYn;
+	}
+
+	public void setTsaYn(String tsaYn) {
+		this.tsaYn = tsaYn;
+	}
+    
+    
 
 }

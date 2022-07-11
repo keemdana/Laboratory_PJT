@@ -67,7 +67,7 @@
 </div>
 
 <input type="file" id="file_search_<%=ctrlUuid%>" style="display:none;" multiple="multiple"/>
-<div class="file_Element_<%=ctrlUuid%>" style="border : 2px dotted #8296C2; width: 95%; height:<%=height%>; padding:5px;overflow: auto;">
+<div class="file_Element_<%=ctrlUuid%>" style="border : 2px dotted #8296C2; width: 100%; height:<%=height%>; padding:5px;overflow: auto;">
 <p id="file_notice_<%=ctrlUuid%>" class="file_Element_<%=ctrlUuid%>" style="font-size: 16px;color:#cdcdcd;width:200px;height:20px;margin: <%=margin %> auto;" data-term="L.파일_끌어다_놓기"></p>
 <ul style="list-style: none;" class="ul_file_list">
 <%

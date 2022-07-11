@@ -18,7 +18,7 @@ Website: http://Alvarez.is/
 body {
     color: #797979;
 	background: #eaeaea;
-    font-family: '맑은 고딕', sans-serif;
+    font-family: '留묒� 怨좊뵓', sans-serif;
     padding: 0px !important;
     margin: 0px !important;
     font-size:13px;
@@ -450,6 +450,13 @@ ul.sidebar-menu li a.active i {
     padding-right: 15px;
     padding-bottom: 15px;
     padding-top: 10px;
+    width: 100%;
+}
+
+.wrapper_popup {
+    display: inline-block;
+    padding-left: 15px;
+    padding-right: 15px;    
     width: 100%;
 }
 
@@ -1025,10 +1032,12 @@ PANELS CONFIGURATIONS
 */
 /* .sub1_search input.sub_search_pro{display:inline-block; width:86%;} */
 
-.sub3_search{width:95%; margin:0 auto; font-size:12px; text-align:left;}
-.sub3_search span[data-tp='th']{display:inline-block;  padding:8px 20px; border-radius:5px; font-weight:bold; color:#333; width:120px; text-align:right;font-size:14px;}
+/* .sub3_search{width:95%; margin:0 auto; font-size:12px; text-align:left;} */
+/* .sub3_search span[data-tp='th']{display:inline-block;  padding:8px 20px; border-radius:5px; font-weight:bold; color:#333; width:120px; text-align:right;font-size:14px;} */
+.sub3_search{width:100%; margin:0 auto; font-size:12px; text-align:left;}
+.sub3_search span[data-tp='th']{display:inline-block;  padding:8px 20px; border-radius:5px; font-weight:bold; color:#333; text-align:left;font-size:14px;}
 .sub3_search select{display:inline-block; width:50%;}
-.sub3_search input{display:inline-block; width:50%;}
+.sub3_search input{display:inline-block; width:30%;}
 .sub3_search button{padding:5px 25px;}
 .sub3_search button{padding:5px 25px;}
 
@@ -3639,7 +3648,7 @@ TABLE.box .body TD { text-align:left; padding-left:5px; }
 TABLE.box .button { text-align:right; padding-right:30px; }
 TABLE.box .body TD.verticalContainer { text-align:left; padding-left:15px; }
 
-/* -- 디자인 요소가 없는 테이블 스타일 -- */
+/* -- �뵒�옄�씤 �슂�냼媛� �뾾�뒗 �뀒�씠釉� �뒪���씪 -- */
 TABLE.none { width:100%; border-spacing:0px;  font-size:13px; margin:0; padding:0; }
 TABLE.none CAPTION { min-height:18px; font-weight:bold; font-size:13px; padding:2px 2px 2px 14px; text-align:left; }
 TABLE.none CAPTION SPAN.left { display:inline-block; float:left; }
@@ -3648,12 +3657,12 @@ TABLE.none TH { border:0!important;padding:0!important; }
 TABLE.none TD { border:0!important;padding:0!important; }
 
 
-/* -- 내부형 테이블 스타일 -- */
+/* -- �궡遺��삎 �뀒�씠釉� �뒪���씪 -- */
 TABLE.inner { width:100%; background-color:#DBDBDB; font-size:13px;}
 TABLE.inner>THEAD>TR>TH, TABLE.inner>TBODY>TR>TH { background-color:#eef6f6; color:#545454; border:1px solid #dee2e6; font-size:13px; font-weight:bold; padding:7px 3px 7px 3px!important; text-align:center; }
 TABLE.inner>TBODY>TR>TD, TABLE.inner>TR>TD { background-color:#FFFFFF; border:1px solid #dee2e6; font-size:13px; padding:3px!important; word-break:break-all; }
 
-/* -- 기본형 테이블 스타일 -- */
+/* -- 湲곕낯�삎 �뀒�씠釉� �뒪���씪 -- */
 TABLE.basic { width:100%; background-color:#DBDBDB; font-size:13px;}
 TABLE.basic CAPTION {min-height:18px;/* background:url('./images/_ico/arrow.gif') left center no-repeat; */font-weight:bold;font-size:13px;padding:2px 2px 4px 2px;text-align:left;}
 TABLE.basic CAPTION SPAN.left { display:inline-block; float:left; }
@@ -3661,15 +3670,15 @@ TABLE.basic CAPTION SPAN.right { display:inline-block; float:right; }
 TABLE.basic TH { background-color:#f7f7f7; color:#545454; border:1px solid #dee2e6; font-size:13px; font-weight:bold; padding:7px 3px 7px 3px!important; text-align:right; }
 TABLE.basic>TBODY>TR>TD, TABLE.basic>TR>TD { background-color:#FFFFFF; border:1px solid #dee2e6; font-size:13px; padding:3px!important; word-break:break-all; }
 
-/* -- 테이블 열이 2개인 경우 스타일 -- */
+/* -- �뀒�씠釉� �뿴�씠 2媛쒖씤 寃쎌슦 �뒪���씪 -- */
 TABLE .th2 { width:10%; word-break: break-all;}
 TABLE .td2 { width:90%; word-break: break-all; text-align:left;}
 
-/* -- 테이블 열이 4개인 경우 스타일 -- */
+/* -- �뀒�씠釉� �뿴�씠 4媛쒖씤 寃쎌슦 �뒪���씪 -- */
 TABLE .th4 { width:10%; word-break: break-all;}
 TABLE .td4 { width:40%; word-break: break-all; text-align:left;}
 
-/* -- 목록형 테이블 스타일 -- */
+/* -- 紐⑸줉�삎 �뀒�씠釉� �뒪���씪 -- */
 TABLE.list { width:100%; background-color:#DBDBDB; border-spacing:0px; font-size:13px; }
 /* TABLE.list TR { border-bottom: 1px solid #DBDBDB;  } */
 TABLE.list tbody TR:nth-child(odd) {background-color: #ffffff;}
@@ -3691,7 +3700,7 @@ TABLE.list tr:hover td { background:#E2E2E2 !important;}
 TABLE.list tr.not_hover:hover td { background:#FFFFFF !important; }
 TABLE.list tr.not_hover:hover td TABLE.list tr:hover td { background:#E2E2E2 !important; }
 
-/* -- 파티클 테이블 스타일 -- */
+/* -- �뙆�떚�겢 �뀒�씠釉� �뒪���씪 -- */
 TABLE.paticle { width:100%; background-color:#DBDBDB; border-spacing:1px; font-size:13px;margin-bottom : -1px; }
 TABLE.paticle TH { background-color:#f7f7f7; border:1px solid #dee2e6; color:#545454; font-size:13px; font-weight:bold; padding:7px 3px 7px 3px!important; text-align:right; }
 TABLE.paticle>TBODY>TR>TD, TABLE.paticle>TR>TD { background-color:#FFFFFF; border:1px solid #dee2e6; font-size:13px; padding:3px!important; word-break:break-all; }
@@ -3826,7 +3835,7 @@ TABLE.paticle>TBODY>TR>TD, TABLE.paticle>TR>TD { background-color:#FFFFFF; borde
     border: 1px solid #d7d7d7;
 }
 
-/* -- 버튼 목록 관련 스타일 -- */
+/* -- 踰꾪듉 紐⑸줉 愿��젴 �뒪���씪 -- */
 DIV.buttonlist { padding:7px 2px 3px 2px; text-align:right; min-height:10px; }
 DIV.buttonlist:after { display:block;clear:both;content:"" }
 DIV.buttonlist .left { float:left; margin:0; padding:0; }
@@ -3853,7 +3862,7 @@ INPUT,TEXTAREA {
 	ime-mode:active;
 }
 
-/* -- 페이지 목록 관련 스타일 -- */
+/* -- �럹�씠吏� 紐⑸줉 愿��젴 �뒪���씪 -- */
 DIV.pagelist {
 		width:100%;
 		height:25px;
@@ -3930,7 +3939,7 @@ SPAN.particleBtn {
 .particleHeader .fa-dot-circle{
 	width: 200px;
 }
-/* 링크span 스타일 */
+/* 留곹겕span �뒪���씪 */
 span.link {
 	text-decoration: underline;
 	cursor: pointer;

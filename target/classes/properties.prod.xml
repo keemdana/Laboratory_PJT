@@ -61,14 +61,15 @@
 	<!-- 이중화로 VIP 주소 -->
     <entry key="db.base.dbms">mssql</entry>
     <entry key="db.base.driverClass">com.microsoft.sqlserver.jdbc.SQLServerDriver</entry>
-    <entry key="db.base.url">jdbc:sqlserver://localhost:1433;database=Research</entry>
-    <entry key="db.base.username">dev_Research</entry>
-    <entry key="db.base.password">ips@1234</entry>
+    <entry key="db.base.url">jdbc:sqlserver://10.10.11.58;database=LAB</entry>
+    <!-- <entry key="db.base.username">dev_Research</entry> -->
+    <entry key="db.base.username">LAB_ADMIN</entry>
+    <entry key="db.base.password">lab@1234</entry>
 
     <!-- Attach -->
     <!-- 첨부파일 NAS 사용 이중화로 Mount Point -->
-    <entry key="attach.saveRootPath">/was/attach</entry>						
-    <entry key="attach.saveTempPath">/was/attach/TMP</entry>
+    <entry key="attach.saveRootPath">D:/LAP/attach</entry>						
+    <entry key="attach.saveTempPath">D:/LAP/attach/TMP</entry>
     <entry key="attach.default.maxFileSize">1048576</entry>
     <entry key="attach.default.maxFileCount">20</entry>
     <entry key="attach.default.allowExt">txt;pdf;xls;xlsx;xlsm;xps;ppt;pptx;doc;docx;hwp;rtf;jpg;jpeg;gif;png;tif;zip;eml;tar;tgz;gz;xz;7z;rar;lzh</entry>

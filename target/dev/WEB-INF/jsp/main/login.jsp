@@ -25,7 +25,7 @@
     <div class="container">
         <div style="margin:200px 0 -80px 0; text-align:center;">
 <%--            <img src="/js/vendor/dashio/img/login-logo.png">--%>
-            <p style="margin:30px 0 0 0; font-size:15px; font-weight:bold;">Paragon System 을 이용하기 위해서는 로그인이 필요합니다. </p>
+            <p style="margin:30px 0 0 0; font-size:15px; font-weight:bold;">R&D Portal 을 이용하기 위해서는 로그인이 필요합니다. </p>
         </div>
         <form class="form-login" id="loginForm" name="form1" method="post">
             <input type="hidden" name="<c:out value='${_csrf.parameterName}'/>" id="<c:out value='${_csrf.parameterName}'/>" value="<c:out value='${_csrf.token}'/>"/>

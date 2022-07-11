@@ -12,7 +12,7 @@
  ~ the terms of the license agreement you entered into
  ~ with Vertex ID. Networks
   -->
-<mapper namespace="com.vertexid.paragon.hr.HrMng.mssql">
+<mapper namespace="com.vertexid.paragon.hr.HrMng.mssql">    
     <select id="list" parameterType="com.vertexid.paragon.hr.HrMngDTO" resultType="paramMap" fetchSize="1000">
         <include refid="Common.prefixPaging" />
         SELECT

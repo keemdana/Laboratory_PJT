@@ -39,7 +39,7 @@ public interface AuthenticationManager {
 
     /**
      * 로그인 처리
-     * @param req request
+     * @param req request 
      * @param res response
      * @param params
      */

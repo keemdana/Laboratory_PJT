@@ -33,6 +33,19 @@ public class MLangMngCtrl extends BaseCtrl{
      * @param params parameters
      * @return view
      */
+	
+	@RequestMapping("/viself/mlang/mLangMng/saveData/json")
+    public String saveData(HttpSession session,
+            ModelMap model,
+            @RequestParam
+            	Map<String,Object> params) {
+
+    	BaseModelVO modelInfo =
+                new BaseModelVO("viself", "mlang", null , null, "MLangMng", "saveData");
+        return getJsonView(modelInfo, model, params);
+    }
+	
+	
     @RequestMapping("/viself/mlang/mLangUpdate/deleteNoLang/json")
     public String deleteNoLang(HttpSession session,
             ModelMap model,
