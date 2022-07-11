@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.vertexid.laboratory.rndfab.rndfabSql.mssql">
+
+
+<!-- 연구설비 > 가동현황 그리드 리스트 (좌측) -->
+    <select id="chartGridList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT A.EQ_CD
+		            , A.PM_NUM
+		            , CASE WHEN A.EQ_CD+'_'+A.PM_NUM = 'POLY03_PM01' THEN 'POLY-03_PM01' ELSE A.EQ_CD+'_'+A.PM_NUM END AS EQ_PM
+		            , ROW_NUMBER() OVER( ORDER BY A.EQ_CD+'_'+A.PM_NUM) AS NO
+		            , MAX(A.INSRT_USER_ID) AS IP
+		            , CASE WHEN A.EQ_CD+'_'+A.PM_NUM = 'POLY03_PM01' THEN 'LP 2P' ELSE ISNULL(MAX(B.PART_NM),'') END AS PART_NM
+		            , ISNULL(MAX(B.TEAM_NM),'')+'_'+ISNULL(MAX(B.PART_NM),'')+'_'+ISNULL(MAX(C.username),'') AS dscpt
+                    , CASE WHEN CONVERT(TIME, MAX(A.EQ_DATE)) = CONVERT(TIME, '2022-05-27')
+		              THEN (SELECT STATUS FROM [LABORATORY].EQMD_DB.[dbo].[EQMD_STATUS] AS Y(NOLOCK) WHERE Y.EQ_CD = A.EQ_CD AND Y.PM_NUM = REPLACE(A.PM_NUM,'0','') AND Y.MIDNIGHT_DT = MAX(A.EQ_DATE))
+		              ELSE (SELECT STATUS FROM [LABORATORY].EQMD_DB.[dbo].[EQMD_P_2022] Z WHERE Z.EQ_CD = A.EQ_CD AND Z.PM_NUM = REPLACE(A.PM_NUM,'0','') AND Z.EQ_DATE = MAX(A.EQ_DATE))
+					  END STATUS
+            FROM 
+	            (
+			            SELECT 	CONVERT(NVARCHAR(10),CONVERT(DATETIME,A.DATE),120) AS DATE
+					            , A.EQ_CD
+                                , CASE WHEN PM_NUM='PM1' THEN 'PM01'
+                                        WHEN PM_NUM='PM2' THEN 'PM02'
+                                        WHEN PM_NUM='PM3' THEN 'PM03'
+                                        WHEN PM_NUM='PM4' THEN 'PM04'
+                                        WHEN PM_NUM='PM5' THEN 'PM05'
+                                        WHEN PM_NUM='PM6' THEN 'PM06'
+                                        WHEN PM_NUM='PM7' THEN 'PM07'
+                                        WHEN PM_NUM='PM8' THEN 'PM08'
+                                        WHEN PM_NUM='PM9' THEN 'PM09' ELSE PM_NUM END AS PM_NUM
+					            , A.STATUS
+					            , A.EQ_DATE
+					            , A.INSRT_USER_ID
+			            FROM [LABORATORY].EQMD_DB.[dbo].[EQMD_P_2022] AS A(NOLOCK)
+				            --LEFT JOIN [LABORATORY].EQMD_DB.[dbo].[EQMD_STATUS] AS B ON A.EQ_CD=B.eq_cd AND A.PM_NUM=B.pm_num AND CONVERT(NVARCHAR(10),A.EQ_DATE,120)=B.std_midnight_dt
+			            WHERE 
+			            <if test="stdt != null and stdt != ''">
+				            A.EQ_DATE >= CONVERT(DATETIME,#{stdt})
+				        </if>
+				        <if test="stdt == null or stdt == ''">
+				        	A.EQ_DATE >= CONVERT(DATETIME,CONVERT(CHAR(10), GETDATE(), 23))
+				        </if>					  
+			            <if test="eddt != null and eddt != ''">
+				            AND A.EQ_DATE <![CDATA[<=]]> CONVERT(DATETIME,#{eddt})
+				        </if>
+				        <if test="eddt == null or eddt == ''">
+				        	AND A.EQ_DATE <![CDATA[<=]]> CONVERT(DATETIME,CONVERT(CHAR(10), GETDATE(), 23))
+				        </if>
+			            
+			            <if test="pjt != null and pjt != ''">
+			            	AND A.EQ_CD LIKE #{pjt}
+			            </if>
+			            --ORDER BY A.EQ_CD, A.PM_NUM, A.EQ_DATE
+
+			            UNION ALL
+
+			            SELECT std_midnight_dt
+				            , eq_cd
+                                , CASE WHEN PM_NUM='PM1' THEN 'PM01'
+                                        WHEN PM_NUM='PM2' THEN 'PM02'
+                                        WHEN PM_NUM='PM3' THEN 'PM03'
+                                        WHEN PM_NUM='PM4' THEN 'PM04'
+                                        WHEN PM_NUM='PM5' THEN 'PM05'
+                                        WHEN PM_NUM='PM6' THEN 'PM06'
+                                        WHEN PM_NUM='PM7' THEN 'PM07'
+                                        WHEN PM_NUM='PM8' THEN 'PM08'
+                                        WHEN PM_NUM='PM9' THEN 'PM09' ELSE PM_NUM END AS PM_NUM
+				            , status
+				            , midnight_dt
+				            , ''
+			            FROM [LABORATORY].EQMD_DB.[dbo].[EQMD_STATUS] AS A(NOLOCK)
+			            WHERE 1=1
+			            <if test="pjt != null and pjt != ''">
+			            	AND eq_cd LIKE #{pjt}
+			            </if>
+			            <if test="stdt != null and stdt != ''">
+				            AND std_midnight_dt <![CDATA[>=]]> #{stdt}
+				        </if>
+				        <if test="stdt == null or stdt == ''">
+				        	AND std_midnight_dt <![CDATA[>=]]> CONVERT(CHAR(10), GETDATE(), 23)
+				        </if>
+				        
+				        <if test="eddt != null and eddt != ''">
+				            AND std_midnight_dt <![CDATA[<=]]> #{eddt}
+				        </if>
+				        <if test="eddt == null or eddt == ''">
+				        	AND std_midnight_dt <![CDATA[<=]]> CONVERT(CHAR(10), GETDATE(), 23)
+				        </if>
+			            --ORDER BY eq_cd, pm_num, midnight_dt
+	            ) A
+	            LEFT JOIN [LABORATORY].EQMD_DB.[dbo].[EQMD_EQDEPT] B WITH(NOLOCK) ON A.EQ_CD+A.PM_NUM = B.EQ_CD+B.PM_NUM
+	            LEFT JOIN [LABORATORY].INSTRUMENT.[dbo].[UV_IPS_AT_EMP] C WITH(NOLOCK) ON B.USER1 = C.userid
+	            WHERE
+	            <foreach item="item" collection="runstat" open="(" separator="OR" close=")">
+	             A.STATUS=#{item}
+	             </foreach>
+                    AND A.STATUS <![CDATA[<>]]> ''
+					AND A.EQ_CD NOT IN ('CVD#22','POLY-03')
+                    AND A.EQ_CD+'_'+A.PM_NUM NOT IN ('ALD02_PM01','MBA-01_PM02')
+	            GROUP BY A.EQ_CD, A.PM_NUM
+	            ORDER BY A.EQ_CD, A.PM_NUM
+    </select>
+
+
+<!-- 연구설비 > 조회 범위 일자 리스트 -->
+    <select id="chartSearchDateList" parameterType="map" resultType="paramMap" fetchSize="1000">
+    	SELECT --COM
+				 YYYYMMDD AS ST_DT
+				, CONVERT(NVARCHAR(10),LEAD(YYYYMMDD, 1, CONVERT(NVARCHAR(16),DATEADD(DAY,1,CONVERT(DATETIME,YYYYMMDD)),120)) OVER (PARTITION BY COM ORDER BY YYYYMMDD),120) AS END_DT
+				, YYYYMMDD AS DATE_NM
+				, CONVERT(NVARCHAR(16),GETDATE(),120) AS ST_TODAY
+				, CONVERT(NVARCHAR(16),DATEADD(MINUTE,5,GETDATE()),120) AS END_TODAY
+				, '▶ 현재시간'+': '+CONVERT(NVARCHAR,CONVERT(NVARCHAR(16),GETDATE(),120)) AS TODAY_NOW
+				, CASE WHEN SUBSTRING(YYYYMMDD,9,2)%2 =1  THEN '#D4F4FA'
+						WHEN SUBSTRING(YYYYMMDD,9,2)%2 =0 THEN '#FAF4C0' ELSE '#FFD9EC' END AS BGCOLOR
+			FROM 
+				(
+					SELECT 'COM' AS COM 
+							, CONVERT(CHAR(10), DATEADD(D, NUMBER,CONVERT(NVARCHAR(10),GETDATE()-80,120)),120) AS YYYYMMDD 
+					FROM MASTER..SPT_VALUES WITH(NOLOCK)
+					WHERE TYPE = 'P'
+				) A
+			WHERE 
+				<if test="stdt != null and stdt != ''">
+		            YYYYMMDD >= CONVERT(DATETIME,#{stdt})
+		        </if>
+		        <if test="stdt == null or stdt == ''">
+		        	YYYYMMDD >= CONVERT(DATETIME,CONVERT(CHAR(10), GETDATE(), 23))
+		        </if>					  
+	            <if test="eddt != null and eddt != ''">
+		            AND YYYYMMDD <![CDATA[<=]]> CONVERT(DATETIME,#{eddt})
+		        </if>
+		        <if test="eddt == null or eddt == ''">
+		        	AND YYYYMMDD <![CDATA[<=]]> CONVERT(DATETIME,CONVERT(CHAR(10), GETDATE(), 23))
+		        </if>
+			ORDER BY ST_DT
+    </select>
+
+<!-- 연구설비 > 조회 범위 일자 리스트2 -->
+    <select id="chartSearchDateList2" parameterType="map" resultType="paramMap" fetchSize="1000">
+    SELECT 
+	        --COM
+	        YYYYMMDD
+	        , CONVERT(NVARCHAR(19),LEAD(YYYYMMDD, 1, CONVERT(NVARCHAR(16),DATEADD(HOUR,1,CONVERT(DATETIME,YYYYMMDD)),120)) OVER (PARTITION BY COM ORDER BY YYYYMMDD),120) AS YYYYMMDDD 
+	        , CONVERT(NVARCHAR(5),CONVERT(DATETIME,YYYYMMDD),24) AS HHSS
+	        , CONVERT(NVARCHAR(10),YYYYMMDD,120) AS YYYYMMDD3
+	        , CASE WHEN SUBSTRING(CONVERT(NVARCHAR(10),YYYYMMDD,120),9,2)%2 = 1 THEN '#D4F4FA'
+	                WHEN SUBSTRING(CONVERT(NVARCHAR(10),YYYYMMDD,120),9,2)%2 = 0 THEN '#FAF4C0' ELSE '#FFD9EC' END AS BGCOLOR
+	        FROM 
+	        (
+	
+	            SELECT 'COM' AS COM 
+	                , CONVERT(CHAR(16), DATEADD(HOUR, NUMBER,CONVERT(NVARCHAR(10),GETDATE()-80,120)),120) AS YYYYMMDD 
+	            FROM MASTER..SPT_VALUES WITH(NOLOCK)
+	            WHERE TYPE = 'P'
+	            --ORDER BY USEDATE
+	        ) A
+	        WHERE 
+	        <if test="stdt != null and stdt != ''">
+		            LEFT(YYYYMMDD,10) >= CONVERT(DATETIME,#{stdt})
+	        </if>
+	        <if test="stdt == null or stdt == ''">
+	        	LEFT(YYYYMMDD,10) >= CONVERT(DATETIME,CONVERT(CHAR(10), GETDATE(), 23))
+	        </if>					  
+            <if test="eddt != null and eddt != ''">
+	            AND LEFT(YYYYMMDD,10) <![CDATA[<=]]> CONVERT(DATETIME,#{eddt})
+	        </if>
+	        <if test="eddt == null or eddt == ''">
+	        	AND LEFT(YYYYMMDD,10) <![CDATA[<=]]> CONVERT(DATETIME,CONVERT(CHAR(10), GETDATE(), 23))
+	        </if>
+	        
+	        ORDER BY YYYYMMDD
+    </select>
+
+
+<!-- 연구설비 > 실제 가동현황 데이터 -->
+    <select id="chartStatusList" parameterType="map" resultType="paramMap" fetchSize="1000">
+    	SELECT A.EQ_CD
+		, A.PM_NUM
+		, A.STATUS
+		, A.EQS_DATE
+		, A.EQE_DATE
+		, A.COLOR
+		, CASE WHEN A.EQ_PM = 'POLY03_PM01' THEN 'POLY-03_PM01' ELSE A.EQ_PM END AS EQ_PM
+		, A.ToolTip
+        , A.STATUS_NM
+		FROM 
+			(					
+				SELECT A.DATE
+						,A.EQ_CD
+						, A.PM_NUM
+						, A.STATUS
+						, CONVERT(NVARCHAR(16),A.EQ_DATE,120) AS EQS_DATE
+						, CONVERT(NVARCHAR(16),LEAD(A.EQ_DATE, 1, CONVERT(NVARCHAR(16),GETDATE(),120)) OVER (PARTITION BY A.EQ_CD, A.PM_NUM ORDER BY A.EQ_DATE),120) AS EQE_DATE
+						, CASE WHEN STATUS = 0 THEN '#000000'
+							WHEN STATUS = 1 THEN '#BDBDBD'
+							WHEN STATUS = 2 THEN '#82DE7E'  --#82DE7E(녹색)
+							WHEN STATUS = 3 THEN '#87EDFF'  --#87EDFF(파랑)
+							WHEN STATUS = 4 THEN '#FF80EE'  --#FF80EE(자주)
+							WHEN STATUS = 5 THEN '#A46EFF'  --#A46EFF(보라)
+							WHEN STATUS = 6 THEN '#FF8080'  --#FF8080(빨간)
+							WHEN STATUS = 7 THEN '#FFD86B'  --#FFD86B(주황) 
+                                ELSE '#000000' END AS COLOR 
+						, A.EQ_CD+'_'+A.PM_NUM AS EQ_PM
+						,'▶상태: '+ CASE WHEN STATUS = 0 THEN 'NotUse(0)'
+							WHEN STATUS = 1 THEN 'DisConnect(1)'
+							WHEN STATUS = 2 THEN 'ATM(2)'
+							WHEN STATUS = 3 THEN 'Vacuum(3)'
+							WHEN STATUS = 4 THEN 'MaintRcp(4)'
+							WHEN STATUS = 5 THEN 'StanbyRcp(5)'
+							WHEN STATUS = 6 THEN 'Process(6)'
+							WHEN STATUS = 7 THEN 'Clean(7)' ELSE '' END 
+							+' , ▶가동시간: '+REPLACE(SUBSTRING(CONVERT(NVARCHAR(16),A.EQ_DATE,120),6,11),'-','.')+'~'+REPLACE(SUBSTRING(CONVERT(NVARCHAR(16),LEAD(A.EQ_DATE, 1, CONVERT(NVARCHAR(16),GETDATE(),120)) OVER (PARTITION BY A.EQ_CD, A.PM_NUM ORDER BY A.EQ_DATE),120),6,11),'-','.') +' , ▶IP: '+A.INSRT_USER_ID  AS ToolTip 
+						--, A.EQ_DATE
+                        , CASE WHEN STATUS = 0 THEN 'NotUse(0)'
+							WHEN STATUS = 1 THEN 'DisConnect(1)'
+							WHEN STATUS = 2 THEN 'ATM(2)'
+							WHEN STATUS = 3 THEN 'Vacuum(3)'
+							WHEN STATUS = 4 THEN 'MaintRcp(4)'
+							WHEN STATUS = 5 THEN 'StanbyRcp(5)'
+							WHEN STATUS = 6 THEN 'Process(6)'
+							WHEN STATUS = 7 THEN 'Clean(7)' ELSE '' END  STATUS_NM
+					FROM 
+						(
+							SELECT 	CONVERT(NVARCHAR(10),CONVERT(DATETIME,A.DATE),120) AS DATE
+									, A.EQ_CD
+									, CASE WHEN PM_NUM='PM1' THEN 'PM01'
+											WHEN PM_NUM='PM2' THEN 'PM02'
+											WHEN PM_NUM='PM3' THEN 'PM03'
+											WHEN PM_NUM='PM4' THEN 'PM04'
+											WHEN PM_NUM='PM5' THEN 'PM05'
+											WHEN PM_NUM='PM6' THEN 'PM06'
+											WHEN PM_NUM='PM7' THEN 'PM07'
+											WHEN PM_NUM='PM8' THEN 'PM08'
+											WHEN PM_NUM='PM9' THEN 'PM09' ELSE PM_NUM END AS PM_NUM
+									, A.STATUS
+									, A.EQ_DATE
+									, A.INSRT_USER_ID 
+							FROM [LABORATORY].EQMD_DB.[dbo].[EQMD_P_2022] AS A(NOLOCK)
+							WHERE
+							<if test="stdt != null and stdt != ''">
+				           	 	A.EQ_DATE >= CONVERT(DATETIME,#{stdt})
+					        </if>
+					        <if test="stdt == null or stdt == ''">
+					        	A.EQ_DATE >= CONVERT(DATETIME,CONVERT(CHAR(10), GETDATE(), 23))
+					        </if>
+					        <if test="eddt != null and eddt != ''">
+					            AND A.EQ_DATE <![CDATA[<=]]> CONVERT(DATETIME,#{eddt}
+					        </if>
+					        <if test="eddt == null or eddt == ''">
+					        	AND A.EQ_DATE <![CDATA[<=]]> CONVERT(DATETIME,CONVERT(CHAR(10), GETDATE(), 23))
+					        </if>
+					        
+                            -- WHERE A.EQ_DATE BETWEEN '2022-06-23' +' '+ SUBSTRING(@runhour,0,3) + ':00' AND '2022-06-23' +' '+ SUBSTRING(@runhour,3,4) + ':00'
+								--	AND A.EQ_CD LIKE @runpjt
+
+							UNION ALL
+
+							SELECT A.std_midnight_dt
+								    , A.eq_cd
+									, CASE WHEN A.PM_NUM='PM1' THEN 'PM01'
+											WHEN A.PM_NUM='PM2' THEN 'PM02'
+											WHEN A.PM_NUM='PM3' THEN 'PM03'
+											WHEN A.PM_NUM='PM4' THEN 'PM04'
+											WHEN A.PM_NUM='PM5' THEN 'PM05'
+											WHEN A.PM_NUM='PM6' THEN 'PM06'
+											WHEN A.PM_NUM='PM7' THEN 'PM07'
+											WHEN A.PM_NUM='PM8' THEN 'PM08'
+											WHEN A.PM_NUM='PM9' THEN 'PM09' ELSE A.PM_NUM END AS PM_NUM
+								, A.status
+								, A.midnight_dt
+								, A.ip
+							FROM [LABORATORY].EQMD_DB.[dbo].[EQMD_STATUS] AS A(NOLOCK)
+							WHERE 1=1
+							<if test="pjt != null and pjt != ''">
+				            	AND eq_cd LIKE #{pjt}
+				            </if>
+				            <if test="stdt != null and stdt != ''">
+					            AND std_midnight_dt <![CDATA[>=]]> #{stdt}
+					        </if>
+					        <if test="stdt == null or stdt == ''">
+					        	AND std_midnight_dt <![CDATA[>=]]> CONVERT(CHAR(10), GETDATE(), 23)
+					        </if>
+					        
+					        <if test="eddt != null and eddt != ''">
+					            AND std_midnight_dt <![CDATA[<=]]> #{eddt}
+					        </if>
+					        <if test="eddt == null or eddt == ''">
+					        	AND std_midnight_dt <![CDATA[<=]]> CONVERT(CHAR(10), GETDATE(), 23)
+					        </if>
+						) A
+			) A
+			WHERE <foreach item="item" collection="runstat" open="(" separator="OR" close=")">
+	             A.STATUS=#{item}
+	             </foreach>
+                    AND A.STATUS <![CDATA[<>]]> ''
+					AND A.EQ_CD NOT IN ('CVD#22','POLY-03')
+                    AND A.EQ_PM NOT IN ('ALD02_PM01','MBA-01_PM02')
+			ORDER BY A.EQ_CD, A.PM_NUM, A.EQS_DATE
+    </select>
+
+
+</mapper>

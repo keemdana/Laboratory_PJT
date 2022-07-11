@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.vertexid.voc.vocProcess.Voc.mssql">
+	<select id="getList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT VOC_NO
+			   , (SELECT DEPT_NM FROM [10.10.10.21].PLM_NEW.dbo.V_EMP WHERE USER_ID = MST.CRE_USER) AS CRE_DEPT
+			   , (SELECT EMP_NM FROM [10.10.10.21].PLM_NEW.dbo.V_EMP WHERE USER_ID = MST.CRE_USER) AS CRE_USER
+			   , CONVERT(CHAR(10), CRE_DATE, 23) AS CRE_DATE
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.BSS_AREA AND HCODE = 'BSS_AREA') AS BSS_AREA
+			   , CUST_NM
+			   , CUS_MNG_DATE
+			   , CUS_MNG_USER
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.REG_TYPE AND HCODE = 'REG_TYPE') AS REG_TYPE
+			   , VOC_TITLE
+			   , VOC_STATUS
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.VOC_STATUS AND HCODE = 'STATUS') AS VOC_STATUS_NM
+			   , DEL_FLAG
+		FROM DBO.VOC_MST MST
+		WHERE DEL_FLAG NOT IN ('Y')
+	</select>
+	<!-- 
+	<select id="getSchVocSelectOne" parameterType="map" resultMap="resultClob" fetchSize="1000">
+        SELECT VOC_NO
+			   , (SELECT DEPT_NM FROM [10.10.10.21].PLM_NEW.dbo.V_EMP WHERE USER_ID = MST.CRE_USER) AS CRE_DEPT
+			   , CRE_USER AS CRE_USER_ID
+			   , (SELECT EMP_NM FROM [10.10.10.21].PLM_NEW.dbo.V_EMP WHERE USER_ID = MST.CRE_USER) AS CRE_USER
+			   , CONVERT(CHAR(10), CRE_DATE, 23) AS CRE_DATE
+			   , BSS_AREA AS BSS_AREA_CD
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.BSS_AREA AND HCODE = 'BSS_AREA') AS BSS_AREA
+			   , CUST_CD
+			   , CUST_NM
+			   , CUS_MNG_DATE
+			   , CUS_MNG_USER
+			   , CUS_MNG_EMAIL
+			   , CUS_MNG_FB_YN
+			   , REG_TYPE AS REG_TYPE_CD
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.REG_TYPE AND HCODE = 'REG_TYPE') AS REG_TYPE
+			   , VOC_TITLE
+			   , REG_CONTENTS
+			   , ATCH_FILE_ID
+			   , VOC_STATUS AS VOC_STATUS_CD
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.VOC_STATUS AND HCODE = 'STATUS') AS VOC_STATUS
+			   , REG_ING_YN
+			   , CASE WHEN REG_ING_YN = 'Y' THEN '진행' ELSE '반려' END AS REG_ING_NM
+			   , CONVERT(CHAR(10), REG_ING_DATE, 23) AS REG_ING_DATE
+			   , REG_ING_RS AS REG_ING_RS_CD
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.REG_ING_RS AND HCODE = 'REJECT') AS REG_ING_RS
+			   , GRADE_TYPE AS GRADE_TYPE_CD
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.GRADE_TYPE AND HCODE = 'GRADE_TYPE') AS GRADE_TYPE
+			   , PR_ORDER_YN
+			   , REG_ING_RS_ETC
+		FROM DBO.VOC_MST MST
+        WHERE VOC_NO  = #{vocNo}
+        AND DEL_FLAG NOT IN ('Y')
+    </select>
+    <resultMap id="resultClob" type="paramMap">
+        <result property="regContents" column="REG_CONTENTS" jdbcType="CLOB" javaType="java.lang.String"/>
+    </resultMap>
+    
+    <select id="getSchVocSelectSulbiList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT   LINE
+			   , PROD
+			   , PROCESS
+			   , PROJECT_NO AS VOC_PJT_NO
+		FROM DBO.VOC_SULBI
+		WHERE VOC_NO  = #{vocNo}
+		AND DEL_FLAG = 'N'
+		ORDER BY SEQ
+	</select>
+    
+    <select id="getSchVocSelectProcessList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT   VP.VOC_NO
+			   , VP.SEQ
+			   , VP.DEPT
+			   , VP.DEPT_NM
+			   , VP.REQ_CONTENTS
+			   , VP.PROCESS_USER_ID
+			   , VP.PROCESS_USER_NM
+			   , VP.PROCESS_PLAN
+			   , VP.PROCESS_PLAN_DATE
+			   , VP.PROCESS_STATUS
+			   , VP.ECR_NO
+			   , VP.GW_KEY
+			   , VP.PROCESS_COMP_DATE
+			   , VP.PROCESS_CONTENTS
+			   , VP.ATCH_FILE_ID
+			   , VM.PR_ORDER_YN
+			   , VP.PROCESS_COMP_YN
+		FROM DBO.VOC_PROCESS VP
+		LEFT OUTER JOIN VOC_MST VM ON VP.VOC_NO = VM.VOC_NO
+		WHERE VM.VOC_NO  = #{vocNo}
+		ORDER BY VP.SEQ
+	</select>
+	 -->
+	<!-- 
+	<select id="getDdList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT   DCODE
+			   , DNAME
+		FROM DBO.VOC_MDM
+		WHERE HCODE = #{hcode}
+		AND DEL_FLAG = 'N'
+		ORDER BY SORT_SEQ
+	</select>
+	 -->
+	 <!-- 
+	<select id="getVocNo" parameterType="map" resultType="string" fetchSize="1000">
+		SELECT   MAX(RIGHT(VOC_NO, 4)) + 1 AS VOC_SEQ
+		FROM VOC_MST
+		WHERE SUBSTRING(VOC_NO,4,4) = LEFT(CONVERT(CHAR(6), GETDATE(), 12), 4)
+	</select>
+	
+	<select id="getCustList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        SELECT	 DCODE
+				   , DNAME
+				   , ROW_NUMBER() OVER( ORDER BY TSM.SORT_SEQ ) AS RN
+				   , COUNT(*) OVER() AS TOT_CNT
+	        FROM [10.10.10.21].PLM_NEW.dbo.ZCODED AS TSM WITH (NOLOCK) 
+			WHERE HCODE = 'ISCM29'
+			AND USE_YN = '1'
+			<if test="custNm != null and !custNm.equals('')">
+				AND DNAME LIKE '%' + #{custNm} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+	
+	<select id="getDeptList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        
+			SELECT DCODE
+				   , DNAME
+				   , ROW_NUMBER() OVER( ORDER BY VE.DCODE ) AS RN
+				   , COUNT(*) OVER() AS TOT_CNT
+			FROM
+			(
+			 SELECT DISTINCT DEPT_CD AS DCODE
+							   , DEPT_NM AS DNAME				 
+						FROM [10.10.10.21].PLM_NEW.dbo.V_EMP 
+						WHERE 1=1
+						AND USE_YN = '1'
+			) VE
+			<if test="deptNm != null and !deptNm.equals('')">
+				WHERE DNAME LIKE '%' + #{deptNm} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+    
+	<select id="getPjtList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        SELECT PROJ_NO AS DCODE
+	        	   , ROW_NUMBER() OVER( ORDER BY MPO.PROJ_NO ) AS RN
+	        	   , COUNT(*) OVER() AS TOT_CNT
+			FROM [10.10.10.21].PLM_NEW.dbo.MES_PROJ_ORDER AS MPO WITH (NOLOCK) 
+			WHERE PROJ_NO NOT LIKE '%SCM%'
+			AND PSTAT NOT IN ('4','D')
+			<if test="pjtNo != null and !pjtNo.equals('')">
+				AND PROJ_NO LIKE '%' + #{pjtNo} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+	
+	<select id="getSulbiList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        SELECT	 DCODE
+				   , DNAME
+				   , ROW_NUMBER() OVER( ORDER BY TSM.SORT_SEQ ) AS RN
+				   , COUNT(*) OVER() AS TOT_CNT
+	        FROM [10.10.10.21].PLM_NEW.dbo.ZCODED AS TSM WITH (NOLOCK) 
+			WHERE HCODE = #{hcode}
+			AND USE_YN = '1'
+			<if test="dname != null and !dname.equals('')">
+				AND DNAME LIKE '%' + #{dname} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+    
+    <select id="getEmpList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        SELECT	 DEPT_CD
+				   , DEPT_NM
+				   , EMP_NO
+				   , EMP_NM + '(' + USER_ID + ')' AS EMP_NM
+				   , ROW_NUMBER() OVER( ORDER BY TSM.EMP_NM ) AS RN
+				   , COUNT(*) OVER() AS TOT_CNT
+	        FROM [10.10.10.21].PLM_NEW.dbo.V_EMP AS TSM WITH (NOLOCK) 
+			WHERE USE_YN = '1'
+			<if test="empNm != null and !empNm.equals('')">
+				AND EMP_NM LIKE '%' + #{empNm} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+    
+    <select id="getEcrList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        SELECT ECR_NO AS DCODE
+			 	   , ECR_TITLE AS DNAME
+			 	   , ECR_EMP_NM
+			 	   , ROW_NUMBER() OVER( ORDER BY ECR.ECR_NO ) AS RN
+			 	   , COUNT(*) OVER() AS TOT_CNT
+			FROM [10.10.10.21].PLM_NEW.dbo.V_ECR ECR WITH (NOLOCK)
+			WHERE 1=1
+	        AND ECR_DT BETWEEN #{ecrFrDate} AND #{ecrEdDate}
+	        <if test="ecrNo != null and !ecrNo.equals('')">
+				AND ECR_NO LIKE '%' + #{ecrNo} + '%'
+			</if>
+			<if test="deptArea != null and !deptArea.equals('')">
+				AND DEPT_AREA LIKE '%' + #{deptArea} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+    
+    <insert id="saveVocMst" parameterType="com.vertexid.voc.vocProcessDTO" >
+        INSERT INTO VOC_MST(
+            VOC_NO
+            , CRE_DATE
+            , CRE_DEPT
+            , CRE_USER
+            , BSS_AREA
+            , REG_TYPE
+            , CUST_CD
+            , CUST_NM
+            , CUS_MNG_DATE
+            , CUS_MNG_USER
+            , CUS_MNG_EMAIL
+            , CUS_MNG_FB_YN
+            , VOC_TITLE
+            , REG_CONTENTS
+            , ATCH_FILE_ID
+            , VOC_STATUS
+            , DEL_FLAG
+        )VALUES(
+            #{vocNo}
+            , GETDATE()
+            , #{creDept}
+            , #{creUser}
+            , #{bssArea}
+            , #{regType}
+            , #{custCd}
+            , #{custNm}
+            , #{cusMngDate}
+            , #{cusMngUser}
+            , #{cusMngEmail}
+            , #{cusMngFbYn}
+            , #{vocTitle}
+            , #{regContents}
+            , #{atchFileId}
+            , 'VOC02'
+            , 'N'
+        )
+    </insert>
+    
+    <insert id="saveTmpMst" parameterType="com.vertexid.voc.vocProcessDTO" >
+        INSERT INTO VOC_MST(
+            VOC_NO
+            , CRE_DATE
+            , CRE_DEPT
+            , CRE_USER
+            , BSS_AREA
+            , REG_TYPE
+            , CUST_CD
+            , CUST_NM
+            , CUS_MNG_DATE
+            , CUS_MNG_USER
+            , CUS_MNG_EMAIL
+            , CUS_MNG_FB_YN
+            , VOC_TITLE
+            , REG_CONTENTS
+            , ATCH_FILE_ID
+            , VOC_STATUS
+            , DEL_FLAG
+        )VALUES(
+            #{vocNo}
+            , GETDATE()
+            , #{creDept}
+            , #{creUser}
+            , #{bssArea}
+            , #{regType}
+            , #{custCd}
+            , #{custNm}
+            , #{cusMngDate}
+            , #{cusMngUser}
+            , #{cusMngEmail}
+            , #{cusMngFbYn}
+            , #{vocTitle}
+            , #{regContents}
+            , #{atchFileId}
+            , 'VOC01'
+            , 'T'
+        )
+    </insert>
+    
+    <insert id="saveVocSulbi" parameterType="com.vertexid.voc.vocSulbiVo" >
+        INSERT INTO VOC_SULBI(
+            VOC_NO
+            , SEQ
+            , LINE
+            , PROD
+            , PROCESS
+            , PROJECT_NO
+            , UPD_DATE
+            , UPD_USER
+            , DEL_FLAG
+        )VALUES(
+            #{vocNo}
+            , #{seq}
+            , #{line}
+            , #{prod}
+            , #{process}
+            , #{vocPjtNo}
+            , GETDATE()
+            , #{creUser}  
+            ,'N'         
+        )
+    </insert>
+    
+    <delete id="deleteMst" parameterType="com.vertexid.voc.vocProcessDTO">
+        UPDATE DBO.VOC_MST
+		SET DEL_FLAG = 'Y'
+		WHERE VOC_NO = #{vocNo}
+    </delete>
+    
+    <delete id="deleteSulbi" parameterType="com.vertexid.voc.vocProcessDTO">
+        DELETE FROM DBO.VOC_SULBI
+		WHERE VOC_NO = #{vocNo}
+    </delete>
+    
+    <update id="updateTmpMst" parameterType="com.vertexid.voc.vocProcessDTO" >
+		UPDATE DBO.VOC_MST
+		SET UPD_DATE = GETDATE()
+			, UPD_USER = #{creUser}
+			, BSS_AREA = #{bssArea}
+            , REG_TYPE = #{regType}
+            , CUST_CD = #{custCd}
+            , CUST_NM = #{custNm}
+            , CUS_MNG_DATE = #{cusMngDate}
+            , CUS_MNG_USER = #{cusMngUser}
+            , CUS_MNG_EMAIL = #{cusMngEmail}
+            , CUS_MNG_FB_YN = #{cusMngFbYn}
+            , VOC_TITLE = #{vocTitle}
+            , REG_CONTENTS = #{regContents}
+            , ATCH_FILE_ID = #{atchFileId}
+            , DEL_FLAG = #{delFlag}
+            , VOC_STATUS = #{vocStatus}
+		WHERE VOC_NO = #{vocNo}
+		AND DEL_FLAG = 'T'
+	</update>
+	
+	<update id="updateProcessMst" parameterType="com.vertexid.voc.vocProcessDTO" >
+		UPDATE DBO.VOC_MST
+		SET REG_ING_YN = #{regIngYn}
+			, GRADE_TYPE = #{gradeType}
+			, REG_ING_RS = #{regIngRs}
+			, REG_ING_DATE = GETDATE()
+			, REG_ING_USER = #{loginUserId}
+			, PR_ORDER_YN = #{prOrderYn}
+			, REG_ING_RS_ETC = #{regIngRsEtc}
+		WHERE VOC_NO = #{vocNo}
+	</update>
+	
+	<insert id="saveVocProcess" parameterType="com.vertexid.voc.vocProcessVo" >
+        INSERT INTO VOC_PROCESS(
+            VOC_NO
+            , SEQ
+            , CRE_DATE
+            , CRE_USER
+            , DEPT
+            , DEPT_NM
+            , REQ_CONTENTS
+            , PROCESS_USER_ID
+            , PROCESS_USER_NM
+            , PROCESS_PLAN
+            , PROCESS_PLAN_DATE
+            , PROCESS_STATUS
+            , ECR_NO
+            , ATCH_FILE_ID
+        )VALUES(
+            #{vocNo}
+            , #{seq}
+            , GETDATE()
+            , #{loginUserId}
+            , #{dept}
+            , #{deptNm}
+            , #{reqContents}
+            , #{processUserId}
+            , #{processUserNm}
+            , #{processPlan}
+            , #{processPlanDate}
+            , #{processStatus}
+            , #{ecrNo}
+            , #{atchFileId}
+        )
+    </insert>
+    
+    <update id="updateProcessCompYn" parameterType="com.vertexid.voc.vocProcessVo" >
+		UPDATE DBO.VOC_PROCESS
+		SET PROCESS_COMP_YN = #{processCompYn}
+		WHERE VOC_NO = #{vocNo}
+		AND SEQ = #{seq}
+	</update>
+	
+    <delete id="deleteProcess" parameterType="com.vertexid.voc.vocProcessDTO">
+        DELETE FROM DBO.VOC_PROCESS
+		WHERE VOC_NO = #{vocNo}
+    </delete>
+    
+    <update id="updateProcessStatus" parameterType="com.vertexid.voc.vocProcessDTO" >
+		UPDATE DBO.VOC_MST
+		SET VOC_STATUS = #{vocStatus}
+		WHERE VOC_NO = #{vocNo}
+	</update>
+	
+	<insert id="saveEmpProcess_test" parameterType="com.vertexid.voc.vocProcessVo" >
+        INSERT INTO VOC_PROCESS(
+            VOC_NO
+            , SEQ
+            , CRE_DATE
+            , CRE_USER
+            , DEPT
+            , DEPT_NM
+            , REQ_CONTENTS
+            , PROCESS_USER_ID
+            , PROCESS_USER_NM
+        )VALUES(
+            #{vocNo}
+            , #{seq}
+            , GETDATE()
+            , #{loginUserId}
+            , #{dept}
+            , #{deptNm}
+            , #{reqContents}
+            , #{processUserId}
+            , #{processUserNm}
+        )
+    </insert>
+    
+    <update id="saveEmpProcess" parameterType="com.vertexid.voc.vocProcessVo" >
+    	UPDATE DBO.VOC_PROCESS
+		SET PROCESS_USER_ID = #{processUserId}
+            , PROCESS_USER_NM = #{processUserNm}
+		WHERE VOC_NO = #{vocNo}
+		AND SEQ = #{seq}
+		AND DEPT = #{dept}
+    </update>
+    
+    <select id="getPrcessCmpYn" parameterType="com.vertexid.voc.vocProcessDTO" resultType="string" fetchSize="1000">
+        SELECT CASE WHEN NO_CNT = 0 THEN 'Y' ELSE 'N' END AS PROCESS_CMP_YN
+		FROM
+		(
+			SELECT COUNT(*) AS NO_CNT
+			FROM VOC_PROCESS
+			WHERE VOC_NO = #{vocNo}
+			AND ISNULL(PROCESS_USER_ID,'') = ''
+		) A
+    </select>
+
+	<update id="saveProProcess" parameterType="com.vertexid.voc.vocProcessVo" >
+		UPDATE DBO.VOC_PROCESS
+		SET PROCESS_PLAN = #{processPlan}
+            , PROCESS_PLAN_DATE = #{processPlanDate}
+            , PROCESS_STATUS = #{processStatus}
+            , ECR_NO = #{ecrNo}
+            , PROCESS_CONTENTS = #{processContents}
+            , ATCH_FILE_ID = #{atchFileId}
+		WHERE VOC_NO = #{vocNo}
+		AND SEQ = #{seq}
+		AND DEPT = #{dept}
+	</update>
+	
+	<insert id="saveProStatusDtl" parameterType="com.vertexid.voc.vocProcessVo" >
+        INSERT INTO VOC_PROCESS_DTL(
+            VOC_NO
+            , PRO_SEQ
+            , PRO_DTL_STATUS
+            , CREATE_DATE
+            , CREATE_USER
+        )VALUES(
+            #{vocNo}
+            , #{seq}
+            , #{processStatus}
+            , GETDATE()
+            , #{creUser}
+        )
+    </insert>
+     -->
+</mapper>        

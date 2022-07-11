@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.vertexid.laboratory.mi.miSql.mssql">
+
+	<!-- 계측기예약 > 홈 > 주요안내 -->
+    <select id="noticeList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT CONTENT,INSERT_DT FROM dbo.MI_NOTICE
+    </select>
+    
+<!-- 계측기예약 > 홈 > 현황 -->
+    <select id="requestList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT CASE TB1.MI_CD WHEN 'ALL' THEN '무관' ELSE TB1.MI_CD END [MI_KEY],
+	           (SELECT COUNT(*) FROM dbo.MI_RQ WHERE MI_KEY=TB1.MI_CD AND MI_RQ_STATUS='1' AND CONVERT(NVARCHAR,INSERT_DT,23) >='2022-01-20' AND DEL_FLAG IS NULL) [VAL1],
+			   (SELECT COUNT(*) FROM dbo.MI_RQ WHERE MI_KEY=TB1.MI_CD AND MI_RQ_STATUS='3' AND CONVERT(NVARCHAR,INSERT_DT,23) >='2022-01-20' AND DEL_FLAG IS NULL) [VAL2],
+			   (SELECT COUNT(*) FROM dbo.MI_RQ WHERE MI_KEY=TB1.MI_CD AND MI_RQ_STATUS='4' AND CONVERT(NVARCHAR,INSERT_DT,23) >='2022-01-20' AND DEL_FLAG IS NULL) [VAL3],
+			   (SELECT COUNT(*) FROM dbo.MI_RQ WHERE MI_KEY=TB1.MI_CD AND MI_RQ_STATUS='5' AND CONVERT(NVARCHAR,INSERT_DT,23) >='2022-01-20' AND DEL_FLAG IS NULL) [VAL4],
+			   (SELECT COUNT(*) FROM dbo.MI_RQ WHERE MI_KEY=TB1.MI_CD AND MI_RQ_STATUS='6' AND CONVERT(NVARCHAR,INSERT_DT,23) >='2022-01-20' AND DEL_FLAG IS NULL) [VAL5],
+			   (SELECT COUNT(*) FROM dbo.MI_RQ WHERE MI_KEY=TB1.MI_CD AND MI_RQ_STATUS='7' AND CONVERT(NVARCHAR,INSERT_DT,23) >='2022-01-20' AND DEL_FLAG IS NULL) [VAL6]
+		FROM dbo.MI_RQ_MINOR TB1 WITH (NOLOCK)
+		LEFT JOIN dbo.MI_RQ TB2
+			   ON TB1.MI_CD=TB2.MI_KEY
+			WHERE TB1.MA_CD='MI_KEY'
+			  AND TB1.USE_YN='Y'
+			GROUP BY TB1.MI_CD 
+			ORDER BY CASE TB1.MI_CD
+						 WHEN 'Aleris8350' THEN 1
+						 WHEN 'Wet Station' THEN 2
+						 WHEN 'SP5' THEN 3
+						 WHEN 'SFX-100' THEN 4
+						 WHEN 'SFX-200' THEN 5
+						 WHEN 'SFX-200_2F' THEN 6
+						 WHEN 'RS-100' THEN 7
+						 WHEN 'XRF' THEN 8
+						 WHEN 'FE-SEM' THEN 9
+						 ELSE 10
+					 END
+    </select>
+    
+<!-- 계측기예약 > 의뢰현황 -->    
+	<select id="requestStatusList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		<include refid="Common.prefixPaging" />
+		SELECT
+		ROW_NUMBER() OVER (ORDER BY MI_RQ_SUBUN) RN
+		, COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+		, PAGING.*
+		FROM (
+			SELECT MTB.MI_RQ_SUBUN
+			     , MTB.MI_RQ_KEY [MI_RQ_KEY]
+			     , CONVERT(VARCHAR(16),INSERT_DT,120) [INSERT_DT]
+			     , MTB.INSERT_ID
+			     , ISNULL((SELECT MAX(CONVERT(NVARCHAR(16),INSERT_DT,120)) FROM dbo.MI_RQ_ST_LOG  WHERE MI_RQ_KEY=MTB.MI_RQ_KEY AND MI_RQ_STATUS='3'),'') [MI_RQ_IN]
+			     , ISNULL((SELECT MAX(CONVERT(NVARCHAR(16),INSERT_DT,120)) FROM dbo.MI_RQ_ST_LOG  WHERE MI_RQ_KEY=MTB.MI_RQ_KEY AND MI_RQ_STATUS='4'),'') [MI_RQ_DT]
+			     , ISNULL((SELECT MAX(CONVERT(NVARCHAR(16),INSERT_DT,120)) FROM dbo.MI_RQ_ST_LOG WHERE MI_RQ_KEY=MTB.MI_RQ_KEY AND MI_RQ_STATUS='5'),'') [MI_START]
+			     , ISNULL((SELECT MAX(CONVERT(NVARCHAR(16),INSERT_DT,120)) FROM dbo.MI_RQ_ST_LOG WHERE MI_RQ_KEY=MTB.MI_RQ_KEY AND MI_RQ_STATUS='7'),'') [MI_END]
+			     , MTB.MI_RQ_DEPT_NM [MI_RQ_DEPT_NM]
+			     , MTB.MI_RQ_USER_NM [MI_RQ_USER_NM]
+			     , MTB.MI_RQ_FOUP_ID [MI_RQ_FOUP_ID]
+			     , (SELECT MI_NM [MI_NM] FROM dbo.[MI_RQ_MINOR] WHERE MA_CD='MI_RQ_G' AND MI_CD=MTB.MI_RQ_G) [MI_RQ_G]
+			     , MTB.MI_RQ_RECIPE
+			     , MTB.MI_RQ_LOT
+			     , MTB.MI_KEY [MI_KEY]
+			     , (SELECT MI_NM [MI_NM] FROM dbo.[MI_RQ_MINOR] WHERE MA_CD='MI_RQ_POINT' AND REL_CD=MTB.MI_RQ_G AND MI_CD=MTB.MI_RQ_POINT) [MI_RQ_POINT]
+			     , TB1.SLOT_CNT [SLOT_CNT]
+			     , MTB.MI_RQ_NEXT_STEP
+			     , TB2.STATUS_NM [STATUS_NM]
+			     , MTB.MI_RQ_STATUS
+			     , MTB.DEL_FLAG
+	--		     , CONVERT(NVARCHAR(10),MTB.INSERT_DT,23) [INSERT_DT]
+                 , CASE WHEN CAST(MI_RQ_COMMENT AS VARCHAR) = '' THEN 'N'
+                        ELSE 'Y'
+                   END COMMENT_YN
+			     , MTB.MI_RQ_TITLE FROM dbo.MI_RQ AS MTB WITH (NOLOCK)
+			LEFT JOIN (SELECT COUNT(*) AS [SLOT_CNT], MI_RQ_KEY AS [MI_RQ_KEYS] FROM dbo.MI_RQ_SLOT GROUP BY MI_RQ_KEY) TB1
+				   ON MTB.MI_RQ_KEY=TB1.MI_RQ_KEYS
+			LEFT JOIN (SELECT MI_RQ_STATUS [STATUS], MI_RQ_STATUS_NM [STATUS_NM] FROM dbo.MI_RQ_ST_INFO) TB2
+				   ON MTB.MI_RQ_STATUS=TB2.STATUS
+			WHERE 1=1 AND MTB.DEL_FLAG IS NULL
+		<if test="miKey != null and miKey != ''">
+			AND MTB.MI_KEY = #{miKey}		-- 계측기
+		</if>
+		
+		<if test="status != null and status != ''">
+			AND MTB.MI_RQ_STATUS = #{status}	-- 상태
+		</if>
+		
+		<if test="stdt != null and stdt != ''">
+			AND CONVERT(CHAR(10),MTB.INSERT_DT,23) BETWEEN #{stdt} AND #{eddt}	-- 작성일자
+		</if>
+		
+		<if test="stdt == null or stdt == ''">
+			AND CONVERT(NVARCHAR,INSERT_DT,23) >='2022-01-20'
+		</if>
+		
+		<if test="opt != null and opt != ''">
+			<if test='opt.equals("1")'>AND MTB.MI_RQ_USER_NM LIKE '%'+#{schWord}+'%'		-- 의뢰자명</if>
+		  	<if test='opt.equals("2")'>AND MTB.MI_RQ_FOUP_ID LIKE '%'+#{schWord}+'%'		-- FOUP ID</if>
+		  	<if test='opt.equals("3")'>AND MTB.MI_RQ_RECIPE LIKE '%'+#{schWord}+'%'			-- RECIPE</if>
+		  	<if test='opt.equals("4")'>AND MTB.MI_RQ_LOT LIKE '%'+#{schWord}+'%'			-- LOT NAME</if>
+		</if>
+		) PAGING
+		<include refid="Common.postfixPaging" />
+	</select>
+    
+<!-- 계측기예약 > 예외현황 -->    
+	<select id="exRequestStatusList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		<include refid="Common.prefixPaging" />
+		SELECT
+		ROW_NUMBER() OVER (ORDER BY MI_RQ_SUBUN) RN
+		, COUNT(1) OVER(PARTITION BY 1) AS TOT_CNT
+		, PAGING.*
+		FROM (
+			SELECT MTB.MI_RQ_SUBUN,MTB.MI_RQ_KEY [MI_RQ_KEY]
+			     , CONVERT(VARCHAR(16),INSERT_DT,120) [INSERT_DT]
+			     , MTB.INSERT_ID
+			     , ISNULL((SELECT MAX(CONVERT(NVARCHAR(16),INSERT_DT,120)) FROM dbo.MI_RQ_ST_LOG  WHERE MI_RQ_KEY=MTB.MI_RQ_KEY AND MI_RQ_STATUS='3'),'') [MI_RQ_IN]
+			     , ISNULL((SELECT MAX(CONVERT(NVARCHAR(16),INSERT_DT,120)) FROM dbo.MI_RQ_ST_LOG  WHERE MI_RQ_KEY=MTB.MI_RQ_KEY AND MI_RQ_STATUS='4'),'') [MI_RQ_DT]
+			     , ISNULL((SELECT MAX(CONVERT(NVARCHAR(16),INSERT_DT,120)) FROM dbo.MI_RQ_ST_LOG WHERE MI_RQ_KEY=MTB.MI_RQ_KEY AND MI_RQ_STATUS='5'),'') [MI_START]
+			     , ISNULL((SELECT MAX(CONVERT(NVARCHAR(16),INSERT_DT,120)) FROM dbo.MI_RQ_ST_LOG WHERE MI_RQ_KEY=MTB.MI_RQ_KEY AND MI_RQ_STATUS='7'),'') [MI_END]
+			     , MTB.MI_RQ_DEPT_NM [MI_RQ_DEPT_NM]
+			     , MTB.MI_RQ_USER_NM [MI_RQ_USER_NM]
+			     , MTB.MI_RQ_FOUP_ID [MI_RQ_FOUP_ID]
+			     , (SELECT MI_NM [MI_NM] FROM dbo.[MI_RQ_MINOR] WHERE MA_CD='MI_RQ_G' AND MI_CD=MTB.MI_RQ_G) [MI_RQ_G]
+			     , MTB.MI_RQ_RECIPE
+			     , MTB.MI_RQ_LOT
+			     , MTB.MI_KEY [MI_KEY]
+			     , (SELECT MI_NM [MI_NM] FROM dbo.[MI_RQ_MINOR] WHERE MA_CD='MI_RQ_POINT' AND REL_CD=MTB.MI_RQ_G AND MI_CD=MTB.MI_RQ_POINT) [MI_RQ_POINT]
+			     , TB1.SLOT_CNT [SLOT_CNT]
+			     , MTB.MI_RQ_NEXT_STEP
+			     , TB2.STATUS_NM [STATUS_NM]
+			     , MTB.MI_RQ_STATUS
+			     , MTB.MI_RQ_TITLE
+			     , CASE WHEN CAST(MTB.MI_RQ_COMMENT AS VARCHAR) = '' THEN 'N'
+			            ELSE 'Y'
+			       END COMMENT_YN
+			FROM dbo.EX_MI_RQ AS MTB WITH (NOLOCK)
+			LEFT JOIN (SELECT COUNT(*) AS [SLOT_CNT], MI_RQ_KEY AS [MI_RQ_KEYS] FROM dbo.MI_RQ_SLOT GROUP BY MI_RQ_KEY) TB1
+				   ON MTB.MI_RQ_KEY=TB1.MI_RQ_KEYS
+			LEFT JOIN (SELECT MI_RQ_STATUS [STATUS], MI_RQ_STATUS_NM [STATUS_NM] FROM dbo.MI_RQ_ST_INFO) TB2
+				   ON MTB.MI_RQ_STATUS=TB2.STATUS
+			WHERE MTB.DEL_FLAG IS NULL
+		<if test="miKey != null and miKey != ''">
+			AND MTB.MI_KEY = #{miKey}		-- 계측기
+		</if>
+		
+		<if test="stdt != null and stdt != ''">
+			AND CONVERT(CHAR(10),MTB.INSERT_DT,23) BETWEEN #{stdt} AND #{eddt}	-- 작성일자
+		</if>
+		
+		<if test="opt != null and opt != ''">
+			<if test='opt.equals("1")'>AND MTB.MI_RQ_USER_NM LIKE '%'+#{schWord}+'%'		-- 의뢰자명</if>
+		  	<if test='opt.equals("2")'>AND MTB.MI_RQ_FOUP_ID LIKE '%'+#{schWord}+'%'		-- FOUP ID</if>
+		  	<if test='opt.equals("3")'>AND MTB.MI_RQ_RECIPE LIKE '%'+#{schWord}+'%'			-- RECIPE</if>
+		  	<if test='opt.equals("4")'>AND MTB.MI_RQ_LOT LIKE '%'+#{schWord}+'%'			-- LOT NAME</if>
+		</if>
+		) PAGING
+		<include refid="Common.postfixPaging" />
+	</select>
+	
+	<select id="miKeyList"  parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT NO, MI_CD,MI_NM
+		FROM dbo.MI_RQ_MINOR
+		WHERE MA_CD='MI_KEY'
+		  AND USE_YN='Y'
+	</select>
+	
+	<select id="statusList"  parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT MI_RQ_STATUS,MI_RQ_STATUS_NM FROM dbo.MI_RQ_ST_INFO
+	</select>
+	
+	<select id="itemList"  parameterType="paramMap" resultType="paramMap" fetchSize="1000">
+		SELECT MI_CD,MI_NM FROM dbo.MI_RQ_MINOR
+		 WHERE MA_CD='MI_RQ_G'
+		   AND REL_CD=#{miKey} AND USE_YN='Y'
+
+	</select>
+	
+	<select id="pointList"  parameterType="paramMap" resultType="paramMap" fetchSize="1000">
+		SELECT MI_CD,MI_NM FROM dbo.MI_RQ_MINOR
+		 WHERE MA_CD='MI_RQ_POINT'
+		   AND REL_CD=#{item} AND USE_YN='Y'
+	</select>
+	
+	<select id="slotList"  parameterType="paramMap" resultType="paramMap" fetchSize="1000">
+		SELECT MI_RQ_SLOT_NO
+		  FROM dbo.[MI_RQ_SLOT]
+		 WHERE MI_RQ_KEY=#{miRqKey}
+	</select>
+	
+	<select id="miRqViewList"  parameterType="paramMap" resultType="paramMap" fetchSize="1000">
+		SELECT MI_RQ_SUBUN,
+               CONVERT(NVARCHAR(10),INSERT_DT,23) [INSERT_DT],
+               INSERT_ID,
+               MI_RQ_DT,
+               ISNULL((SELECT MAX(CONVERT(NVARCHAR(10),INSERT_DT,23)) FROM dbo.MI_RQ_ST_LOG WHERE MI_RQ_KEY=MI_RQ_KEY AND MI_RQ_STATUS='3'),'') [MI_START],
+               ISNULL((SELECT MAX(CONVERT(NVARCHAR(10),INSERT_DT,23)) FROM dbo.MI_RQ_ST_LOG WHERE MI_RQ_KEY=MI_RQ_KEY AND MI_RQ_STATUS='5'),'') [MI_END],
+               MI_RQ_DEPT_NM,
+               MI_RQ_USER_NM,
+               CONCAT (MI_RQ_DEPT_NM, ' ', MI_RQ_USER_NM) MI_RQ_USER,
+               MI_RQ_FOUP_ID,
+               (SELECT MI_NM FROM dbo.[MI_RQ_MINOR] WHERE MA_CD='MI_RQ_G' AND MI_CD=MI_RQ_G) [MI_RQ_G],
+               MI_RQ_G [MI_RQ_CD],
+               MI_RQ_RECIPE,
+               MI_FOLDER,
+               MI_CASET,
+               MI_RQ_LOT,
+               MI_KEY,
+               MI_RQ_USER_ID,
+               (SELECT MI_NM FROM dbo.[MI_RQ_MINOR] WHERE MA_CD='MI_RQ_POINT' AND REL_CD=MI_RQ_G AND MI_CD=MI_RQ_POINT) [MI_RQ_POINT],
+               MI_RQ_POINT [MI_RQ_PT],
+               ISNULL(TB1.SLOT_CNT, 0) [SLOT_CNT],
+               MI_RQ_NEXT_STEP,
+               TB2.STATUS_NM [STATUS_NM],
+               MI_RQ_STATUS,
+               MI_RQ_COMMENT,
+               MI_RQ_TITLE,MI_RQ_KEY FROM dbo.MI_RQ
+               LEFT JOIN (SELECT COUNT(*) AS [SLOT_CNT], STB1.MI_RQ_KEY AS [MI_RQ_KEYS] FROM dbo.MI_RQ_SLOT STB1 GROUP BY STB1.MI_RQ_KEY) TB1
+               ON MI_RQ_KEY=TB1.MI_RQ_KEYS
+               LEFT JOIN (SELECT MI_RQ_STATUS [STATUS], MI_RQ_STATUS_NM [STATUS_NM] FROM dbo.MI_RQ_ST_INFO) TB2
+               ON MI_RQ_STATUS=TB2.STATUS
+               WHERE MI_RQ_KEY=#{miRqKey}
+	</select>
+	
+	
+	<select id="exMiRqViewList"  parameterType="paramMap" resultType="paramMap" fetchSize="1000">
+		SELECT MI_RQ_SUBUN,
+			   CONVERT(NVARCHAR(10),INSERT_DT,23) [INSERT_DT],
+			   INSERT_ID,
+			   MI_RQ_DT,
+			   ISNULL((SELECT MAX(CONVERT(NVARCHAR(10),INSERT_DT,23)) FROM dbo.MI_RQ_ST_LOG WHERE MI_RQ_KEY=MI_RQ_KEY AND MI_RQ_STATUS='3'),'') [MI_START],
+			   ISNULL((SELECT MAX(CONVERT(NVARCHAR(10),INSERT_DT,23)) FROM dbo.MI_RQ_ST_LOG WHERE MI_RQ_KEY=MI_RQ_KEY AND MI_RQ_STATUS='5'),'') [MI_END],
+			   MI_RQ_DEPT_NM,
+			   MI_RQ_USER_NM,
+			   MI_RQ_FOUP_ID,
+			   (SELECT MI_NM FROM dbo.[MI_RQ_MINOR] WHERE MA_CD='MI_RQ_G' AND MI_CD=MI_RQ_G) [MI_RQ_G],
+			   MI_RQ_G [MI_RQ_CD],
+			   MI_RQ_RECIPE,
+			   MI_FOLDER,
+			   MI_CASET,
+			   MI_RQ_LOT,
+			   MI_KEY,
+			   (SELECT MI_NM FROM dbo.[MI_RQ_MINOR] WHERE MA_CD='MI_RQ_POINT' AND REL_CD=MI_RQ_G AND MI_CD=MI_RQ_POINT) [MI_RQ_POINT],
+			   MI_RQ_POINT [MI_RQ_PT],
+			   ISNULL(TB1.SLOT_CNT, 0) [SLOT_CNT],
+			   MI_RQ_NEXT_STEP,
+			   TB2.STATUS_NM [STATUS_NM],
+			   MI_RQ_STATUS,
+			   MI_RQ_COMMENT,
+			   MI_RQ_TITLE,MI_RQ_KEY FROM dbo.EX_MI_RQ
+		LEFT JOIN (SELECT COUNT(*) AS [SLOT_CNT], STB1.MI_RQ_KEY AS [MI_RQ_KEYS] FROM dbo.MI_RQ_SLOT STB1 GROUP BY STB1.MI_RQ_KEY) TB1
+		  ON MI_RQ_KEY=TB1.MI_RQ_KEYS
+		LEFT JOIN (SELECT MI_RQ_STATUS [STATUS], MI_RQ_STATUS_NM [STATUS_NM] FROM dbo.MI_RQ_ST_INFO) TB2
+		  ON MI_RQ_STATUS=TB2.STATUS
+		WHERE MI_RQ_KEY=#{miRqKey}
+	</select>
+	
+	<select id="mirqGetRows" parameterType="paramMap" resultType="int" fetchSize="1000">
+		SELECT CONVERT(INT,MAX(RIGHT(MI_RQ_KEY,6)))+1 AS [COUNT]  FROM [dbo].[MI_RQ]
+	</select>
+	
+	<select id="getMiRqKey" parameterType="paramMap" resultType="string" fetchSize="1000">
+		SELECT MI_RQ_KEY FROM [dbo].[MI_RQ] WHERE NO =#{no}
+	</select>
+	
+	<insert id="mirqInsert" parameterType="hashmap" useGeneratedKeys="true" keyProperty="MI_RQ_KEY" keyColumn="MI_RQ_KEY">
+		INSERT INTO [dbo].[MI_RQ](
+			MI_RQ_KEY,
+			MI_RQ_STATUS,
+			MI_RQ_DEPT,
+			MI_RQ_DEPT_NM,
+			MI_RQ_USER_ID,
+			MI_RQ_USER_NM,
+			MI_RQ_TITLE,
+			MI_RQ_FOUP_ID,
+			MI_RQ_LOT,
+			MI_RQ_RECIPE,
+			MI_FOLDER,
+			MI_CASET,
+			MI_KEY,
+			MI_RQ_G,
+			MI_RQ_POINT,
+			MI_RQ_COMMENT,
+			INSERT_DT,
+			INSERT_ID
+			)
+		VALUES(
+			LAB.DBO.FN_MIRQKEY(YEAR(GETDATE())),	-- mi_rq_key
+			'1',									-- mi_rq_status
+			#{miRegDeptId},							-- mi_rq_dept
+			#{miRegDeptNm},				     		-- MI_RQ_DEPT_NM,
+			#{miRegId},             				-- MI_RQ_USER_ID,
+			#{miRegNm},        			    		-- MI_RQ_USER_NM,
+			#{title},             			       	-- MI_RQ_TITLE,  
+			#{foupId},            			       	-- MI_RQ_FOUP_ID,
+			#{lotNm},             			       	-- MI_RQ_LOT,    
+			#{recipe},      			            -- MI_RQ_RECIPE, 
+			#{folder},                   			-- MI_FOLDER,    
+			#{caset},                    			-- MI_CASET,     
+			#{miKey},                    			-- MI_KEY,       
+			#{item},                     			-- MI_RQ_G,      
+			#{point},                    			-- MI_RQ_POINT,  
+			#{comment},                 			-- MI_RQ_COMMENT,
+			getdate(),                   			-- INSERT_DT,    
+			#{miRegId}              				-- INSERT_ID     
+			)
+			<selectKey resultType="string" keyProperty="MI_RQ_KEY" order="BEFORE">
+				-- SELECT @@identity
+				SELECT LAB.DBO.FN_MIRQKEY(YEAR(GETDATE()))
+			</selectKey>
+	</insert>
+	
+	<insert id="mirqSlotLogInsert" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		INSERT INTO MI_RQ_ST_LOG(MI_RQ_KEY,MI_RQ_STATUS,MI_ST_DT,INSERT_ID,INSERT_DT) 
+		                  VALUES(#{MI_RQ_KEY},'1',GETDATE(),#{miUptLoginId},GETDATE())
+	</insert>	
+	
+	<insert id="mirqSlotInsert" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		INSERT INTO MI_RQ_SLOT(MI_RQ_KEY,MI_RQ_SLOT_NO,INSERT_DT,INSERT_ID)
+		                VALUES(#{MI_RQ_KEY},#{miSlot},GETDATE(),#{miUptLoginId})
+	</insert>	
+	
+	<!-- 의뢰반려 -->
+	<update id="miRqReject" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_STATUS='2'
+         WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+	
+	<insert id="miRqRejectReason" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		INSERT INTO MI_RQ_REASON(MI_RQ_KEY,MI_RQ_STATUS,COMMENT,IN_DATE)
+		VALUES((SELECT MAX(NO)+1 FROM [dbo].[MI_RQ_REASON]),#{miRqKey},'2',#{comment},GETDATE())
+	</insert>
+	
+	<insert id="miRqRejectLog" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+        INSERT INTO MI_RQ_ST_LOG(MI_RQ_KEY,MI_RQ_STATUS,MI_ST_DT,INSERT_ID,INSERT_DT)
+        VALUES(#{miRqKey},'2',GETDATE(),#{userid},GETDATE())
+	</insert>
+	
+	<update id="miRqRejectSubun" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_SUBUN=NULL
+         WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+	
+	<update id="miRqRejectSubun2" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE A SET A.MI_RQ_SUBUN = A.RowNum FROM (SELECT MI_RQ_SUBUN, ROW_NUMBER() OVER (ORDER BY MI_RQ_SUBUN) AS MI_RQ_SUBUN FROM MI_RQ WHERE MI_RQ_SUBUN IS NOT NULL AND DEL_FLAG IS NULL AND MI_KEY=(SELECT MI_KEY FROM MI_RQ
+		WHERE MI_RQ_KEY=#{miRqKey})) A
+	</update>
+	
+	<update id="miRqReceipt" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_STATUS='4'
+		WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+	
+	<insert id="miRqReceiptLog" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		INSERT INTO MI_RQ_ST_LOG(MI_RQ_KEY,MI_RQ_STATUS,MI_ST_DT,INSERT_ID,INSERT_DT)
+			  VALUES(#{miRqKey},'4',GETDATE(),#{userid},GETDATE())
+	</insert>
+	
+	<select id="subunList" parameterType="paramMap" resultType="int" fetchSize="1000">
+		SELECT MI_RQ_SUBUN FROM MI_RQ 
+		WHERE MI_KEY=(SELECT MI_KEY FROM MI_RQ WHERE MI_RQ_KEY=#{miRqKey})
+		AND DEL_FLAG IS NULL
+		AND MI_RQ_SUBUN IS NOT NULL
+		ORDER BY MI_RQ_SUBUN
+	</select>
+	
+	<update id="miRqSubunChange1" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE MI_RQ SET MI_RQ_SUBUN=MI_RQ_SUBUN+1 
+		WHERE MI_KEY=(SELECT MI_KEY FROM MI_RQ WHERE MI_RQ_KEY=#{miRqKey})
+		AND MI_RQ_SUBUN >= #{miRqSubun}
+		AND MI_RQ_SUBUN <![CDATA[<]]> #{nowSubun}
+	</update>
+	
+	<update id="miRqSubunChange2" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE MI_RQ SET MI_RQ_SUBUN=MI_RQ_SUBUN-1 
+		WHERE MI_KEY=(SELECT MI_KEY FROM MI_RQ WHERE MI_RQ_KEY=#{miRqKey})
+		AND MI_RQ_SUBUN <![CDATA[<=]]> #{miRqSubun}
+		AND MI_RQ_SUBUN > #{nowSubun}
+	</update>
+	
+	<update id="miRqSubunChange3" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_SUBUN=#{miRqSubun}
+		WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+	
+	<update id="miRqReceiptSubun1" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_SUBUN = (SELECT MAX(ISNULL(MI_RQ_SUBUN, 0)+1) FROM MI_RQ
+		 WHERE MI_KEY = (SELECT MI_KEY FROM MI_RQ WHERE MI_RQ_KEY = #{miRqKey})
+		   AND MI_RQ_G='Wet Station/WER' AND DEL_FLAG IS NULL) WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+	
+	<update id="miRqReceiptSubun2" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+	UPDATE [dbo].[MI_RQ] SET MI_RQ_SUBUN = MI_RQ_SUBUN+1
+	 WHERE MI_KEY=(SELECT MI_KEY FROM MI_RQ WHERE MI_RQ_KEY = #{miRqKey})
+	   AND MI_RQ_G='Wet Station/Decap' AND DEL_FLAG IS NULL
+	</update>
+	
+	<update id="miRqReceiptSubun3" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_SUBUN = (SELECT MAX(ISNULL(MI_RQ_SUBUN, 0) + 1) 
+												  FROM MI_RQ
+												 WHERE MI_KEY = (SELECT MI_KEY FROM MI_RQ WHERE MI_RQ_KEY = #{miRqKey})
+												   AND DEL_FLAG IS NULL) 
+         WHERE MI_RQ_KEY = #{miRqKey}
+	</update>
+	
+	<update id="miRqStrat" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_STATUS='5'
+         WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+	
+	<insert id="miRqInsertLog" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		INSERT INTO MI_RQ_ST_LOG(MI_RQ_KEY,MI_RQ_STATUS,MI_ST_DT,INSERT_ID,INSERT_DT) VALUES(#{miRqKey},'5',GETDATE(),#{userid},GETDATE())
+	</insert>
+	
+	<update id="startUpdateSubun" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE MI_RQ SET MI_RQ_SUBUN=NULL WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+	
+	<update id="miRqStratH" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE[dbo].[MI_RQ] SET MI_RQ_SUBUN = MI_RQ_SUBUN - 1 WHERE MI_KEY = (SELECT MI_KEY FROM MI_RQ WHERE MI_RQ_KEY = #{miRqKey})
+	</update>
+	
+	<update id="miRqHold" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_STATUS='6'
+         WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+	
+	<insert id="miRqHoldReason" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		INSERT INTO MI_RQ_REASON(MI_RQ_KEY,MI_RQ_STATUS,COMMENT,IN_DATE) VALUES((SELECT MAX(NO)+1 FROM [dbo].[MI_RQ_REASON]), #{miRqKey},'6',#{comment},GETDATE())
+	</insert>
+	
+	<insert id="miRqHoldLog" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		INSERT INTO MI_RQ_ST_LOG(MI_RQ_KEY,MI_RQ_STATUS,MI_ST_DT,INSERT_ID,INSERT_DT) VALUES(#{miRqKey},'6',GETDATE(),#{userid},GETDATE())
+	</insert>
+	
+	<update id="miRqEnd" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_STATUS='7'
+         WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+	
+	<insert id="miRqEndRog" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		INSERT INTO MI_RQ_ST_LOG(MI_RQ_KEY,MI_RQ_STATUS,MI_ST_DT,INSERT_ID,INSERT_DT)
+						  VALUES(#{miRqKey},'7',GETDATE(),#{userId},GETDATE())
+	</insert>
+    
+	<update id="miRqCancle" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_STATUS='0'
+         WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+    
+	<update id="miRqDelete1" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_SUBUN=MI_RQ_SUBUN-1
+         WHERE MI_KEY=(SELECT MI_KEY FROM MI_RQ WHERE MI_RQ_KEY=#{miRqKey})
+           AND MI_RQ_SUBUN >= (SELECT MI_RQ_SUBUN FROM MI_RQ WHERE MI_RQ_KEY=#{miRqKey})
+	</update>
+    
+	<update id="miRqDelete2" parameterType="com.vertexid.laboratory.mi.labMiDTO">
+		UPDATE [dbo].[MI_RQ] SET MI_RQ_SUBUN=NULL,DEL_ID=#{delId},DEL_FLAG='Y',DEL_DATE=GETDATE()
+         WHERE MI_RQ_KEY=#{miRqKey}
+	</update>
+	
+</mapper>        

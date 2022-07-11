@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.vertexid.voc.vocProcess.VocMst.mssql">
+	<select id="getVocList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT VOC_NO
+			   , (SELECT DEPT_NM FROM PIS.PLM_NEW.dbo.V_EMP WHERE USER_ID = MST.CREATE_USER) AS CREATE_DEPT
+			   , (SELECT EMP_NM FROM PIS.PLM_NEW.dbo.V_EMP WHERE USER_ID = MST.CREATE_USER) AS CREATE_USER
+			   , CONVERT(CHAR(10), CREATE_DATE, 23) AS CREATE_DATE
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.BSS_AREA AND HCODE = 'BSS_AREA') AS BSS_AREA
+			   , CUST_NM
+			   , CUST_REQ_DATE
+			   , CUST_USER_NM
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.VOC_REG_TYPE AND HCODE = 'REG_TYPE') AS VOC_REG_TYPE
+			   , VOC_TITLE
+			   , VOC_STATUS
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.VOC_STATUS AND HCODE = 'STATUS') AS VOC_STATUS_NM
+			   , DEL_FLAG
+		FROM DBO.IPS_VOC_MST MST
+		WHERE DEL_FLAG NOT IN ('Y')
+	</select>
+	
+	<select id="getDdList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT   DCODE
+			   , DNAME
+		FROM DBO.VOC_MDM
+		WHERE HCODE = #{hcode}
+		AND DEL_FLAG = 'N'
+		ORDER BY SORT_SEQ
+	</select>
+	
+	<select id="getCustList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        SELECT	 DCODE
+				   , DNAME
+				   , ROW_NUMBER() OVER( ORDER BY TSM.SORT_SEQ ) AS RN
+				   , COUNT(*) OVER() AS TOT_CNT
+	        FROM PIS.PLM_NEW.dbo.ZCODED AS TSM WITH (NOLOCK) 
+			WHERE HCODE = 'ISCM29'
+			AND USE_YN = '1'
+			<if test="custNm != null and !custNm.equals('')">
+				AND DNAME LIKE '%' + #{custNm} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+    
+    <select id="getPjtList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        SELECT PROJ_NO AS DCODE
+	        	   , ROW_NUMBER() OVER( ORDER BY MPO.PROJ_NO ) AS RN
+	        	   , COUNT(*) OVER() AS TOT_CNT
+			FROM PIS.PLM_NEW.dbo.MES_PROJ_ORDER AS MPO WITH (NOLOCK) 
+			WHERE PROJ_NO NOT LIKE '%SCM%'
+			AND PSTAT NOT IN ('4','D')
+			<if test="pjtNo != null and !pjtNo.equals('')">
+				AND PROJ_NO LIKE '%' + #{pjtNo} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+    
+	<select id="getVocNo" parameterType="map" resultType="string" fetchSize="1000">
+		SELECT   MAX(RIGHT(VOC_NO, 4)) + 1 AS VOC_SEQ
+		FROM IPS_VOC_MST
+		WHERE SUBSTRING(VOC_NO,4,4) = LEFT(CONVERT(CHAR(6), GETDATE(), 12), 4)
+	</select>
+	
+	<select id="vocHisExistYn" parameterType="com.vertexid.voc.mst.vocMstDTO" resultType="string" fetchSize="1000">
+		SELECT VOC_NO
+		FROM IPS_VOC_STATUS_HISTORY
+		WHERE VOC_NO = #{vocNo}
+	</select>
+	
+	<insert id="saveVocMst" parameterType="com.vertexid.voc.mst.vocMstDTO" >
+        INSERT INTO IPS_VOC_MST(
+            VOC_NO
+            , CREATE_DATE
+            , CREATE_DEPT
+            , CREATE_USER
+            , BSS_AREA
+            , VOC_REG_TYPE
+            , CUST_CD
+            , CUST_NM
+            , CUST_REQ_DATE
+            , CUST_USER_NM
+            , CUST_USER_EMAIL
+            , CUST_FB_YN
+            , VOC_TITLE
+            , CUST_REQ_CONTENTS
+            , ATCH_FILE_MST_ID
+            , VOC_STATUS
+            , DEL_FLAG
+        )VALUES(
+            #{vocNo}
+            , GETDATE()
+            , #{createDept}
+            , #{createUser}
+            , #{bssArea}
+            , #{vocRegType}
+            , #{custCd}
+            , #{custNm}
+            , #{custReqDate}
+            , #{custUserNm}
+            , #{custUserEmail}
+            , #{custFbYn}
+            , #{vocTitle}
+            , #{custReqContents}
+            , #{atchFileMstId}
+            , 'VOC02'
+            , 'N'
+        )
+    </insert>
+    
+    <insert id="saveHisStatus" parameterType="com.vertexid.voc.mst.vocMstDTO" >
+        INSERT INTO IPS_VOC_STATUS_HISTORY(
+            VOC_NO
+            , RECENTLY_STATUS
+            , REG_USER
+            , REG_DATE
+        )VALUES(
+            #{vocNo}
+            , 'VOC02'
+            , #{loginUserId}
+            , GETDATE()
+        )
+    </insert>
+    
+    <update id="updateHisStatus" parameterType="com.vertexid.voc.mst.vocMstDTO" >
+        UPDATE IPS_VOC_STATUS_HISTORY
+        SET RECENTLY_STATUS = #{hisStatus}
+            <if test="hisStatus != null and hisStatus.equals('VOC03')">
+               	, DEPT_USER = #{loginUserId}
+            	, DEPT_DATE = GETDATE()
+            </if>
+            <if test="hisStatus != null and hisStatus.equals('VOC04')">
+               	, EMP_USER = #{loginUserId}
+            	, EMP_DATE = GETDATE()
+            </if>
+            <if test="hisStatus != null and hisStatus.equals('VOC05')">
+               	, PRC_USER = #{loginUserId}
+            	, PRO_START_DATE = GETDATE()
+            </if>
+            <if test="hisStatus != null and hisStatus.equals('VOC06')">
+               	, PRC_USER = #{loginUserId}
+            	, PRO_END_DATE = GETDATE()
+            </if>
+            <if test="hisStatus != null and hisStatus.equals('VOC08')">
+               	, EST_USER = #{loginUserId}
+            	, EST_DATE = GETDATE()
+            </if>
+            <if test="hisStatus != null and hisStatus.equals('VOC12')">
+               	, REG_USER = #{loginUserId}
+            	, REG_DATE = GETDATE()
+            </if>
+        WHERE VOC_NO = #{vocNo}
+    </update>
+    
+    <insert id="saveTmpMst" parameterType="com.vertexid.voc.mst.vocMstDTO" >
+        INSERT INTO IPS_VOC_MST(
+            VOC_NO
+            , CREATE_DATE
+            , CREATE_DEPT
+            , CREATE_USER
+            , BSS_AREA
+            , VOC_REG_TYPE
+            , CUST_CD
+            , CUST_NM
+            , CUST_REQ_DATE
+            , CUST_USER_NM
+            , CUST_USER_EMAIL
+            , CUST_FB_YN
+            , VOC_TITLE
+            , CUST_REQ_CONTENTS
+            , ATCH_FILE_MST_ID
+            , VOC_STATUS
+            , DEL_FLAG
+        )VALUES(
+            #{vocNo}
+            , GETDATE()
+            , #{createDept}
+            , #{createUser}
+            , #{bssArea}
+            , #{vocRegType}
+            , #{custCd}
+            , #{custNm}
+            , #{custReqDate}
+            , #{custUserNm}
+            , #{custUserEmail}
+            , #{custFbYn}
+            , #{vocTitle}
+            , #{custReqContents}
+            , #{atchFileMstId}
+            , 'VOC01'
+            , 'T'
+        )
+    </insert>
+    
+	<update id="updateTmpMst" parameterType="com.vertexid.voc.mst.vocMstDTO" >
+		UPDATE DBO.IPS_VOC_MST
+		SET BSS_AREA = #{bssArea}
+            , VOC_REG_TYPE = #{vocRegType}
+            , VOC_TITLE = #{vocTitle}
+            , CUST_CD = #{custCd}
+            , CUST_NM = #{custNm}
+            , CUST_REQ_DATE = #{custReqDate}
+            , CUST_USER_NM = #{custUserNm}
+            , CUST_USER_EMAIL = #{custUserEmail}
+            , CUST_FB_YN = #{custFbYn}
+            , CUST_REQ_CONTENTS = #{custReqContents}
+            , ATCH_FILE_MST_ID = #{atchFileMstId}
+            , DEL_FLAG = #{delFlag}
+            , VOC_STATUS = #{vocStatus}
+		WHERE VOC_NO = #{vocNo}
+	</update>
+    
+    <delete id="deleteMst" parameterType="com.vertexid.voc.mst.vocMstDTO">
+        UPDATE DBO.IPS_VOC_MST
+		SET DEL_FLAG = 'Y'
+		WHERE VOC_NO = #{vocNo}
+    </delete>
+    
+    <select id="getSchVocSelectOne" parameterType="map" resultMap="resultClob" fetchSize="1000">
+        SELECT VOC_NO
+			   , (SELECT DEPT_NM FROM PIS.PLM_NEW.dbo.V_EMP WHERE USER_ID = MST.CREATE_USER) AS CREATE_DEPT
+			   , CREATE_USER AS CREATE_USER_ID
+			   , (SELECT EMP_NM FROM PIS.PLM_NEW.dbo.V_EMP WHERE USER_ID = MST.CREATE_USER) AS CREATE_USER
+			   , CONVERT(CHAR(10), CREATE_DATE, 23) AS CREATE_DATE
+			   , BSS_AREA AS BSS_AREA_CD
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.BSS_AREA AND HCODE = 'BSS_AREA') AS BSS_AREA
+			   , CUST_CD
+			   , CUST_NM
+			   , CUST_REQ_DATE
+			   , CUST_USER_NM
+			   , CUST_USER_EMAIL
+			   , CUST_FB_YN
+			   , VOC_REG_TYPE AS VOC_REG_TYPE_CD
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.VOC_REG_TYPE AND HCODE = 'REG_TYPE') AS VOC_REG_TYPE
+			   , VOC_TITLE
+			   , CUST_REQ_CONTENTS
+			   , ATCH_FILE_MST_ID
+			   , VOC_STATUS AS VOC_STATUS_CD
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.VOC_STATUS AND HCODE = 'STATUS') AS VOC_STATUS
+			   , REG_ACCEPT_YN
+			   , CASE WHEN REG_ACCEPT_YN = 'Y' THEN '진행' ELSE '반려' END AS REG_ACCEPT_NM
+			   , CONVERT(CHAR(10), REG_DECIDE_DATE, 23) AS REG_DECIDE_DATE
+			   , REG_REJECT_REASON AS REG_REJECT_REASON_CD
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.REG_REJECT_REASON AND HCODE = 'REJECT') AS REG_REJECT_REASON
+			   , VOC_GRADE_TYPE AS VOC_GRADE_TYPE_CD
+			   , (SELECT DNAME FROM VOC_MDM WHERE DCODE = MST.VOC_GRADE_TYPE AND HCODE = 'GRADE_TYPE') AS VOC_GRADE_TYPE
+			   , PRC_ORDER_YN
+			   , REG_DECIDE_OPINION
+		FROM DBO.IPS_VOC_MST MST
+        WHERE VOC_NO  = #{vocNo}
+        AND DEL_FLAG NOT IN ('Y')
+    </select>
+    <resultMap id="resultClob" type="paramMap">
+        <result property="custReqContents" column="CUST_REQ_CONTENTS" jdbcType="CLOB" javaType="java.lang.String"/>
+    </resultMap>
+    
+    <update id="updateProcessMst" parameterType="com.vertexid.voc.mst.vocMstDTO" >
+		UPDATE DBO.IPS_VOC_MST
+		SET REG_ACCEPT_YN = #{regAcceptYn}
+			, VOC_GRADE_TYPE = #{vocGradeType}
+			, REG_REJECT_REASON = #{regRejectReason}
+			, REG_DECIDE_DATE = GETDATE()
+			, REG_DECIDE_USER = #{regDecideUser}
+			, PRC_ORDER_YN = #{prcOrderYn}
+			, REG_DECIDE_OPINION = #{regDecideOpinion}
+		WHERE VOC_NO = #{vocNo}
+	</update>
+    
+    <update id="updateProcessStatus" parameterType="com.vertexid.voc.mst.vocMstDTO" >
+		UPDATE DBO.IPS_VOC_MST
+		SET VOC_STATUS = #{vocStatus}
+		WHERE VOC_NO = #{vocNo}
+	</update>
+	
+	<select id="getDeptList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        
+			SELECT DCODE
+				   , DNAME
+				   , ROW_NUMBER() OVER( ORDER BY VE.DCODE ) AS RN
+				   , COUNT(*) OVER() AS TOT_CNT
+			FROM
+			(
+			 SELECT DISTINCT DEPT_CD AS DCODE
+							   , DEPT_NM AS DNAME				 
+						FROM PIS.PLM_NEW.dbo.V_EMP 
+						WHERE 1=1
+						AND USE_YN = '1'
+						AND WORK_CD = 'IPS_T000006'
+			) VE
+			<if test="deptNm != null and !deptNm.equals('')">
+				WHERE DNAME LIKE '%' + #{deptNm} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+    
+    <select id="getEcrList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        SELECT ECR_NO AS DCODE
+			 	   , ECR_TITLE AS DNAME
+			 	   , ECR_EMP_NM
+			 	   , dbo.fn_getEcrStatus(ECR_NO, PSTAT) AS ECR_STATUS
+			 	   , ROW_NUMBER() OVER( ORDER BY ECR.ECR_NO ) AS RN
+			 	   , COUNT(*) OVER() AS TOT_CNT
+			FROM PIS.PLM_NEW.dbo.V_ECR ECR WITH (NOLOCK)
+			WHERE 1=1
+	        AND ECR_DT BETWEEN #{ecrFrDate} AND #{ecrEdDate}
+	        <if test="ecrNo != null and !ecrNo.equals('')">
+				AND ECR_NO LIKE '%' + #{ecrNo} + '%'
+			</if>
+			<if test="deptArea != null and !deptArea.equals('')">
+				AND DEPT_AREA LIKE '%' + #{deptArea} + '%'
+			</if>
+			ORDER BY ECR_DT DESC
+        <include refid="Common.postfixPaging" />
+    </select>
+    
+    <select id="getEmpList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        SELECT	 DEPT_CD
+				   , DEPT_NM
+				   , EMP_NO
+				   , EMP_NM + '(' + USER_ID + ')' AS EMP_NM
+				   , ROW_NUMBER() OVER( ORDER BY TSM.EMP_NM ) AS RN
+				   , COUNT(*) OVER() AS TOT_CNT
+	        FROM PIS.PLM_NEW.dbo.V_EMP AS TSM WITH (NOLOCK) 
+			WHERE USE_YN = '1'
+			<if test="empNm != null and !empNm.equals('')">
+				AND EMP_NM LIKE '%' + #{empNm} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+    
+</mapper>        

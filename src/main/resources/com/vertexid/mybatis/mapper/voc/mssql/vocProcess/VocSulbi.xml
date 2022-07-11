@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.vertexid.voc.vocProcess.VocSulbi.mssql">
+	<select id="getSulbiList" parameterType="map" resultType="paramMap" fetchSize="1000">
+        <include refid="Common.prefixPaging" />
+	        SELECT	 DCODE
+				   , DNAME
+				   , ROW_NUMBER() OVER( ORDER BY TSM.SORT_SEQ ) AS RN
+				   , COUNT(*) OVER() AS TOT_CNT
+	        FROM PIS.PLM_NEW.dbo.ZCODED AS TSM WITH (NOLOCK) 
+			WHERE HCODE = #{hcode}
+			AND USE_YN = '1'
+			<if test="dname != null and !dname.equals('')">
+				AND DNAME LIKE '%' + #{dname} + '%'
+			</if>
+        <include refid="Common.postfixPaging" />
+    </select>
+    
+	<delete id="deleteSulbi" parameterType="com.vertexid.voc.mst.vocMstDTO">
+        DELETE FROM DBO.IPS_VOC_REL_SULBI
+		WHERE VOC_NO = #{vocNo}
+    </delete>
+    
+    <insert id="saveVocSulbi" parameterType="com.vertexid.voc.sulbi.vocSulbiVo" >
+        INSERT INTO IPS_VOC_REL_SULBI(
+            VOC_NO
+            , SEQ
+            , LINE
+            , PRODUCT
+            , PROCESS
+            , PROJECT_NO
+        )VALUES(
+            #{vocNo}
+            , #{seq}
+            , #{line}
+            , #{product}
+            , #{process}
+            , #{vocPjtNo}
+        )
+    </insert>
+    
+    <select id="getSchVocSelectSulbiList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT   LINE
+			   , PRODUCT
+			   , PROCESS
+			   , PROJECT_NO AS VOC_PJT_NO
+		FROM DBO.IPS_VOC_REL_SULBI
+		WHERE VOC_NO  = #{vocNo}
+		ORDER BY SEQ
+	</select>
+</mapper>        

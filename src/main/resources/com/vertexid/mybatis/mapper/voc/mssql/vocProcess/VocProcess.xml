@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        
+<mapper namespace="com.vertexid.voc.vocProcess.VocProcess.mssql">
+	<delete id="deleteProcess" parameterType="com.vertexid.voc.mst.vocMstDTO">
+        DELETE FROM DBO.IPS_VOC_PROCESS
+		WHERE VOC_NO = #{vocNo}
+    </delete>
+    
+    <select id="getSchVocSelectProcessList" parameterType="map" resultType="paramMap" fetchSize="1000">
+		SELECT   VP.VOC_NO
+			   , VP.SEQ
+			   , VP.DEPT_CD
+			   , VP.DEPT_NM
+			   , VP.DEPT_REQ_CONTENTS
+			   , VP.PRC_USER_ID
+			   , VP.PRC_USER_NM
+			   , VP.PRC_PLAN_TYPE
+			   , VP.PRC_PLAN_DATE
+			   , VP.PRC_STATUS
+			   , VP.ECR_NO
+			   , VP.ECR_STATUS
+			   , VP.GW_KEY
+			   , VP.PRC_COMP_DATE
+			   , VP.PRC_CONTENTS
+			   , VP.ATCH_FILE_ID
+			   , VM.PRC_ORDER_YN
+		FROM DBO.IPS_VOC_PROCESS VP
+		LEFT OUTER JOIN IPS_VOC_MST VM ON VP.VOC_NO = VM.VOC_NO
+		WHERE VM.VOC_NO  = #{vocNo}
+		ORDER BY VP.SEQ
+	</select>
+	
+	<select id="getSchVocSelectProcessTot" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT ISNULL((SELECT DNAME FROM VOC_MDM WHERE HCODE = 'PROCESS_STATUS' AND DEL_FLAG = 'N' AND DCODE = MAX(PRC_STATUS)),'선택') AS PRC_TOT_STATUS 
+				, ISNULL(MAX(PRC_COMP_DATE),'진행사항 없음') AS PRC_TOT_COMP_DATE
+		FROM IPS_VOC_PROCESS
+		WHERE VOC_NO = #{vocNo}
+    </select>
+    
+    <select id="getDeptJang" parameterType="map" resultType="paramMap" fetchSize="1000">
+        SELECT LOGIN_ID AS USER_ID
+		FROM V_SYS_USER
+		WHERE DEPT_CD IN (SELECT DEPT_CD
+						 FROM IPS_VOC_PROCESS
+						 WHERE VOC_NO = #{vocNo}
+						 AND DEPT_CD = #{deptCd})
+		AND GROUP_YN = 'Y'
+    </select>
+    
+	<insert id="saveVocProcess" parameterType="com.vertexid.voc.prc.vocPrcVo" >
+        INSERT INTO IPS_VOC_PROCESS(
+            VOC_NO
+            , SEQ
+            , CREATE_DATE
+            , CREATE_USER
+            , DEPT_CD
+            , DEPT_NM
+            , DEPT_REQ_CONTENTS
+            , PRC_USER_ID
+            , PRC_USER_NM
+            , PRC_PLAN_TYPE
+            , PRC_PLAN_DATE
+            , PRC_STATUS
+            , ECR_NO
+            , ATCH_FILE_ID
+        )VALUES(
+            #{vocNo}
+            , #{seq}
+            , GETDATE()
+            , #{loginUserId}
+            , #{deptCd}
+            , #{deptNm}
+            , #{deptReqContents}
+            , #{prcUserId}
+            , #{prcUserNm}
+            , #{prcPlanType}
+            , #{prcPlanDate}
+            , #{prcStatus}
+            , #{ecrNo}
+            , #{atchFileId}
+        )
+    </insert>
+    
+	<update id="updateProcessCompYn" parameterType="com.vertexid.voc.prc.vocPrcVo" >
+		UPDATE DBO.IPS_VOC_PROCESS
+		SET PRC_COMP_YN = #{prcCompYn}
+		WHERE VOC_NO = #{vocNo}
+		AND SEQ = #{seq}
+	</update>
+	
+	<update id="saveProProcess" parameterType="com.vertexid.voc.prc.vocPrcVo" >
+		UPDATE DBO.IPS_VOC_PROCESS
+		SET PRC_PLAN_TYPE = #{prcPlanType}
+            , PRC_PLAN_DATE = #{prcPlanDate}
+            , PRC_STATUS = #{prcStatus}
+            , ECR_NO = #{ecrNo}
+            , ECR_STATUS = #{ecrStatus}
+            , PRC_CONTENTS = #{prcContents}
+            , ATCH_FILE_ID = #{atchFileId}
+		WHERE VOC_NO = #{vocNo}
+		AND SEQ = #{seq}
+		AND DEPT_CD = #{deptCd}
+	</update>
+	
+	<update id="saveEmpProcess" parameterType="com.vertexid.voc.prc.vocPrcVo" >
+    	UPDATE DBO.IPS_VOC_PROCESS
+		SET PRC_USER_ID = #{prcUserId}
+            , PRC_USER_NM = #{prcUserNm}
+		WHERE VOC_NO = #{vocNo}
+		AND SEQ = #{seq}
+		AND DEPT_CD = #{deptCd}
+    </update>
+    
+    <select id="getPrcessCmpYn" parameterType="com.vertexid.voc.mst.vocMstDTO" resultType="string" fetchSize="1000">
+        SELECT CASE WHEN NO_CNT = 0 THEN 'Y' ELSE 'N' END AS PROCESS_CMP_YN
+		FROM
+		(
+			SELECT COUNT(*) AS NO_CNT
+			FROM IPS_VOC_PROCESS
+			WHERE VOC_NO = #{vocNo}
+			AND ISNULL(PRC_USER_ID,'') = ''
+		) A
+    </select>
+    
+    <select id="getEcrStatus" parameterType="com.vertexid.voc.prc.vocPrcVo" resultType="string" fetchSize="1000">
+		select dbo.fn_getEcrStatus(ECR_NO, PSTAT) AS ecrStatus
+		FROM PIS.PLM_NEW.dbo.EC_ECR
+		WHERE ECR_NO = #{ecrNo}
+    </select>
+    
+    <insert id="savePrcApproval" parameterType="com.vertexid.voc.mst.vocApvDTO" >
+        INSERT INTO [HR].[COVI_FLOW_SI].[dbo].[IPS_TB_A01_EAPP_INTERFACE](
+            CMPID
+			,INTER_ID
+			,SYSID
+			,SYS_KEY
+			,SEQ
+			,USER_ID
+			,FORM_PREFIX
+			,TITLE
+			,BODY
+			,STATUS
+			,INSERT_DT
+			,FORM_NAME
+        )VALUES(
+            #{cmpId}
+            ,#{interId}
+            ,#{sysId}
+            ,#{sysKey}
+            ,#{seq}
+            ,#{userId}
+            ,#{formPrefix}
+            , #{title}
+            , #{body}
+            , #{status}
+            , GETDATE()
+            , #{formName}
+        )
+    </insert>
+    
+    <update id="updateGwKeyProcess" parameterType="com.vertexid.voc.prc.vocPrcVo" >
+    	UPDATE DBO.IPS_VOC_PROCESS
+		SET GW_KEY = #{gwKey},
+			GW_PROGRESS_YN = 'Y'
+		WHERE VOC_NO = #{vocNo}
+		AND SEQ = #{sortSeq}
+		AND DEPT_CD = #{deptCd}
+    </update>
+</mapper>        
